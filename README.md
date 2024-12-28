@@ -54,9 +54,10 @@ npm run start
 ```
 
 ## Example requests
-* `https://geodata.mxd.codes/staticmaps?width=300&height=300&center=-119.49280,37.81084&zoom=9&format=png`
-![example request 1](https://geodata.mxd.codes/staticmaps?width=300&height=300&center=-119.49280,37.81084&zoom=9&format=png "example request 1")
-* `https://geodata.mxd.codes/staticmaps?width=500&height=500&center=-73.99515,40.76761&zoom=10&format=webp`
-![example request 2](https://geodata.mxd.codes/staticmaps?width=500&height=500&center=-73.99515,40.76761&zoom=10&format=webp "example request 2")
-* `https://geodata.mxd.codes/staticmaps?width=500&height=500&center=-73.99515,40.76761&zoom=10&format=png&tileUrl=https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}`
-![example request with custom tileUrl](https://geodata.mxd.codes/staticmaps?width=500&height=500&center=-73.99515,40.76761&zoom=10&format=png&tileUrl=https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x} "example request with custom tileUrl")
+
+* `http://localhost:3000/staticmaps?width=300&height=300&center=-119.49280,37.81084&zoom=9&format=png`
+![example request 1](http://localhost:3000/staticmaps?width=300&height=300&center=-119.49280,37.81084&zoom=9&format=png "example request 1")
+* `http://localhost:3000/staticmaps?width=500&height=500&center=-73.99515,40.76761&zoom=10&format=webp`
+![example request 2](http://localhost:3000/staticmaps?width=500&height=500&center=-73.99515,40.76761&zoom=10&format=webp "example request 2")
+* `http://localhost:3000/staticmaps?width=500&height=500&center=-73.99515,40.76761&zoom=10&format=png&tileUrl=https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}`
+![example request with custom tileUrl]( "example request with custom tileUrl")
