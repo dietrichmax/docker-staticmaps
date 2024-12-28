@@ -45,4 +45,3 @@ jobs:
             ${{ secrets.DOCKER_HUB_USERNAME}}/docker-staticmaps:latest
             ghcr.io/${{ github.repository }}:${{ github.sha }}
             ghcr.io/${{ github.repository }}:latest
-            ghcr.io/${{ github.repository }}
