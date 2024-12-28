@@ -13,10 +13,13 @@ export async function render(options) {
     tileSize: 256,
   })
 
-  // Add markers and polylines only if coordinates are provided
-  if (options.coordinates) {
+  let finalZoom = options.zoom
+  let center = options.center
+
+  // Handle coordinates if provided
+  if (options.coordinates && options.coordinates.length > 0) {
     // Add markers if markers=true
-    if (options.markers === true) {  // Strict comparison
+    if (options.markers === true) {
       options.coordinates.forEach(coord => {
         map.addMarker({
           coord: coord,
@@ -30,7 +33,7 @@ export async function render(options) {
     }
 
     // Add polyline only if polyline=true and we have multiple coordinates
-    if (options.polyline === true && options.coordinates.length > 1) {  // Strict comparison
+    if (options.polyline === true && options.coordinates.length > 1) {
       map.addLine({
         coords: options.coordinates,
         color: 'blue',
@@ -38,15 +41,19 @@ export async function render(options) {
       })
     }
 
-    // Calculate center and zoom if coordinates are provided
-    if (!options.zoom || !options.center) {
-      const bounds = getBoundingBox(options.coordinates)
-      options.center = [(bounds.minLon + bounds.maxLon) / 2, (bounds.minLat + bounds.maxLat) / 2]
-      options.zoom = calculateZoom(bounds, options.width, options.height)
+    // Calculate center and zoom only if not provided
+    const bounds = getBoundingBox(options.coordinates)
+
+    if (!center) {
+      center = [(bounds.minLon + bounds.maxLon) / 2, (bounds.minLat + bounds.maxLat) / 2]
+    }
+
+    if (finalZoom === null) {
+      finalZoom = calculateZoom(bounds, options.width, options.height)
     }
   }
 
-  await map.render(options.center, options.zoom)
+  await map.render(center, finalZoom)
   return map.image.buffer(`image/${options.format}`, { quality: 75 })
 }
 
@@ -67,11 +74,12 @@ export function getTileUrl(reqTileUrl, reqBasemap) {
 
 export function checkParams(req) {
   const missingParams = []
-  let zoom
+  let zoom = null  // Changed to null initially
 
   if (req.query.zoom) {
-    zoom = req.query.zoom
-  } else {
+    zoom = parseInt(req.query.zoom)
+  } else if (!req.query.coordinates) {
+    // Only require zoom if coordinates are not provided
     missingParams.push(" {zoom}")
   }
 
@@ -80,7 +88,6 @@ export function checkParams(req) {
     missingParams.push(" {center or coordinates}")
   }
 
-  // Parse markers and polyline parameters
   const markers = req.query.markers === 'true'
   const polyline = req.query.polyline === 'true'
 
