@@ -1,7 +1,7 @@
 {
   "name": "docker-staticmaps",
   "version": "0.1.0",
-  "description": "A containerized web version for [staticmaps](https://www.npmjs.com/package/staticmaps) with [Express](https://github.com/expressjs/express)",
+  "description": "A containerized web version for https://www.npmjs.com/package/staticmaps with https://github.com/expressjs/express",
   "author": "Max Dietrich <mail@mxd.codes>",
   "repository": "github:dietrichmax/docker-staticmaps",
   "scripts": {

@@ -4,7 +4,7 @@
 
 ## Usage
 
-To get a static map from the endpoint "/staticmaps" several prameters have to be provided
+To get a static map from the endpoint `/staticmaps` several prameters have to be provided
 
 For different styles docker-staticmaps is using exisiting tile-services from various providers. Be sure to check their Terms of Use for your use case or use a `custom` tileserver!
 
