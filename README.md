@@ -46,7 +46,7 @@ Polylines can be added to a map. Therefore you have to add a parameter `path=col
 
 - `color`: specify the hex color code without hash symbol
 - `weight`: thickness of line in pixel
-- `coordinates`: pair of coordinates in `{lat1},{lon1}|{lat2},{lon2}` seperated by `|`. At least two are needed for a polyline
+- `coordinates`: pair of coordinates in `{lat1},{lon1}|{lat2},{lon2}` seperated by `|`. At least two pairs of coordinates are needed for a polyline
 
 ## Deployment
 
