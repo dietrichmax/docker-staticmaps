@@ -1,7 +1,7 @@
 import StaticMaps from "../staticmaps/staticmaps.js"
 import basemaps from "./basemaps.js"
 
-export async function render(options, features) {
+export async function render(options) {
   const map = new StaticMaps({
     width: options.width,
     height: options.height,
@@ -13,15 +13,47 @@ export async function render(options, features) {
     tileSize: 256,
   })
 
-  if (features) {
-    features.map((feature) => {
-      if (feature.polyline) {
-        map.addLine(feature.polyline)
-      }
-    })
+  let finalZoom = options.zoom
+  let center = options.center
+
+  // Handle coordinates if provided
+  if (options.coordinates && options.coordinates.length > 0) {
+    // Add markers if markers=true
+    if (options.markers === true) {
+      options.coordinates.forEach(coord => {
+        map.addMarker({
+          coord: coord,
+          img: './public/images/marker-28.png',
+          width: 42,
+          height: 42,
+          offsetX: 14,
+          offsetY: 42
+        })
+      })
+    }
+
+    // Add polyline only if polyline=true and we have multiple coordinates
+    if (options.polyline === true && options.coordinates.length > 1) {
+      map.addLine({
+        coords: options.coordinates,
+        color: 'blue',
+        width: 3
+      })
+    }
+
+    // Calculate center and zoom only if not provided
+    const bounds = getBoundingBox(options.coordinates)
+
+    if (!center) {
+      center = [(bounds.minLon + bounds.maxLon) / 2, (bounds.minLat + bounds.maxLat) / 2]
+    }
+
+    if (finalZoom === null) {
+      finalZoom = calculateZoom(bounds, options.width, options.height)
+    }
   }
 
-  await map.render(options.center, options.zoom)
+  await map.render(center, finalZoom)
   return map.image.buffer(`image/${options.format}`, { quality: 75 })
 }
 
@@ -42,52 +74,71 @@ export function getTileUrl(reqTileUrl, reqBasemap) {
 
 export function checkParams(req) {
   const missingParams = []
-  let zoom
-  let center
+  let zoom = null  // Changed to null initially
 
   if (req.query.zoom) {
-    zoom = req.query.zoom
-  } else {
+    zoom = parseInt(req.query.zoom)
+  } else if (!req.query.coordinates) {
+    // Only require zoom if coordinates are not provided
     missingParams.push(" {zoom}")
   }
 
-  if (req.query.center) {
-    center = req.query.center
-  } else {
-    missingParams.push(" {center}")
+  // Only require center if coordinates not provided
+  if (!req.query.center && !req.query.coordinates) {
+    missingParams.push(" {center or coordinates}")
   }
 
-  return missingParams
+  const markers = req.query.markers === 'true'
+  const polyline = req.query.polyline === 'true'
+
+  return { missingParams, zoom, markers, polyline }
 }
 
-export function getFeatures(req) {
-  // add features
-  const features = []
-  // polylines with path param
-  if (req.query.path) {
-    const pathQueryArray = req.query.path.split("|")
+export function parseCoordinates(coordString) {
+  if (!coordString) return []
 
-    const polylineColor =
-      "#" + pathQueryArray.splice(0, 1).toString().replace("color:", "")
-    const polylineWeight = parseInt(
-      pathQueryArray.splice(0, 1).toString().replace("weight:", "")
-    )
+  return coordString.split('|').map(coord => {
+    const [lat, lon] = coord.split(',').map(Number)
+    return [lon, lat] // Convert to [longitude, latitude] format
+  })
+}
 
-    const polylineCoords = []
-    pathQueryArray.map((coords) => {
-      const coordinatePairs = coords.split(",")
-      const coordinatePair = []
-      coordinatePairs.map((coords) => coordinatePair.push(parseFloat(coords)))
-      polylineCoords.push([coordinatePair[1], coordinatePair[0]])
-    })
-
-    features.push({
-      polyline: {
-        coords: polylineCoords,
-        color: polylineColor,
-        width: polylineWeight,
-      },
-    })
+function getBoundingBox(coordinates) {
+  const bounds = {
+    minLat: Infinity,
+    maxLat: -Infinity,
+    minLon: Infinity,
+    maxLon: -Infinity
   }
-  return features
+
+  coordinates.forEach(([lon, lat]) => {
+    bounds.minLat = Math.min(bounds.minLat, lat)
+    bounds.maxLat = Math.max(bounds.maxLat, lat)
+    bounds.minLon = Math.min(bounds.minLon, lon)
+    bounds.maxLon = Math.max(bounds.maxLon, lon)
+  })
+
+  return bounds
+}
+
+function calculateZoom(bounds, width, height) {
+  const WORLD_PX = 256
+  const ZOOM_MAX = 18
+  const PADDING = 20 // 20px padding on each side
+
+  const latRadian = bounds.maxLat * Math.PI / 180
+
+  // Adjust width and height to account for padding
+  const effectiveWidth = width - (2 * PADDING)
+  const effectiveHeight = height - (2 * PADDING)
+
+  // Calculate the width and height in pixels for the given coordinates
+  const latDiff = Math.abs(bounds.maxLat - bounds.minLat)
+  const lonDiff = Math.abs(bounds.maxLon - bounds.minLon)
+
+  const latZoom = Math.floor(Math.log2(effectiveHeight * 360 / (latDiff * WORLD_PX)))
+  const lonZoom = Math.floor(Math.log2(effectiveWidth * 360 / (lonDiff * WORLD_PX * Math.cos(latRadian))))
+
+  // Use the more conservative (smaller) zoom level to ensure all points are visible
+  return Math.min(Math.min(latZoom, lonZoom) - 1, ZOOM_MAX)
 }

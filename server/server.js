@@ -1,5 +1,5 @@
 import express from "express"
-import { render, getTileUrl, checkParams, getFeatures } from "./utils.js"
+import { render, getTileUrl, checkParams, parseCoordinates } from "./utils.js"
 
 const asyncHandler = (fun) => (req, res, next) => {
   Promise.resolve(fun(req, res, next)).catch(next)
@@ -11,21 +11,26 @@ const port = 3000
 app.get(
   "/staticmaps",
   asyncHandler(async (req, res) => {
-    const missingParams = checkParams(req)
+    const { missingParams, zoom, markers, polyline } = checkParams(req);
+
     if (missingParams.length > 0) {
       res.status(422)
       res.send("Parameters" + missingParams.toString() + " missing!")
     } else {
-      const coordinates = req.query.center.split(",")
-
-      const lon = parseFloat(coordinates[0])
-      const lat = parseFloat(coordinates[1])
+      let center
+      if (req.query.center) {
+        const coordinates = req.query.center.split(",")
+        center = [parseFloat(coordinates[0]), parseFloat(coordinates[1])]
+      }
 
       const options = {
         width: parseInt(req.query.width) || 300,
         height: parseInt(req.query.height) || 300,
         zoom: parseInt(req.query.zoom),
-        center: [lat, lon],
+        center: center,
+        coordinates: parseCoordinates(req.query.coordinates),
+        markers: markers,
+        polyline: polyline,
         tileUrl: getTileUrl(req.query.tileUrl, req.query.basemap),
         format: req.query.format ? req.query.format : "png",
       }
