@@ -56,8 +56,13 @@ npm run start
 ## Example requests
 
 * `http://localhost:3000/staticmaps?width=300&height=300&center=-119.49280,37.81084&zoom=9&format=png`
+
 ![example request 1](https://github.com/dietrichmax/docker-staticmaps/blob/main/examples/example1.png "example request 1")
+
 * `http://localhost:3000/staticmaps?width=500&height=500&center=-73.99515,40.76761&zoom=10&format=webp`
+
 ![example request 2](https://github.com/dietrichmax/docker-staticmaps/blob/main/examples/example2.webp "example request 2")
+
 * `http://localhost:3000/staticmaps?width=500&height=500&center=-73.99515,40.76761&zoom=10&format=png&tileUrl=https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}`
+
 ![example request with custom tileUrl](https://github.com/dietrichmax/docker-staticmaps/blob/main/examples/example3.png "example request with custom tileUrl")
