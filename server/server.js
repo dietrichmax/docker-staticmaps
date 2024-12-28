@@ -35,9 +35,7 @@ app.get(
         format: req.query.format ? req.query.format : "png",
       }
 
-      const features = getFeatures(req)
-
-      const img = await render(options, features)
+      const img = await render(options)
 
       res.writeHead(200, {
         "Content-Type": `image/${options.format}`,
@@ -50,4 +48,5 @@ app.get(
 
 app.listen(port, () => {
   console.log(`staticmaps listening on port ${port}`)
+  console.log(`http://localhost:${port}`)
 })
