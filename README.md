@@ -49,3 +49,5 @@ git clone https://github.com/dietrichmax/docker-staticmaps
 npm i
 npm run start
 ```
+
+**Endpoint** `localhost:3000/staticmaps`
