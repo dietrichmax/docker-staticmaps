@@ -35,7 +35,7 @@ jobs:
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
         with:
           images: |
-            my-docker-hub-namespace/my-docker-hub-repository
+            ${{ secrets.DOCKER_HUB_USERNAME}}/docker-staticmaps
             ghcr.io/${{ github.repository }}
 
       - name: Build and push 🏗️
@@ -45,9 +45,8 @@ jobs:
           file: ./Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: |
-            ${{ secrets.DOCKER_HUB_USERNAME}}/docker-staticmaps:${{ github.sha }}
-            ${{ secrets.DOCKER_HUB_USERNAME}}/docker-staticmaps:latest
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
 
       - name: Generate artifact attestation
         uses: actions/attest-build-provenance@v2
