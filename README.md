@@ -8,9 +8,9 @@ To get a static map from the endpoint `/staticmaps` several prameters have to be
 
 - `center` - Center coordinates of the map in the format `lon, lat`
 - `zoom` - Set the zoom level for the map.
-- `width` - default 300 - Width in pixels of the final image
-- `height` - default 300 - Height in pixels of the final image
-- `format` (e.g. "png", "jpg" or "webp")
+- `width` - default `300` - Width in pixels of the final image
+- `height` - default `300` - Height in pixels of the final image
+- `format` - default `png` (e.g. `png`, `jpg` or `webp`)
 
 For different basemaps docker-staticmaps is using exisiting tile-services from various providers. Be sure to check their Terms of Use for your use case or use a `custom` tileserver with the `tileUrl` parameter!
 
@@ -42,7 +42,7 @@ For different basemaps docker-staticmaps is using exisiting tile-services from v
 **with Docker**
 
 ```
-docker run -d -p 3000:3000 --name docker-staticmaps mxdcodes/docker-staticmaps
+docker run -d  --name='static-maps-api' -p '3003:3000/tcp' 'mxdcodes/docker-staticmaps:latest'
 ```
 
 **with Node.js**
@@ -56,8 +56,8 @@ npm run start
 ## Example requests
 
 * `http://localhost:3000/staticmaps?width=300&height=300&center=-119.49280,37.81084&zoom=9&format=png`
-![example request 1](http://localhost:3000/staticmaps?width=300&height=300&center=-119.49280,37.81084&zoom=9&format=png "example request 1")
+![example request 1](https://github.com/dietrichmax/docker-staticmaps/blob/main/examples/example1.png "example request 1")
 * `http://localhost:3000/staticmaps?width=500&height=500&center=-73.99515,40.76761&zoom=10&format=webp`
-![example request 2](http://localhost:3000/staticmaps?width=500&height=500&center=-73.99515,40.76761&zoom=10&format=webp "example request 2")
+![example request 2](https://github.com/dietrichmax/docker-staticmaps/blob/main/examples/example2.webp "example request 2")
 * `http://localhost:3000/staticmaps?width=500&height=500&center=-73.99515,40.76761&zoom=10&format=png&tileUrl=https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}`
-![example request with custom tileUrl]( "example request with custom tileUrl")
+![example request with custom tileUrl](https://github.com/dietrichmax/docker-staticmaps/blob/main/examples/example3.png "example request with custom tileUrl")
