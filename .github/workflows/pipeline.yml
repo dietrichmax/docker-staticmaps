@@ -28,7 +28,6 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-  
           
       - name: Extract metadata (tags, labels) for Docker
         id: meta
@@ -37,8 +36,6 @@ jobs:
           images: |
             ${{ secrets.DOCKER_HUB_USERNAME}}/docker-staticmaps:${{ github.sha }}
             ${{ secrets.DOCKER_HUB_USERNAME}}/docker-staticmaps:latest
-            ghcr.io/${{ github.repository }}/docker-staticmaps:latest
-            ghcr.io/${{ github.repository }}/docker-staticmaps:${{ github.sha }}
 
       - name: Build and push 🏗️
         uses: docker/build-push-action@v2
