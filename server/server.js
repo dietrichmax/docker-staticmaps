@@ -8,9 +8,6 @@ const asyncHandler = (fun) => (req, res, next) => {
 const app = express()
 const port = 3000
 
-const defaultWidth = 300
-const defaultHeight = 300
-
 app.get(
   "/staticmaps",
   asyncHandler(async (req, res) => {
@@ -27,8 +24,8 @@ app.get(
       }
 
       const options = {
-        width: parseInt(req.query.width) || defaultWidth,
-        height: parseInt(req.query.height) || defaultHeight,
+        width: parseInt(req.query.width) || 300,
+        height: parseInt(req.query.height) || 300,
         zoom: parseInt(req.query.zoom),
         center: center,
         coordinates: parseCoordinates(req.query.coordinates),
@@ -38,7 +35,9 @@ app.get(
         format: req.query.format ? req.query.format : "png",
       }
 
-      const img = await render(options)
+      const features = getFeatures(req)
+
+      const img = await render(options, features)
 
       res.writeHead(200, {
         "Content-Type": `image/${options.format}`,
