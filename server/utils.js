@@ -36,7 +36,6 @@ export function checkParams(req) {
   const missingParams = []
   let zoom
   let center
-  let format
   
   if (req.query.zoom) {
     zoom = req.query.zoom
@@ -48,12 +47,6 @@ export function checkParams(req) {
     center = req.query.center
   } else {
     missingParams.push(" {center}")
-  }
-
-  if (req.query.format) {
-    format = req.query.format
-  } else {
-    missingParams.push(" {format}")
   }
 
   return missingParams
