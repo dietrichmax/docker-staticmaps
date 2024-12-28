@@ -1,0 +1,30 @@
+{
+  "name": "docker-staticmaps",
+  "version": "0.1.0",
+  "description": "A containerized web version for [staticmaps](https://www.npmjs.com/package/staticmaps) with [Express](https://github.com/expressjs/express)",
+  "author": "Max Dietrich <mail@mxd.codes>",
+  "repository": "github:dietrichmax/docker-staticmaps",
+  "scripts": {
+    "format": "prettier --write .",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server/server.js"
+  },
+  "type": "module",
+  "dependencies": {
+    "@turf/bbox": "^6.5.0",
+    "@turf/circle": "^6.5.0",
+    "express": "^4.18.2",
+    "got": "^14.1.0",
+    "lodash.chunk": "^4.2.0",
+    "lodash.find": "^4.6.0",
+    "lodash.first": "^3.0.0",
+    "lodash.flatten": "^4.4.0",
+    "lodash.isequal": "^4.5.0",
+    "lodash.last": "^3.0.0",
+    "lodash.uniqby": "^4.7.0",
+    "modern-async": "^1.1.4",
+    "prettier": "^3.2.4",
+    "sharp": "^0.33.2",
+    "url": "^0.11.3"
+  }
+}
