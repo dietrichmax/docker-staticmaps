@@ -39,7 +39,7 @@ For different styles docker-staticmaps is using exisiting tile-services from var
 **with Docker**
 
 ```
-docker run -p 3000:3000 mxdcodes/docker-staticmaps
+docker run -d -p 3000:3000 --name docker-staticmaps mxdcodes/docker-staticmaps
 ```
 
 **with Node.js**
