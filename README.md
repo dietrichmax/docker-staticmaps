@@ -2,6 +2,8 @@
 
 [![Build & Publish](https://github.com/dietrichmax/docker-staticmaps/actions/workflows/pipeline.yml/badge.svg)](https://github.com/dietrichmax/docker-staticmaps/actions/workflows/pipeline.yml) 
 
+A containerized web version for [staticmaps](https://www.npmjs.com/package/staticmaps) with [express](https://github.com/expressjs/express).
+
 ## Usage
 
 To get a static map from the endpoint `/staticmaps` several prameters have to be provided.
@@ -59,7 +61,7 @@ npm run start
 
 ![example request 1](https://github.com/dietrichmax/docker-staticmaps/blob/main/examples/example1.png "example request 1")
 
-* `http://localhost:3000/staticmaps?width=500&height=500&center=-73.99515,40.76761&zoom=10&format=webp`
+* `http://localhost:3000/staticmaps?width=500&height=500&center=-73.99515,40.76761&zoom=10&format=webp&basemap=carto-voyager`
 
 ![example request 2](https://github.com/dietrichmax/docker-staticmaps/blob/main/examples/example2.webp "example request 2")
 
