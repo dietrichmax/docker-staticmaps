@@ -1,5 +1,5 @@
 import express from "express"
-import { render, getTileUrl, checkParams } from "./utils.js"
+import { render, getTileUrl, checkParams, getFeatures } from "./utils.js"
 
 const asyncHandler = (fun) => (req, res, next) => {
   Promise.resolve(fun(req, res, next)).catch(next)
@@ -7,9 +7,6 @@ const asyncHandler = (fun) => (req, res, next) => {
 
 const app = express()
 const port = 3000
-
-const defaultWidth = 300
-const defaultHeight = 300
 
 app.get(
   "/staticmaps",
@@ -25,15 +22,17 @@ app.get(
       const lat = parseFloat(coordinates[1])
 
       const options = {
-        width: parseInt(req.query.width) || defaultWidth,
-        height: parseInt(req.query.height) || defaultHeight,
+        width: parseInt(req.query.width) || 300,
+        height: parseInt(req.query.height) || 300,
         zoom: parseInt(req.query.zoom),
-        center: [lon, lat],
+        center: [lat, lon],
         tileUrl: getTileUrl(req.query.tileUrl, req.query.basemap),
         format: req.query.format ? req.query.format : "png",
       }
 
-      const img = await render(options)
+      const features = getFeatures(req)
+
+      const img = await render(options, features)
 
       res.writeHead(200, {
         "Content-Type": `image/${options.format}`,

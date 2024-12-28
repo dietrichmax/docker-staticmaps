@@ -1,6 +1,6 @@
 # Docker Static Maps API
 
-[![Build & Publish](https://github.com/dietrichmax/docker-staticmaps/actions/workflows/pipeline.yml/badge.svg)](https://github.com/dietrichmax/docker-staticmaps/actions/workflows/pipeline.yml) 
+[![Build & Publish](https://github.com/dietrichmax/docker-staticmaps/actions/workflows/pipeline.yml/badge.svg)](https://github.com/dietrichmax/docker-staticmaps/actions/workflows/pipeline.yml)
 
 A containerized web version for [staticmaps](https://www.npmjs.com/package/staticmaps) with [express](https://github.com/expressjs/express).
 
@@ -13,6 +13,8 @@ To get a static map from the endpoint `/staticmaps` several prameters have to be
 - `width` - default `300` - Width in pixels of the final image
 - `height` - default `300` - Height in pixels of the final image
 - `format` - default `png` (e.g. `png`, `jpg` or `webp`)
+
+### Basemap
 
 For different basemaps docker-staticmaps is using exisiting tile-services from various providers. Be sure to check their Terms of Use for your use case or use a `custom` tileserver with the `tileUrl` parameter!
 
@@ -38,6 +40,13 @@ For different basemaps docker-staticmaps is using exisiting tile-services from v
   - `carto-voyager` - [Carto](https://carto.com/location-data-services/basemaps/) Free usage for up to 75,000 mapviews per month, non-commercial services only.
   - `custom` - Pass through the tile URL using parameter `tileurl`
 
+### Drawing Polylines
+
+Polylines can be added to a map. Therefore you have to add a parameter `path=color:{color}|weight:{lineWeight}|{point1({lat},{lon})}|{point2({lat},{lon})}`, e.g. `path=color:0000FFBB|weight:7|40.736202,-74.006138|40.720982,-73.982277|40.708751,-74.009228`.
+
+- `color`: specify the hex color code without hash symbol
+- `weight`: thickness of line in pixel
+- `coordinates`: pair of coordinates in `{lat1},{lon1}|{lat2},{lon2}` seperated by `|`. At least two are needed for a polyline
 
 ## Deployment
 
@@ -57,14 +66,20 @@ npm run start
 
 ## Example requests
 
-* `http://localhost:3000/staticmaps?width=300&height=300&center=-119.49280,37.81084&zoom=9&format=png`
+- `http://localhost:3000/staticmaps?width=300&height=300&center=-119.49280,37.81084&zoom=9&format=png`
 
 ![example request 1](https://github.com/dietrichmax/docker-staticmaps/blob/main/examples/example1.png "example request 1")
 
-* `http://localhost:3000/staticmaps?width=500&height=500&center=-73.99515,40.76761&zoom=10&format=webp&basemap=carto-voyager`
+- `http://localhost:3000/staticmaps?width=500&height=500&center=-73.99515,40.76761&zoom=10&format=webp&basemap=carto-voyager`
 
 ![example request 2](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/example2.webp "example request 2")
 
-* `http://localhost:3000/staticmaps?width=500&height=500&center=-73.99515,40.76761&zoom=10&format=png&tileUrl=https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}`
+- `http://localhost:3000/staticmaps?width=500&height=500&center=-73.99515,40.76761&zoom=10&format=png&tileUrl=https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}`
 
 ![example request with custom tileUrl](https://github.com/dietrichmax/docker-staticmaps/blob/main/examples/example3.png "example request with custom tileUrl")
+
+- `http://localhost:3000/staticmaps?width=500&height=500&center=-73.99515,40.76761&zoom=10&format=png&tileUrl=https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}`
+
+- `http://localhost:3000/staticmaps?center=40.737102,-73.990318&zoom=12&width=1000&height=1000&basemap=gray-background&path=color:0000FFBB|weight:7|40.736202,-74.006138|40.720982,-73.982277|40.708751,-74.009228`
+
+![example request with polyline](https://github.com/dietrichmax/docker-staticmaps/blob/main/examples/polyline_example.png "example request with polyline")
