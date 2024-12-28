@@ -31,7 +31,7 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: |
-            ${{ secrets.DOCKER_HUB_USERNAME}}/docker-staticmaps
+            ${{ secrets.DOCKER_HUB_USERNAME}}/${{ github.repository }}
 
       - name: Build and push 🏗️
         uses: docker/build-push-action@v5
