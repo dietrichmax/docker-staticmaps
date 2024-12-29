@@ -46,8 +46,8 @@ With the parameter `polyline` you can define a polyline with atleast two pairs o
 
 `polyline=polylineStyles|polylineLocation1|polylineLocation2|...`
 
-- `weight` - Weight of the polyline in pixels, e.g. `weight:5`
-- `color` - 24-Bit-color hex value, e.g. `color:0000ff`
+- `weight` - default `5` - Weight of the polyline in pixels, e.g. `weight:5`
+- `color` - default `blue` -24-Bit-color hex value, e.g. `color:0000ff`
 - `polylineLocation` - in format `[lat,lon]` and seperated by `|`. Atleast two locations are needed to draw a polyline.
 
 If coordinates are provided and no zoom option is provided Zoom level `zoom` is being calculated automatically. If both zoom and coordinates are there, provided zoom value is being used.
@@ -79,8 +79,8 @@ npm run start
 ## Example requests
 
 <details>
-  <summary>Minimal example: only `center`</summary>
-  <p>http://localhost:3000/staticmaps?center=-119.49280,37.81084</p>
+  <summary>Minimal example: `center` and `zoom`</summary>
+  <p>http://localhost:3000/staticmaps?center=-119.49280,37.81084&zoom=9</p>
 </details>
 
 ![Minimal example: only `center`](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/minimalexample.png "screenshot of minimal example: only `center`")
