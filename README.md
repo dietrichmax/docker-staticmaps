@@ -42,14 +42,49 @@ For different basemaps docker-staticmaps is using exisiting tile-services from v
 
 ### Drawing Markers and Polylines
 
-
 - `markers` (true/false) to enable/disable rendering markers on the image
 - `polyline` (true/false`) to enable/disable rendering polyline on the image
 - `coordinates` (lat,lon|lat,lon|lat,lon etc.) should contain list of coordinates for markers and/or polyline to be drawn on the map image
 
- If coordinates are provided and no zoom option is provided Zoom level `zoom` is being calculated automatically. If both zoom and coordinates are there, provided zoom value is being used.
- 
-Examples (239 points in each):
+If coordinates are provided and no zoom option is provided Zoom level `zoom` is being calculated automatically. If both zoom and coordinates are there, provided zoom value is being used.
+
+## Deployment
+
+**with Docker**
+
+```
+docker run -d  --name='static-maps-api' -p '3003:3000/tcp' 'mxdcodes/docker-staticmaps:latest'
+```
+
+**with Node.js**
+
+```js
+git clone https://github.com/dietrichmax/docker-staticmaps
+npm i
+npm run start
+```
+
+## Example requests
+
+- `http://localhost:3000/staticmaps?width=300&height=300&center=-119.49280,37.81084&zoom=9&format=png`
+
+![example request 1](https://github.com/dietrichmax/docker-staticmaps/blob/main/examples/example1.png "example request 1")
+
+- `http://localhost:3000/staticmaps?width=500&height=500&center=-73.99515,40.76761&zoom=10&format=webp&basemap=carto-voyager`
+
+![example request 2](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/example2.webp "example request 2")
+
+- `http://localhost:3000/staticmaps?width=500&height=500&center=-73.99515,40.76761&zoom=10&format=png&tileUrl=https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}`
+
+![example request with custom tileUrl](https://github.com/dietrichmax/docker-staticmaps/blob/main/examples/example3.png "example request with custom tileUrl")
+
+- `http://localhost:3000/staticmaps?width=500&height=500&center=-73.99515,40.76761&zoom=10&format=png&tileUrl=https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}`
+
+- `http://localhost:3000/staticmaps?center=40.737102,-73.990318&zoom=12&width=1000&height=1000&basemap=gray-background&path=color:0000FFBB|weight:7|40.736202,-74.006138|40.720982,-73.982277|40.708751,-74.009228`
+
+![example request with polyline](https://github.com/dietrichmax/docker-staticmaps/blob/main/examples/polyline_example.png "example request with polyline")
+
+### Examples with Markers and Polygons (239 points in each):
 
 <details><summary>No zoom, `polyline=true`, `markers=false`</summary>
 <p>
@@ -91,39 +126,3 @@ http://localhost:3000/staticmaps?width=600&height=600&polyline=true&zoom=13&mark
 </details> 
 
 ![`zoom=9`, `polyline=true`, `markers=true`](https://github.com/user-attachments/assets/9d807751-17cc-40a9-9646-4308934b0472)
-
-## Deployment
-
-**with Docker**
-
-```
-docker run -d  --name='static-maps-api' -p '3003:3000/tcp' 'mxdcodes/docker-staticmaps:latest'
-```
-
-**with Node.js**
-
-```js
-git clone https://github.com/dietrichmax/docker-staticmaps
-npm i
-npm run start
-```
-
-## Example requests
-
-- `http://localhost:3000/staticmaps?width=300&height=300&center=-119.49280,37.81084&zoom=9&format=png`
-
-![example request 1](https://github.com/dietrichmax/docker-staticmaps/blob/main/examples/example1.png "example request 1")
-
-- `http://localhost:3000/staticmaps?width=500&height=500&center=-73.99515,40.76761&zoom=10&format=webp&basemap=carto-voyager`
-
-![example request 2](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/example2.webp "example request 2")
-
-- `http://localhost:3000/staticmaps?width=500&height=500&center=-73.99515,40.76761&zoom=10&format=png&tileUrl=https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}`
-
-![example request with custom tileUrl](https://github.com/dietrichmax/docker-staticmaps/blob/main/examples/example3.png "example request with custom tileUrl")
-
-- `http://localhost:3000/staticmaps?width=500&height=500&center=-73.99515,40.76761&zoom=10&format=png&tileUrl=https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}`
-
-- `http://localhost:3000/staticmaps?center=40.737102,-73.990318&zoom=12&width=1000&height=1000&basemap=gray-background&path=color:0000FFBB|weight:7|40.736202,-74.006138|40.720982,-73.982277|40.708751,-74.009228`
-
-![example request with polyline](https://github.com/dietrichmax/docker-staticmaps/blob/main/examples/polyline_example.png "example request with polyline")

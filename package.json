@@ -7,6 +7,7 @@
   "scripts": {
     "format": "prettier --write .",
     "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon server/server.js",
     "start": "node server/server.js"
   },
   "type": "module",
@@ -26,5 +27,8 @@
     "prettier": "^3.2.4",
     "sharp": "^0.33.2",
     "url": "^0.11.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
   }
 }

@@ -7,9 +7,10 @@ const asyncHandler = (fun) => (req, res, next) => {
 
 const app = express()
 const port = 3000
+const endpoint = "/staticmaps"
 
 app.get(
-  "/staticmaps",
+  endpoint,
   asyncHandler(async (req, res) => {
     const { missingParams, zoom, markers, polyline } = checkParams(req);
 
@@ -48,5 +49,5 @@ app.get(
 
 app.listen(port, () => {
   console.log(`staticmaps listening on port ${port}`)
-  console.log(`http://localhost:${port}`)
+  console.log(`Endpoint: http://localhost:${port}${endpoint}`)
 })
