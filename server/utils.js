@@ -5,6 +5,7 @@ export function validateParams(req) {
   const missingParams = [] // to render feedback for missing params
   let center = null // Changed to null initially
   let polyline = false
+  let markers = false
 
   if (req.query.center) {
     const coordinates = req.query.center.split(",")
@@ -49,19 +50,29 @@ export function validateParams(req) {
     }
   }
 
+  if (req.query.markers) {
+    let markersArray = req.query.markers.split("|")
+    let markersCoords = markersArray
+    markersCoords = Object.keys(markersArray).map((key) => {
+      const [lat, lon] = markersCoords[key].split(",").map(Number)
+      return [lon, lat] // Convert to [longitude, latitude] format
+    })
+
+    markers = {
+      coords: markersCoords,
+    }
+  }
   // Only require center if polyline or marker coordinates not provided
   if (!req.query.center && !polyline.coords && !markers.coords) {
     missingParams.push(" {center or coordinates}")
   }
-
-  //const markers = req.query.markers === 'true'
 
   const options = {
     width: parseInt(req.query.width) || 300,
     height: parseInt(req.query.height) || 300,
     zoom: parseInt(req.query.zoom),
     center: center,
-    //markers: markers,
+    markers: markers,
     polyline: polyline,
     tileUrl: getTileUrl(req.query.tileUrl, req.query.basemap),
     format: req.query.format || "png",
@@ -70,6 +81,9 @@ export function validateParams(req) {
 }
 
 export async function render(options) {
+  let finalZoom = options.zoom
+  let center = options.center
+
   const map = new StaticMaps({
     width: options.width,
     height: options.height,
@@ -81,32 +95,28 @@ export async function render(options) {
     tileSize: 256,
   })
 
-  let finalZoom = options.zoom
-  let center = options.center
-
-  // Handle coordinates if provided
-  /*if (options.coordinates && options.coordinates.length > 0) {
-    // Add markers if markers=true
-    if (options.markers === true) {
-      options.coordinates.forEach((coord) => {
-        map.addMarker({
-          coord: coord,
-          img: "./public/images/marker-28.png",
-          width: 42,
-          height: 42,
-          offsetX: 14,
-          offsetY: 42,
-        })
+  // Add markers only if markers object exists and we atleast one coordinates
+  if (options.markers && options.markers.coords.length > 0) {
+    options.markers.coords.forEach((coord) => {
+      map.addMarker({
+        coord: coord,
+        img: "./public/images/marker-28.png",
+        width: 42,
+        height: 42,
+        offsetX: 15,
+        offsetY: 27,
       })
-    }*/
+    })
+  }
 
-  // Add polyline=path only if polyline object exists and we have multiple coordinates
+  // Add polyline only if polyline object exists and we have multiple coordinates
   if (options.polyline && options.polyline.coords.length > 1) {
     map.addLine({
       coords: options.polyline.coords,
       color: options.polyline.color,
       width: options.polyline.weight,
     })
+
     // Calculate polyline center and zoom only if not provided
     const bounds = getBoundingBox(options.polyline.coords)
 

@@ -42,20 +42,23 @@ For different basemaps docker-staticmaps is using exisiting tile-services from v
 
 ### Polylines
 
-With the parameter `polyline` you can define a polyline with atleast two pairs of coordinates (point of {lat},{lon}) in the following format:
+With the parameter `polyline` you can define a polyline with atleast two pairs of coordinates in the following format:
 
 `polyline=polylineStyles|polylineLocation1|polylineLocation2|...`
 
-**Polyline styles**
-
 - `weight` - Weight of the polyline in pixels, e.g. `weight:5`
 - `color` - 24-Bit-color hex value, e.g. `color:0xFFFFCC`
-
-**Polyline locations**
-
 - `polylineLocation` - in format {lat},{lon} and seperated by `|`. Atleast two locations are needed to draw a polyline.
 
 If coordinates are provided and no zoom option is provided Zoom level `zoom` is being calculated automatically. If both zoom and coordinates are there, provided zoom value is being used.
+
+### Markers
+
+With the parameter `markers` you can define a one or multiple markers depending on how much pair of coordinates you pass to the parameter
+
+`markers=markerLocation1|markerLocation2|...`
+
+- `markerLocation` - in format {lat},{lon} and seperated by `|`. Atleast one locations is needed to draw a marker.
 
 ## Deployment
 
@@ -97,3 +100,21 @@ npm run start
   </details>
 
 ![No zoom, `polyline=true`, `markers=false`](https://github.com/dietrichmax/docker-staticmaps/blob/main/examples/polylinepath.png)
+
+<details>
+  <summary>Markers</summary>
+    <p>
+      http://localhost:3000/staticmaps?width=600&height=600&markers=48.725680,-3.983445|48.722170,-3.982201
+    </p>
+  </details>
+
+![No zoom, `polyline=true`, `markers=false`](https://github.com/dietrichmax/docker-staticmaps/blob/main/examples/markers.png)
+
+<details>
+  <summary>Markers and Polyline</summary>
+    <p>
+      http://localhost:3000/staticmaps?width=600&height=600&markers=48.725680,-3.983445|48.722170,-3.982201&polyline=weight:5|color:0000ff|48.725680,-3.983445|48.722170,-3.982201
+    </p>
+  </details>
+
+![No zoom, `polyline=true`, `markers=false`](https://github.com/dietrichmax/docker-staticmaps/blob/main/examples/markers.png)
