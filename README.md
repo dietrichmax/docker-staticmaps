@@ -47,8 +47,8 @@ With the parameter `polyline` you can define a polyline with atleast two pairs o
 `polyline=polylineStyles|polylineLocation1|polylineLocation2|...`
 
 - `weight` - Weight of the polyline in pixels, e.g. `weight:5`
-- `color` - 24-Bit-color hex value, e.g. `color:0xFFFFCC`
-- `polylineLocation` - in format {lat},{lon} and seperated by `|`. Atleast two locations are needed to draw a polyline.
+- `color` - 24-Bit-color hex value, e.g. `color:0000ff`
+- `polylineLocation` - in format `[lat,lon]` and seperated by `|`. Atleast two locations are needed to draw a polyline.
 
 If coordinates are provided and no zoom option is provided Zoom level `zoom` is being calculated automatically. If both zoom and coordinates are there, provided zoom value is being used.
 
@@ -58,7 +58,7 @@ With the parameter `markers` you can define a one or multiple markers depending 
 
 `markers=markerLocation1|markerLocation2|...`
 
-- `markerLocation` - in format {lat},{lon} and seperated by `|`. Atleast one locations is needed to draw a marker.
+- `markerLocation` - in format `[lat,lon]` and seperated by `|`. Atleast one locations is needed to draw a marker.
 
 ## Deployment
 
@@ -83,7 +83,7 @@ npm run start
   <p>http://localhost:3000/staticmaps?center=-119.49280,37.81084</p>
 </details>
 
-![Minimal example: only `center`](https://github.com/dietrichmax/docker-staticmaps/blob/main/examples/minimalexample.png "screenshot of minimal example: only `center`")
+![Minimal example: only `center`](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/minimalexample.png "screenshot of minimal example: only `center`")
 
 <details>
   <summary>`width=500`, `height=500`, `center=-73.99515,40.76761`, zoom=10`, `format=webp`, `basemap=carto-voyager`</summary>
@@ -93,28 +93,28 @@ npm run start
 ![example request 2](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/example2.webp "example request 2")
 
 <details>
-  <summary>Polyline with no `zoom`, weight:6` and `color:0000ff`</summary>
+  <summary>Polyline with no `zoom`, `weight:6` and `color:0000ff`</summary>
     <p>
     http://localhost:3000/staticmaps?width=600&height=600&polyline=weight:6|color:0000ff|48.726304979176675,-3.9829935637739382|48.72623035828412,-3.9829726446543385|48.726126671101639,-3.9829546542797467|48.725965124843256,-3.9829070729298808|48.725871429380568,-3.9828726793245273|48.725764250990267,-3.9828064532306628|48.725679557682362,-3.9827385375789146|48.72567025076134,-3.9827310750289113|48.725529844164292,-3.9826617613709225|48.725412537198615,-3.9826296635284164|48.725351694726704,-3.9826201452878531|48.725258599474508,-3.9826063049230411|48.725157520450125,-3.9825900299314232|48.725077863838543,-3.9825779905509102|48.724930435729831,-3.9825514102373938|48.724815578113535,-3.9825237355887291|48.724760905376989,-3.9825013965800564|48.724677938456551,-3.9824534296566916|48.724379435330384,-3.9822469276001118|48.724304509274596,-3.9821850264836076|48.7242453124599,-3.9821320570321772|48.724206187829317,-3.9821063430223207|48.724117073204575,-3.9820862134785551
     </p>
   </details>
 
-![No zoom, `polyline=true`, `markers=false`](https://github.com/dietrichmax/docker-staticmaps/blob/main/examples/polylinepath.png)
+![No zoom, `polyline=true`, `markers=false`](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/polylinepath.png)
 
 <details>
   <summary>Markers</summary>
     <p>
-      http://localhost:3000/staticmaps?width=600&height=600&markers=48.725680,-3.983445|48.722170,-3.982201
+      http://localhost:3000/staticmaps?width=600&height=600&markers=48.726304979176675,-3.9829935637739382|48.724117073204575,-3.9820862134785551
     </p>
   </details>
 
-![No zoom, `polyline=true`, `markers=false`](https://github.com/dietrichmax/docker-staticmaps/blob/main/examples/markers.png)
+![No zoom, `polyline=true`, `markers=false`](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/markers.png)
 
 <details>
   <summary>Markers and Polyline</summary>
     <p>
-      http://localhost:3000/staticmaps?width=600&height=600&markers=48.725680,-3.983445|48.722170,-3.982201&polyline=weight:5|color:0000ff|48.725680,-3.983445|48.722170,-3.982201
+      http://localhost:3000/staticmaps?width=600&height=600&polyline=weight:6|color:0000ff|48.726304979176675,-3.9829935637739382|48.72623035828412,-3.9829726446543385|48.726126671101639,-3.9829546542797467|48.725965124843256,-3.9829070729298808|48.725871429380568,-3.9828726793245273|48.725764250990267,-3.9828064532306628|48.725679557682362,-3.9827385375789146|48.72567025076134,-3.9827310750289113|48.725529844164292,-3.9826617613709225|48.725412537198615,-3.9826296635284164|48.725351694726704,-3.9826201452878531|48.725258599474508,-3.9826063049230411|48.725157520450125,-3.9825900299314232|48.725077863838543,-3.9825779905509102|48.724930435729831,-3.9825514102373938|48.724815578113535,-3.9825237355887291|48.724760905376989,-3.9825013965800564|48.724677938456551,-3.9824534296566916|48.724379435330384,-3.9822469276001118|48.724304509274596,-3.9821850264836076|48.7242453124599,-3.9821320570321772|48.724206187829317,-3.9821063430223207|48.724117073204575,-3.9820862134785551&markers=48.726304979176675,-3.9829935637739382|48.724117073204575,-3.9820862134785551
     </p>
   </details>
 
-![No zoom, `polyline=true`, `markers=false`](https://github.com/dietrichmax/docker-staticmaps/blob/main/examples/markersandpolyline.png)
+![No zoom, `polyline=true`, `markers=false`](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/markersandpolyline.png)
