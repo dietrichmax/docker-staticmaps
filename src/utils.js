@@ -22,22 +22,26 @@ export function validateParams(req) {
     pathArray.map((elem) => {
       if (elem.includes("color")) {
         //--> todo validate color function hex and name
+        // get color param for polyline and the index of it
         removeValFromIndex.push(pathArray.indexOf(elem))
         polylineColor = elem.replace("color:", "#")
       }
 
       if (elem.includes("weight")) {
+        // get weight param for polyline and the index of it
         removeValFromIndex.push(pathArray.indexOf(elem))
         polylineWeight = parseInt(elem.replace("weight:", ""))
       }
     })
 
+    // remove color and weight from polyline query so coordinates are left
     if (removeValFromIndex.length > 0) {
       for (var i = removeValFromIndex.length - 1; i >= 0; i--) {
         polylineCoords.splice(removeValFromIndex[i], 1)
       }
     }
 
+    // sort coordinates
     polylineCoords = Object.keys(pathArray).map((key) => {
       const [lat, lon] = pathArray[key].split(",").map(Number)
       return [lon, lat] // Convert to [longitude, latitude] format

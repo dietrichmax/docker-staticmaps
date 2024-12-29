@@ -16,10 +16,12 @@ app.get(
   asyncHandler(async (req, res) => {
     const { missingParams, options } = validateParams(req)
 
+    // give feedback on missing parameters
     if (missingParams.length > 0) {
       res.status(422)
       res.send("Parameters" + missingParams.toString() + " missing!")
     } else {
+      // else render the map
       const img = await render(options)
 
       res.writeHead(200, {
