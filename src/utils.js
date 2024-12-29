@@ -1,4 +1,4 @@
-import StaticMaps from "../staticmaps/staticmaps.js"
+import StaticMaps from "./staticmaps/staticmaps.js"
 import basemaps from "./basemaps.js"
 
 export function validateParams(req) {

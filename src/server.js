@@ -1,13 +1,15 @@
 import express from "express"
 import { render, validateParams } from "./utils.js"
+import dotenv from 'dotenv'
+dotenv.config()
 
 const asyncHandler = (fun) => (req, res, next) => {
   Promise.resolve(fun(req, res, next)).catch(next)
 }
 
 const app = express()
-const port = 3000
-const endpoint = "/staticmaps"
+const port = process.env.PORT ? parseInt(process.env.PORT) : 3000
+const endpoint = process.env.PORT ? process.env.ENDPOINT : "/staticmaps"
 
 app.get(
   endpoint,
@@ -30,6 +32,5 @@ app.get(
 )
 
 app.listen(port, () => {
-  console.log(`staticmaps listening on port ${port}`)
-  console.log(`Endpoint: http://localhost:${port}${endpoint}`)
+  console.log(`[server]: http://localhost:${port}${endpoint}`)
 })
