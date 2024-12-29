@@ -117,4 +117,4 @@ npm run start
     </p>
   </details>
 
-![No zoom, `polyline=true`, `markers=false`](https://github.com/dietrichmax/docker-staticmaps/blob/main/examples/markers.png)
+![No zoom, `polyline=true`, `markers=false`](https://github.com/dietrichmax/docker-staticmaps/blob/main/examples/markersandpolyline.png)
