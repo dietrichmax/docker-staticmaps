@@ -45,10 +45,7 @@ export function validateParams(req) {
     }
 
     // sort coordinates
-    polylineCoords = Object.keys(polylineArray).map((key) => {
-      const [lat, lon] = polylineArray[key].split(",").map(Number)
-      return [lon, lat] // Convert to [longitude, latitude] format
-    })
+    polylineCoords = parseCoordinates(polylineArray)
 
     polyline = {
       coords: polylineCoords,
@@ -61,10 +58,8 @@ export function validateParams(req) {
   if (req.query.markers) {
     let markersArray = req.query.markers.split("|")
     let markersCoords = markersArray
-    markersCoords = Object.keys(markersArray).map((key) => {
-      const [lat, lon] = markersCoords[key].split(",").map(Number)
-      return [lon, lat] // Convert to [longitude, latitude] format
-    })
+
+    markersCoords = parseCoordinates(markersArray)
 
     markers = {
       coords: markersCoords,
@@ -116,10 +111,7 @@ export function validateParams(req) {
     }
     
     // sort coordinates
-    circleCoord = Object.keys(circleArray).map((key) => {
-      const [lat, lon] = circleCoord[key].split(",").map(Number)
-      return [lon, lat] // Convert to [longitude, latitude] format
-    })[0]
+    circleCoord = parseCoordinates(circleArray)[0]
 
     circle = {
       coord: circleCoord,
@@ -129,7 +121,6 @@ export function validateParams(req) {
       fill: circleFill,
     }
 
-    console.log(circle)
   }
 
   // Only require center if polyline or marker coordinates not provided
@@ -175,8 +166,8 @@ export async function render(options) {
         img: "./public/images/marker-28.png",
         width: 42,
         height: 42,
-        offsetX: 15,
-        offsetY: 27,
+        offsetX: 13.6,
+        offsetY: 27.6,
       })
     })
   }
@@ -191,9 +182,7 @@ export async function render(options) {
   }
 
   // Add circles only if circle object exists and we atleast one coordinates
-  
   if (options.circle && options.circle.coord.length > 0) {
-    //console.log(options.circle)
     map.addCircle({
       coord: options.circle.coord,
       radius: options.circle.radius,
@@ -204,9 +193,9 @@ export async function render(options) {
 
   }
 
-  if (finalZoom === null) {
+  /*if (finalZoom === null) {
     finalZoom = calculateZoom(bounds, options.width, options.height)
-  }
+  }*/
 
   await map.render(center, finalZoom)
   return map.image.buffer(`image/${options.format}`, { quality: 80 })
@@ -233,13 +222,13 @@ export function getTileUrl(reqTileUrl, reqBasemap) {
 export function parseCoordinates(coordString) {
   if (!coordString) return []
 
-  return coordString.split("|").map((coord) => {
-    const [lat, lon] = coord.split(",").map(Number)
+  return Object.keys(coordString).map((key) => {
+    const [lat, lon] = coordString[key].split(",").map(Number)
     return [lon, lat] // Convert to [longitude, latitude] format
   })
 }
 
-// calculate bounding base for given coordinates
+/*/ calculate bounding base for given coordinates
 function getBoundingBox(coordinates) {
   const bounds = {
     minLat: Infinity,
@@ -285,4 +274,4 @@ function calculateZoom(bounds, width, height) {
 
   // Use the more conservative (smaller) zoom level to ensure all points are visible
   return Math.min(Math.min(latZoom, lonZoom) - 1, ZOOM_MAX)
-}
+}*/

@@ -4,6 +4,15 @@
 
 A containerized web version for [staticmaps](https://www.npmjs.com/package/staticmaps) with [express](https://github.com/expressjs/express).
 
+Table of Contents
+- [Usage](#usage)
+  - [Basemap](#basemap)
+  - [Polylines](#polylines)
+  - [Markers](#markers)
+  - [Circles](#circles)
+  - [Usage examples](#usage-examples)
+- [Deployment](#deployment)
+
 ## Usage
 
 To get a static map from the endpoint `/staticmaps` several prameters have to be provided.
@@ -13,6 +22,7 @@ To get a static map from the endpoint `/staticmaps` several prameters have to be
 - `width` - default `300` - Width in pixels of the final image
 - `height` - default `300` - Height in pixels of the final image
 - `format` - default `png` (e.g. `png`, `jpg` or `webp`)
+- `basemap` - default `osm` - Map base layer
 
 ### Basemap
 
@@ -42,43 +52,47 @@ For different basemaps docker-staticmaps is using exisiting tile-services from v
 
 ### Polylines
 
-With the parameter `polyline` you can define a polyline with atleast two pairs of coordinates in the following format:
+With the parameter `polyline` you can add a polyline to the map in the following format:
 
-`polyline=polylineStyles|polylineLocation1|polylineLocation2|...`
+`polyline=polylineStyle|polylineCoord1|polylineCoord2|...`
+
+- `polylineCoord` - required - in format `lat,lon` and seperated by `|`. Atleast two locations are needed to draw a polyline.
+
+The `polylineStyle` consists of the following two parameters separated by `|`.
 
 - `weight` - default `5` - Weight of the polyline in pixels, e.g. `weight:5`
 - `color` - default `blue` -24-Bit-color hex value, e.g. `color:0000ff`
-- `polylineLocation` - in format `[lat,lon]` and seperated by `|`. Atleast two locations are needed to draw a polyline.
 
 If no `center` is specified, the polyline will be centered.
 
 ### Markers
 
-With the parameter `markers` you can define a one or multiple markers depending on how much pair of coordinates you pass to the parameter
+With the parameter `markers` you can draw one or multiple markers depending on how much pair of coordinates you pass to the parameter
 
-`markers=markerLocation1|markerLocation2|...`
+`markers=markerCoord1|markerCoord2|...`
 
-- `markerLocation` - in format `[lat,lon]` and seperated by `|`. Atleast one locations is needed to draw a marker.
+- `markerCoord` - required - in format `lat,lon` and separated by `|`. Atleast one coordinate is needed to draw a marker.
 
 If no `center` is specified, the markers will be centered.
 
-## Deployment
+### Circles
 
-**with Docker**
+With the parameter `circle` you can add a circle to the map in the following format:
 
-```
-docker run -d  --name='static-maps-api' -p '3003:3000/tcp' 'mxdcodes/docker-staticmaps:latest'
-```
+`circle=circleStyle|circleCoord`
 
-**with Node.js**
+- `circleCoord` - required - in format `lat,lon` and separated by `|`. Atleast one locations is needed to draw a marker.
 
-```js
-git clone https://github.com/dietrichmax/docker-staticmaps
-npm i
-npm run start
-```
+The `circleStyle` consists of the following parameters seperated by `|`.
 
-## Usage Examples
+- `radius` - required - Circle radius in meter, e.g. `radius:500`
+- `color` - default `#0000bb` -  Stroke color of the circle, e.g. `color:#0000bb`
+- `width` - default `3` - Stroke width of the circle, e.g. `width:3`
+- `fill` - default `#AA0000` - Fill color of the circle, e.g. `fill:#AA0000`
+
+If no `center` is specified, the circle will be centered.
+
+### Usage Examples
 
 <details>
   <summary>Minimal example: `center` and `zoom`</summary>
@@ -132,4 +146,19 @@ npm run start
 ![No zoom, `polyline=true`, `markers=false`](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/circle.png)
 
 
+## Deployment
+
+**with Docker**
+
+```
+docker run -d  --name='static-maps-api' -p '3003:3000/tcp' 'mxdcodes/docker-staticmaps:latest'
+```
+
+**with Node.js**
+
+```js
+git clone https://github.com/dietrichmax/docker-staticmaps
+npm i
+npm run start
+```
 
