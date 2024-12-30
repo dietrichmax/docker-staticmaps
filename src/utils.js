@@ -6,30 +6,33 @@ export function validateParams(req) {
   let center = null // Changed to null initially
   let polyline = false
   let markers = false
+  let circle = false
 
+  // get center from query
   if (req.query.center) {
     const coordinates = req.query.center.split(",")
     center = [parseFloat(coordinates[0]), parseFloat(coordinates[1])]
   }
 
+  // define polyline options from query
   if (req.query.polyline) {
     let polylineWeight = 5 // default polyline weight
     let polylineColor = "blue" // default polyline color
     let removeValFromIndex = []
 
-    let pathArray = req.query.polyline.split("|")
-    let polylineCoords = pathArray
-    pathArray.map((elem) => {
+    let polylineArray = req.query.polyline.split("|")
+    let polylineCoords = polylineArray
+    polylineArray.map((elem) => {
       if (elem.includes("color")) {
         //--> todo validate color function hex and name
         // get color param for polyline and the index of it
-        removeValFromIndex.push(pathArray.indexOf(elem))
+        removeValFromIndex.push(polylineArray.indexOf(elem))
         polylineColor = elem.replace("color:", "#")
       }
 
       if (elem.includes("weight")) {
         // get weight param for polyline and the index of it
-        removeValFromIndex.push(pathArray.indexOf(elem))
+        removeValFromIndex.push(polylineArray.indexOf(elem))
         polylineWeight = parseInt(elem.replace("weight:", ""))
       }
     })
@@ -42,8 +45,8 @@ export function validateParams(req) {
     }
 
     // sort coordinates
-    polylineCoords = Object.keys(pathArray).map((key) => {
-      const [lat, lon] = pathArray[key].split(",").map(Number)
+    polylineCoords = Object.keys(polylineArray).map((key) => {
+      const [lat, lon] = polylineArray[key].split(",").map(Number)
       return [lon, lat] // Convert to [longitude, latitude] format
     })
 
@@ -54,6 +57,7 @@ export function validateParams(req) {
     }
   }
 
+  // define marker options from query
   if (req.query.markers) {
     let markersArray = req.query.markers.split("|")
     let markersCoords = markersArray
@@ -66,11 +70,74 @@ export function validateParams(req) {
       coords: markersCoords,
     }
   }
+
+  // define circle options from query
+  if (req.query.circle) {
+    let circleRadius // required
+    let circleColor = "#0000bb" // 	(optional) Stroke color of the circle
+    let circleWidth = 3 // (optional) Stroke width of the circle
+    let circleFill = "#AA0000" // (optional) Fill color of the circle
+    let removeValFromIndex = []
+
+    let circleArray = req.query.circle.split("|")
+    let circleCoord = circleArray
+    circleArray.map((elem) => {
+      if (elem.includes("radius")) {
+        //--> todo validate color function hex and name
+        // get radius param for circle and the index of it
+        removeValFromIndex.push(circleArray.indexOf(elem))
+        circleRadius = parseInt(elem.replace("radius:", ""))
+      }
+
+      if (elem.includes("color")) {
+        // get color param for circle and the index of it
+        removeValFromIndex.push(circleArray.indexOf(elem))
+        circleColor = elem.replace("color:", "#")
+      }
+
+      if (elem.includes("width")) {
+        // get width param for circle and the index of it
+        removeValFromIndex.push(circleArray.indexOf(elem))
+        circleWidth = parseInt(elem.replace("width:", ""))
+      }
+
+      if (elem.includes("fill")) {
+        // get fill param for circle and the index of it
+        removeValFromIndex.push(circleArray.indexOf(elem))
+        circleFill = elem.replace("fill:", "#")
+      }
+    })
+
+    // remove params from circle query so only coordinates are left
+    if (removeValFromIndex.length > 0) {
+      for (var i = removeValFromIndex.length - 1; i >= 0; i--) {
+        circleCoord.splice(removeValFromIndex[i], 1)
+      }
+    }
+    
+    // sort coordinates
+    circleCoord = Object.keys(circleArray).map((key) => {
+      const [lat, lon] = circleCoord[key].split(",").map(Number)
+      return [lon, lat] // Convert to [longitude, latitude] format
+    })[0]
+
+    circle = {
+      coord: circleCoord,
+      radius: circleRadius,
+      color: circleColor,
+      width: circleWidth,
+      fill: circleFill,
+    }
+
+    console.log(circle)
+  }
+
   // Only require center if polyline or marker coordinates not provided
-  if (!req.query.center && !polyline.coords && !markers.coords) {
+  if (!req.query.center && !polyline.coords && !markers.coords && !circle.coord) {
     missingParams.push(" {center or coordinates}")
   }
 
+  // create options which will be passed to staticmaps render()
   const options = {
     width: parseInt(req.query.width) || 300,
     height: parseInt(req.query.height) || 300,
@@ -78,6 +145,7 @@ export function validateParams(req) {
     center: center,
     markers: markers,
     polyline: polyline,
+    circle: circle,
     tileUrl: getTileUrl(req.query.tileUrl, req.query.basemap),
     format: req.query.format || "png",
   }
@@ -120,36 +188,42 @@ export async function render(options) {
       color: options.polyline.color,
       width: options.polyline.weight,
     })
+  }
 
-    // Calculate polyline center and zoom only if not provided
-    const bounds = getBoundingBox(options.polyline.coords)
+  // Add circles only if circle object exists and we atleast one coordinates
+  
+  if (options.circle && options.circle.coord.length > 0) {
+    //console.log(options.circle)
+    map.addCircle({
+      coord: options.circle.coord,
+      radius: options.circle.radius,
+      color: options.circle.coord,
+      fill: options.circle.fill,
+      width: options.circle.width,
+    })
 
-    if (!center) {
-      center = [
-        (bounds.minLon + bounds.maxLon) / 2,
-        (bounds.minLat + bounds.maxLat) / 2,
-      ]
-    }
   }
 
   if (finalZoom === null) {
     finalZoom = calculateZoom(bounds, options.width, options.height)
   }
-  //}
 
   await map.render(center, finalZoom)
-  return map.image.buffer(`image/${options.format}`, { quality: 75 })
+  return map.image.buffer(`image/${options.format}`, { quality: 80 })
 }
 
 export function getTileUrl(reqTileUrl, reqBasemap) {
   let tileUrl
+  // use custom tileUrl if exisiting
   if (reqTileUrl) {
     tileUrl = reqTileUrl
+  // use predfined tileserver based on param basemap
   } else if (reqBasemap) {
     const tileUrlObj = basemaps.filter((obj) => {
       return obj.basemap === reqBasemap
     })
     return tileUrlObj[0].url
+  // else use osm tileserver as default
   } else {
     tileUrl = "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
   }
@@ -165,6 +239,7 @@ export function parseCoordinates(coordString) {
   })
 }
 
+// calculate bounding base for given coordinates
 function getBoundingBox(coordinates) {
   const bounds = {
     minLat: Infinity,
@@ -183,6 +258,7 @@ function getBoundingBox(coordinates) {
   return bounds
 }
 
+// calculate zoom to fit given boundingBox
 function calculateZoom(bounds, width, height) {
   const WORLD_PX = 256
   const ZOOM_MAX = 18

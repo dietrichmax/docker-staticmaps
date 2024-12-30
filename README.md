@@ -50,7 +50,7 @@ With the parameter `polyline` you can define a polyline with atleast two pairs o
 - `color` - default `blue` -24-Bit-color hex value, e.g. `color:0000ff`
 - `polylineLocation` - in format `[lat,lon]` and seperated by `|`. Atleast two locations are needed to draw a polyline.
 
-If coordinates are provided and no zoom option is provided Zoom level `zoom` is being calculated automatically. If both zoom and coordinates are there, provided zoom value is being used.
+If no `center` is specified, the polyline will be centered.
 
 ### Markers
 
@@ -59,6 +59,8 @@ With the parameter `markers` you can define a one or multiple markers depending 
 `markers=markerLocation1|markerLocation2|...`
 
 - `markerLocation` - in format `[lat,lon]` and seperated by `|`. Atleast one locations is needed to draw a marker.
+
+If no `center` is specified, the markers will be centered.
 
 ## Deployment
 
@@ -76,7 +78,7 @@ npm i
 npm run start
 ```
 
-## Example requests
+## Usage Examples
 
 <details>
   <summary>Minimal example: `center` and `zoom`</summary>
@@ -99,7 +101,7 @@ npm run start
     </p>
   </details>
 
-![No zoom, `polyline=true`, `markers=false`](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/polylinepath.png)
+![Polyline with no zoom](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/polylinepath.png)
 
 <details>
   <summary>Markers</summary>
@@ -108,7 +110,7 @@ npm run start
     </p>
   </details>
 
-![No zoom, `polyline=true`, `markers=false`](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/markers.png)
+![Markers with no zoom](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/markers.png)
 
 <details>
   <summary>Markers and Polyline</summary>
@@ -117,4 +119,17 @@ npm run start
     </p>
   </details>
 
-![No zoom, `polyline=true`, `markers=false`](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/markersandpolyline.png)
+![No zoom, polyline and marker`](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/markersandpolyline.png)
+
+
+<details>
+  <summary>Circle with no zoom</summary>
+    <p>
+      http://localhost:3000/staticmaps?width=600&height=600&basemap=osm&circle=radius:100|48.726304979176675,-3.9829935637739382
+    </p>
+  </details>
+
+![No zoom, `polyline=true`, `markers=false`](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/circle.png)
+
+
+
