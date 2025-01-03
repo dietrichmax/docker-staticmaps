@@ -180,7 +180,7 @@ http://localhost:3000/staticmaps?width=600&height=600&basemap=osm&circle=radius:
 docker run -d  --name='docker-staticmaps' -p '80:3000/tcp' 'ghcr.io/dietrichmax/docker-staticmaps:latest'
 ```
 
-```
+```docker-compose.yml
 services:
   docker-staticmaps:
     image: ghcr.io/dietrichmax/docker-staticmaps:latest
