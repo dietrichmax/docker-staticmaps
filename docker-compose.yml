@@ -1,0 +1,8 @@
+services:
+  docker-staticmaps:
+    image: ghcr.io/dietrichmax/docker-staticmaps:latest
+    container_name: docker-staticmaps
+    restart: always
+    ports:
+      - "80:3000"
+
