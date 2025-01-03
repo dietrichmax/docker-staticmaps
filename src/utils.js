@@ -7,6 +7,7 @@ export function validateParams(req) {
   let polyline = false
   let markers = false
   let circle = false
+  let polygon = false
 
   // get center from query
   if (req.query.center) {
@@ -51,6 +52,55 @@ export function validateParams(req) {
       coords: polylineCoords,
       weight: polylineWeight,
       color: polylineColor,
+    }
+  }
+
+  // define polygon options from query
+  if (req.query.polygon) {
+    let polygonColor = "blue" //default polyline color
+    let polygonWeight =  3 // default polygon width
+    let polygonFill =  "green" // default polygon fill
+    let removeValFromIndex = []
+
+    
+    let polygonArray = req.query.polygon.split("|")
+    let polygonCoords = polygonArray
+  
+    polygonArray.map((elem) => {
+      if (elem.includes("color")) {
+        //--> todo validate color function hex and name
+        // get color param for polyline and the index of it
+        removeValFromIndex.push(polygonArray.indexOf(elem))
+        polygonColor = elem.replace("color:", "#")
+      }
+
+      if (elem.includes("weight")) {
+        // get weight param for polyline and the index of it
+        removeValFromIndex.push(polygonArray.indexOf(elem))
+        polygonWeight = parseInt(elem.replace("weight:", ""))
+      }
+
+      if (elem.includes("fill")) {
+        // get weight param for polyline and the index of it
+        removeValFromIndex.push(polygonArray.indexOf(elem))
+        polygonFill = elem.replace("fill:", "#")
+      }
+    })
+
+    // remove color and weight from polyline query so coordinates are left
+    if (removeValFromIndex.length > 0) {
+      for (var i = removeValFromIndex.length - 1; i >= 0; i--) {
+        polygonCoords.splice(removeValFromIndex[i], 1)
+      }
+    }
+
+    polygonCoords = parseCoordinates(polygonArray)
+  
+    polygon = {
+      coords: polygonCoords,
+      color: polygonColor,
+      weight: polygonWeight,
+      fill: polygonFill,
     }
   }
 
@@ -124,7 +174,7 @@ export function validateParams(req) {
   }
 
   // Only require center if polyline or marker coordinates not provided
-  if (!req.query.center && !polyline.coords && !markers.coords && !circle.coord) {
+  if (!req.query.center && !polyline.coords && !markers.coords && !circle.coord && !polygon.coords) {
     missingParams.push(" {center or coordinates}")
   }
 
@@ -137,6 +187,7 @@ export function validateParams(req) {
     markers: markers,
     polyline: polyline,
     circle: circle,
+    polygon: polygon,
     tileUrl: getTileUrl(req.query.tileUrl, req.query.basemap),
     format: req.query.format || "png",
   }
@@ -181,6 +232,16 @@ export async function render(options) {
     })
   }
 
+  // Add polygon only if polygon object exists and we have multiple coordinates
+  if (options.polygon && options.polygon.coords.length > 1) {
+    map.addPolygon({
+      coords: options.polygon.coords,
+      color: options.polygon.color,
+      width: options.polygon.weight,
+      fill: options.polygon.fill,
+    })
+  }
+
   // Add circles only if circle object exists and we atleast one coordinates
   if (options.circle && options.circle.coord.length > 0) {
     map.addCircle({
@@ -190,7 +251,6 @@ export async function render(options) {
       fill: options.circle.fill,
       width: options.circle.width,
     })
-
   }
 
   /*if (finalZoom === null) {

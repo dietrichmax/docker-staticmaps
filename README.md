@@ -4,7 +4,7 @@
 
 A containerized web version for [staticmaps](https://www.npmjs.com/package/staticmaps) with [express](https://github.com/expressjs/express).
 
-Table of Contents
+**Table of Contents**
 - [Usage](#usage)
   - [Basemap](#basemap)
   - [Polylines](#polylines)
@@ -65,6 +65,22 @@ The `polylineStyle` consists of the following two parameters separated by `|`.
 
 If no `center` is specified, the polyline will be centered.
 
+### Polylines
+
+With the parameter `polygon` you can add a polgon to the map in the following format:
+
+`polygon=polygonStyle|polygonCoord1|polygonCoord2|...`
+
+- `polygonCoord` - required - in format `lat,lon` and seperated by `|`. Atleast two locations are needed to draw a polyline. First and last locations have to be the same to close the polygon.
+
+The `polygonStyle` consists of the following two parameters separated by `|`.
+
+- `color` - default `blue` -24-Bit-color hex value, e.g. `color:4874db`
+- `weight` - default `5` - Weight of the polygon in pixels, e.g. `weight:5`
+- `fill` - default `green` -24-Bit-color hex value, e.g. `fill:eb7a34`
+
+If no `center` is specified, the polygon will be centered.
+
 ### Markers
 
 With the parameter `markers` you can draw one or multiple markers depending on how much pair of coordinates you pass to the parameter
@@ -116,6 +132,15 @@ If no `center` is specified, the circle will be centered.
   </details>
 
 ![Polyline with no zoom](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/polylinepath.png)
+
+<details>
+  <summary>Polygon with no `zoom`, `color:4874db`,`weight:7` and `fill:eb7a3`</summary>
+    <p>
+    http://localhost:3000/staticmaps?width=600&height=600&polygon=color:4874db|weight:7|fill:eb7a34|41.891169,12.491691|41.890633,12.493697|41.889012,12.492989|41.889467,12.490811|41.891169,12.491691
+    </p>
+  </details>
+
+![polygon with no zoom](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/polygonexample.png)
 
 <details>
   <summary>Markers</summary>
