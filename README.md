@@ -8,7 +8,7 @@ A containerized web version for [staticmaps](https://www.npmjs.com/package/stati
 - [Usage](#usage)
   - [Basemap](#basemap)
   - [Polylines](#polylines)
-  - [Polygons](#polgons)
+  - [Polygons](#polygons)
   - [Markers](#markers)
   - [Circles](#circles)
   - [Usage examples](#usage-examples)
@@ -98,7 +98,7 @@ If no `center` is specified, the polygon will be centered.
 <details>
   <summary>Polygon with no `zoom`, `color:4874db`,`weight:7` and `fill:eb7a3`</summary>
     <p>
-    ```http://localhost:3000/staticmaps?width=600&height=600&polygon=color:4874db|weight:7|fill:eb7a34|41.891169,12.491691|41.890633,12.493697|41.889012,12.492989|41.889467,12.490811|41.891169,12.491691```
+    http://localhost:3000/staticmaps?width=600&height=600&polygon=color:4874db|weight:7|fill:eb7a34|41.891169,12.491691|41.890633,12.493697|41.889012,12.492989|41.889467,12.490811|41.891169,12.491691
     </p>
   </details>
 
@@ -119,7 +119,7 @@ If no `center` is specified, the markers will be centered.
 <details>
   <summary>Markers</summary>
     <p>
-      ```http://localhost:3000/staticmaps?width=600&height=600&markers=48.726304979176675,-3.9829935637739382|48.724117073204575,-3.9820862134785551```
+      http://localhost:3000/staticmaps?width=600&height=600&markers=48.726304979176675,-3.9829935637739382|48.724117073204575,-3.9820862134785551
     </p>
   </details>
 
@@ -147,14 +147,14 @@ If no `center` is specified, the circle will be centered.
 <details>
   <summary>Circle with no zoom</summary>
     <p>
-      ```http://localhost:3000/staticmaps?width=600&height=600&basemap=osm&circle=radius:100|48.726304979176675,-3.9829935637739382```
+      http://localhost:3000/staticmaps?width=600&height=600&basemap=osm&circle=radius:100|48.726304979176675,-3.9829935637739382
     </p>
   </details>
 
 ![No zoom, `polyline=true`, `markers=false`](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/circle.png)
 
 
-### MoreuUsage examples
+### More usage examples
 
 <details>
   <summary>Minimal example: `center` and `zoom`</summary>
