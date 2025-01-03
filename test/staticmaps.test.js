@@ -31,7 +31,7 @@ describe("get predefined basemap", () => {
 })
 
 describe("get custom tileurl", () => {
-    it("should return a basemap url", () => {
+    it("should return a tileurl url", () => {
       const url = getTileUrl("https://localhost/tilepath/tile/{z}/{y}/{x}", null)
       expect(url).toBe("https://localhost/tilepath/tile/{z}/{y}/{x}")
     })
