@@ -11,7 +11,7 @@ A containerized web version for [staticmaps](https://www.npmjs.com/package/stati
   - [Polygons](#polygons)
   - [Markers](#markers)
   - [Circles](#circles)
-  - [Usage examples](#usage-examples)
+  - [Usage examples](#more-usage-examples)
 - [Deployment](#deployment)
 
 ## Usage
