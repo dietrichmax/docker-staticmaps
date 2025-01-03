@@ -8,6 +8,7 @@ A containerized web version for [staticmaps](https://www.npmjs.com/package/stati
 - [Usage](#usage)
   - [Basemap](#basemap)
   - [Polylines](#polylines)
+  - [Polygons](#polgons)
   - [Markers](#markers)
   - [Circles](#circles)
   - [Usage examples](#usage-examples)
@@ -65,7 +66,7 @@ The `polylineStyle` consists of the following two parameters separated by `|`.
 
 If no `center` is specified, the polyline will be centered.
 
-### Polylines
+### Polygons
 
 With the parameter `polygon` you can add a polgon to the map in the following format:
 
