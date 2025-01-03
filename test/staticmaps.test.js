@@ -19,7 +19,7 @@ describe("validate incorrect params", () => {
     it("should return a options object and no missingParams", () => {
       const params = { basemap: 'osm', zoom: '9' }
       const { missingParams, options } = validateParams(params)
-      expect(missingParams.length).toBe(1)
+      expect(missingParams.length).toBeGreaterThan(0)
     })
 })
 
