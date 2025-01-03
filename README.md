@@ -177,8 +177,19 @@ http://localhost:3000/staticmaps?width=600&height=600&basemap=osm&circle=radius:
 **with Docker**
 
 ```
-docker run -d  --name='static-maps-api' -p '3003:3000/tcp' 'mxdcodes/docker-staticmaps:latest'
+docker run -d  --name='docker-staticmaps' -p '80:3000/tcp' 'ghcr.io/dietrichmax/docker-staticmaps:latest'
 ```
+
+```
+services:
+  docker-staticmaps:
+    image: ghcr.io/dietrichmax/docker-staticmaps:latest
+    container_name: docker-staticmaps
+    restart: always
+    ports:
+      - "80:3000"
+```
+
 
 **with Node.js**
 
