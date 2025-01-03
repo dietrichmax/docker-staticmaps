@@ -1,7 +1,7 @@
 import StaticMaps from "./staticmaps/staticmaps.js"
 import basemaps from "./basemaps.js"
 
-export function validateParams(req) {
+export function validateParams(query) {
   const missingParams = [] // to render feedback for missing params
   let center = null // Changed to null initially
   let polyline = false
@@ -10,18 +10,18 @@ export function validateParams(req) {
   let polygon = false
 
   // get center from query
-  if (req.query.center) {
-    const coordinates = req.query.center.split(",")
+  if (query.center) {
+    const coordinates = query.center.split(",")
     center = [parseFloat(coordinates[0]), parseFloat(coordinates[1])]
   }
 
   // define polyline options from query
-  if (req.query.polyline) {
+  if (query.polyline) {
     let polylineWeight = 5 // default polyline weight
     let polylineColor = "blue" // default polyline color
     let removeValFromIndex = []
 
-    let polylineArray = req.query.polyline.split("|")
+    let polylineArray = query.polyline.split("|")
     let polylineCoords = polylineArray
     polylineArray.map((elem) => {
       if (elem.includes("color")) {
@@ -56,14 +56,14 @@ export function validateParams(req) {
   }
 
   // define polygon options from query
-  if (req.query.polygon) {
+  if (query.polygon) {
     let polygonColor = "blue" //default polyline color
     let polygonWeight =  3 // default polygon width
     let polygonFill =  "green" // default polygon fill
     let removeValFromIndex = []
 
     
-    let polygonArray = req.query.polygon.split("|")
+    let polygonArray = query.polygon.split("|")
     let polygonCoords = polygonArray
   
     polygonArray.map((elem) => {
@@ -105,8 +105,8 @@ export function validateParams(req) {
   }
 
   // define marker options from query
-  if (req.query.markers) {
-    let markersArray = req.query.markers.split("|")
+  if (query.markers) {
+    let markersArray = query.markers.split("|")
     let markersCoords = markersArray
 
     markersCoords = parseCoordinates(markersArray)
@@ -117,14 +117,14 @@ export function validateParams(req) {
   }
 
   // define circle options from query
-  if (req.query.circle) {
+  if (query.circle) {
     let circleRadius // required
     let circleColor = "#0000bb" // 	(optional) Stroke color of the circle
     let circleWidth = 3 // (optional) Stroke width of the circle
     let circleFill = "#AA0000" // (optional) Fill color of the circle
     let removeValFromIndex = []
 
-    let circleArray = req.query.circle.split("|")
+    let circleArray = query.circle.split("|")
     let circleCoord = circleArray
     circleArray.map((elem) => {
       if (elem.includes("radius")) {
@@ -174,22 +174,22 @@ export function validateParams(req) {
   }
 
   // Only require center if polyline or marker coordinates not provided
-  if (!req.query.center && !polyline.coords && !markers.coords && !circle.coord && !polygon.coords) {
+  if (!query.center && !polyline.coords && !markers.coords && !circle.coord && !polygon.coords) {
     missingParams.push(" {center or coordinates}")
   }
 
   // create options which will be passed to staticmaps render()
   const options = {
-    width: parseInt(req.query.width) || 300,
-    height: parseInt(req.query.height) || 300,
-    zoom: parseInt(req.query.zoom),
+    width: parseInt(query.width) || 300,
+    height: parseInt(query.height) || 300,
+    zoom: parseInt(query.zoom),
     center: center,
     markers: markers,
     polyline: polyline,
     circle: circle,
     polygon: polygon,
-    tileUrl: getTileUrl(req.query.tileUrl, req.query.basemap),
-    format: req.query.format || "png",
+    tileUrl: getTileUrl(query.tileUrl, query.basemap),
+    format: query.format || "png",
   }
   return { missingParams, options }
 }

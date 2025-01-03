@@ -7,14 +7,14 @@ const asyncHandler = (fun) => (req, res, next) => {
   Promise.resolve(fun(req, res, next)).catch(next)
 }
 
-const app = express()
+const server = express()
 const port = process.env.PORT ? parseInt(process.env.PORT) : 3000
 const endpoint = process.env.PORT ? process.env.ENDPOINT : "/staticmaps"
 
-app.get(
+server.get(
   endpoint,
   asyncHandler(async (req, res) => {
-    const { missingParams, options } = validateParams(req)
+    const { missingParams, options } = validateParams(req.query)
 
     // give feedback on missing parameters
     if (missingParams.length > 0) {
@@ -33,6 +33,8 @@ app.get(
   })
 )
 
-app.listen(port, () => {
+server.listen(port, () => {
   console.log(`[server]: http://localhost:${port}${endpoint}`)
 })
+
+export default server
