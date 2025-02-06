@@ -16,20 +16,23 @@ A containerized web version for [staticmaps](https://www.npmjs.com/package/stati
 
 ## Usage
 
-To get a static map from the endpoint `/staticmaps` several prameters have to be provided.
+Request static maps from the `/staticmaps` endpoint using the following parameters:
 
-- `center` - Center coordinates of the map in the format `lon, lat`
-- `zoom` - Set the zoom level for the map.
-- `width` - default `300` - Width in pixels of the final image
-- `height` - default `300` - Height in pixels of the final image
-- `format` - default `png` (e.g. `png`, `jpg` or `webp`)
-- `basemap` - default `osm` - Map base layer
+### Required Parameters
+- `center` - Center coordinates in the format `lon,lat`.
+- `zoom` - Zoom level.
+
+### Optional Parameters
+- `width` (default: `300`) - Image width in pixels.
+- `height` (default: `300`) - Image height in pixels.
+- `format` (default: `png`) - Output format (`png`, `jpg`, or `webp`).
+- `basemap` (default: `osm`) - Choose a map base layer (see options below).
 
 ### Basemap
 
-For different basemaps docker-staticmaps is using exisiting tile-services from various providers. Be sure to check their Terms of Use for your use case or use a `custom` tileserver with the `tileUrl` parameter!
+Use predefined basemaps with the `basemap`parameter or specify a `custom` tile server with the `tileUrl` parameter. Ensure compliance with provider terms of use.
 
-- `basemap` - default "osm" - Select the basemap
+Supported basemaps:
   - `osm` - default - [Open Street Map](https://www.openstreetmap.org/)
   - `streets` - Esri's [street basemap](https://www.arcgis.com/home/webmap/viewer.html?webmap=7990d7ea55204450b8110d57e20c99ab)
   - `satellite` - Esri's [satellite basemap](https://www.arcgis.com/home/webmap/viewer.html?webmap=d802f08316e84c6592ef681c50178f17&center=-71.055499,42.364247&level=15)
@@ -174,13 +177,14 @@ http://localhost:3000/staticmaps?width=600&height=600&basemap=osm&circle=radius:
 
 ## Deployment
 
-**with Docker**
-
+### Using Docker
+Run the container:
 ```
-docker run -d  --name='docker-staticmaps' -p '80:3000/tcp' 'ghcr.io/dietrichmax/docker-staticmaps:latest'
+docker run -d --name='docker-staticmaps' -p '80:3000/tcp' 'ghcr.io/dietrichmax/docker-staticmaps:latest'
 ```
 
-```docker-compose.yml
+Or use `docker-compose.yml`:
+```yaml
 services:
   docker-staticmaps:
     image: ghcr.io/dietrichmax/docker-staticmaps:latest
@@ -190,12 +194,10 @@ services:
       - "80:3000"
 ```
 
-
-**with Node.js**
-
-```js
+### Using Node.js
+```
 git clone https://github.com/dietrichmax/docker-staticmaps
-npm i
-npm run start
+npm install
+npm start
 ```
 
