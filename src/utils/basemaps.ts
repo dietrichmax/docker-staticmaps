@@ -1,4 +1,22 @@
-const basemaps = [
+/**
+ * Interface for Basemap options.
+ */
+interface Basemaps {
+  /**
+   * The name of the basemap.
+   */
+  basemap: string
+
+  /**
+   * The URL template for the basemap tiles.
+   */
+  url: string
+}
+
+/**
+ * A collection of predefined basemaps with their corresponding URLs.
+ */
+const basemaps: Basemaps[] = [
   {
     basemap: "streets",
     url: "https://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",

@@ -1,6 +1,8 @@
+
+node_modules
+.git
 Dockerfile
 .dockerignore
-node_modules
-npm-debug.log
-README.md
-.git
+*.log
+*.md
+examples

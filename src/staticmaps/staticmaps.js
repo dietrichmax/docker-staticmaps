@@ -1,10 +1,5 @@
 import got from "got"
 import sharp from "sharp"
-import find from "lodash.find"
-import uniqBy from "lodash.uniqby"
-import url from "url"
-import chunk from "lodash.chunk"
-import { mapSeries } from "modern-async"
 
 import Image from "./image.js"
 import IconMarker from "./marker.js"
@@ -14,9 +9,17 @@ import Circle from "./circle.js"
 import Text from "./text.js"
 import Bound from "./bound.js"
 import TileServerConfig from "./tileserverconfig.js"
-
-import asyncQueue from "./helper/asyncQueue.js"
-import geoutils from "./helper/geo.js"
+import {
+  workOnQueue,
+  lonToX,
+  latToY,
+  yToLat,
+  xToLon,
+  simplify,
+  meterToPixel,
+  chunk,
+} from "./utils.js"
+import logger from "../utils/logger.js"
 
 const RENDER_CHUNK_SIZE = 1000
 
@@ -114,7 +117,7 @@ class StaticMaps {
       !this.multipolygons &&
       !(center && zoom)
     ) {
-      throw new Error(
+      tlogger.error(
         "Cannot render empty map: Add  center || lines || markers || polygons."
       )
     }
@@ -126,8 +129,8 @@ class StaticMaps {
     if (maxZoom && this.zoom > maxZoom) this.zoom = maxZoom
 
     if (center && center.length === 2) {
-      this.centerX = geoutils.lonToX(center[0], this.zoom)
-      this.centerY = geoutils.latToY(center[1], this.zoom)
+      this.centerX = lonToX(center[0], this.zoom)
+      this.centerY = latToY(center[1], this.zoom)
     } else {
       // # get extent of all lines
       const extent = this.determineExtent(this.zoom)
@@ -136,16 +139,16 @@ class StaticMaps {
       const centerLon = (extent[0] + extent[2]) / 2
       const centerLat = (extent[1] + extent[3]) / 2
 
-      this.centerX = geoutils.lonToX(centerLon, this.zoom)
-      this.centerY = geoutils.latToY(centerLat, this.zoom)
+      this.centerX = lonToX(centerLon, this.zoom)
+      this.centerY = latToY(centerLat, this.zoom)
     }
 
     this.image = new Image(this.options)
 
     // Await this.drawLayer for each tile layer
-    await mapSeries(this.tileLayers, async (layer) => {
+    for (const layer of this.tileLayers) {
       await this.drawLayer(layer)
-    })
+    }
 
     await this.loadMarker()
     return this.drawFeatures()
@@ -201,14 +204,14 @@ class StaticMaps {
 
       // # consider dimension of marker
       const ePx = marker.extentPx()
-      const x = geoutils.lonToX(e[0], zoom)
-      const y = geoutils.latToY(e[1], zoom)
+      const x = lonToX(e[0], zoom)
+      const y = latToY(e[1], zoom)
 
       extents.push([
-        geoutils.xToLon(x - parseFloat(ePx[0]) / this.tileSize, zoom),
-        geoutils.yToLat(y + parseFloat(ePx[1]) / this.tileSize, zoom),
-        geoutils.xToLon(x + parseFloat(ePx[2]) / this.tileSize, zoom),
-        geoutils.yToLat(y - parseFloat(ePx[3]) / this.tileSize, zoom),
+        xToLon(x - parseFloat(ePx[0]) / this.tileSize, zoom),
+        yToLat(y + parseFloat(ePx[1]) / this.tileSize, zoom),
+        xToLon(x + parseFloat(ePx[2]) / this.tileSize, zoom),
+        yToLat(y - parseFloat(ePx[3]) / this.tileSize, zoom),
       ])
     }
 
@@ -227,13 +230,11 @@ class StaticMaps {
     for (let z = this.zoomRange.max; z >= this.zoomRange.min; z--) {
       const extent = this.determineExtent(z)
       const width =
-        (geoutils.lonToX(extent[2], z) - geoutils.lonToX(extent[0], z)) *
-        this.tileSize
+        (lonToX(extent[2], z) - lonToX(extent[0], z)) * this.tileSize
       if (width > this.width - this.padding[0] * 2) continue
 
       const height =
-        (geoutils.latToY(extent[1], z) - geoutils.latToY(extent[3], z)) *
-        this.tileSize
+        (latToY(extent[1], z) - latToY(extent[3], z)) * this.tileSize
       if (height > this.height - this.padding[1] * 2) continue
 
       return z
@@ -260,7 +261,7 @@ class StaticMaps {
   async drawLayer(config) {
     if (!config || !config.tileUrl) {
       // Early return if we shouldn't draw a base layer
-      console.log(1)
+      logger.debug(1)
       return this.image.draw([])
     }
     const xMin = Math.floor(this.centerX - (0.5 * this.width) / this.tileSize)
@@ -280,7 +281,7 @@ class StaticMaps {
 
         let tileUrl
         if (config.tileUrl.includes("{quadkey}")) {
-          const quadKey = geoutils.tileXYToQuadKey(tileX, tileY, this.zoom)
+          const quadKey = tileXYToQuadKey(tileX, tileY, this.zoom)
           tileUrl = config.tileUrl.replace("{quadkey}", quadKey)
         } else {
           tileUrl = config.tileUrl
@@ -325,15 +326,14 @@ class StaticMaps {
     const imageMetadata = await baseImage.metadata()
 
     const processedChunks = chunks.map((c) => {
-      const svg = `
-        <svg
+      const svg = `<svg
           width="${imageMetadata.width}px"
           height="${imageMetadata.height}px"
           version="1.1"
           xmlns="http://www.w3.org/2000/svg">
           ${c.map((f) => svgFunction(f)).join("\n")}
-        </svg>
-      `
+        </svg>`
+
       return { input: Buffer.from(svg), top: 0, left: 0 }
     })
 
@@ -345,13 +345,9 @@ class StaticMaps {
    */
   circleToSVG(circle) {
     const latCenter = circle.coord[1]
-    const radiusInPixel = geoutils.meterToPixel(
-      circle.radius,
-      this.zoom,
-      latCenter
-    )
-    const x = this.xToPx(geoutils.lonToX(circle.coord[0], this.zoom))
-    const y = this.yToPx(geoutils.latToY(circle.coord[1], this.zoom))
+    const radiusInPixel = meterToPixel(circle.radius, this.zoom, latCenter)
+    const x = this.xToPx(lonToX(circle.coord[0], this.zoom))
+    const y = this.yToPx(latToY(circle.coord[1], this.zoom))
     return `
       <circle
         cx="${x}"
@@ -362,7 +358,7 @@ class StaticMaps {
         fill="${circle.fill}"
         stroke-width="${circle.width}"
         />
-    `
+        `
   }
 
   /**
@@ -370,8 +366,8 @@ class StaticMaps {
    */
   textToSVG(text) {
     const mapcoords = [
-      this.xToPx(geoutils.lonToX(text.coord[0], this.zoom)) - text.offset[0],
-      this.yToPx(geoutils.latToY(text.coord[1], this.zoom)) - text.offset[1],
+      this.xToPx(lonToX(text.coord[0], this.zoom)) - text.offset[0],
+      this.yToPx(latToY(text.coord[1], this.zoom)) - text.offset[1],
     ]
 
     return `
@@ -386,8 +382,7 @@ class StaticMaps {
         text-anchor="${text.anchor}"
       >
           ${text.text}
-      </text>
-    `
+      </text>`
   }
 
   /**
@@ -396,8 +391,8 @@ class StaticMaps {
   multiPolygonToSVG(multipolygon) {
     const shapeArrays = multipolygon.coords.map((shape) =>
       shape.map((coord) => [
-        this.xToPx(geoutils.lonToX(coord[0], this.zoom)),
-        this.yToPx(geoutils.latToY(coord[1], this.zoom)),
+        this.xToPx(lonToX(coord[0], this.zoom)),
+        this.yToPx(latToY(coord[1], this.zoom)),
       ])
     )
 
@@ -425,16 +420,36 @@ class StaticMaps {
    *  Render Polyline to SVG
    */
   lineToSVG(line) {
-    const points = line.coords.map((coord) => [
-      this.xToPx(geoutils.lonToX(coord[0], this.zoom)),
-      this.yToPx(geoutils.latToY(coord[1], this.zoom)),
+    let svgElements = []
+
+    let points = line.coords.map((coord) => [
+      this.xToPx(lonToX(coord[0], this.zoom)),
+      this.yToPx(latToY(coord[1], this.zoom)),
     ])
-    return `<${line.type === "polyline" ? "polyline" : "polygon"}
+
+    if (line.simplify) {
+      points = simplify(points)
+    }
+
+    // Generate circles for smooth transitions
+    let circles = points
+      .map(
+        (point) =>
+          `<circle cx="${point[0]}" cy="${point[1]}" r="3" fill="${line.color}" />`
+      )
+      .join("\n")
+
+    // Create polyline for the main line
+    let polyline = `<${line.type === "polyline" ? "polyline" : "polygon"}
               style="fill-rule: inherit;"
               points="${points.join(" ")}"
               stroke="${line.color}"
               fill="${line.fill ? line.fill : "none"}"
               stroke-width="${line.width}"/>`
+
+    svgElements.push(circles, polyline)
+
+    return `<svg xmlns="http://www.w3.org/2000/svg">${svgElements.join("\n")}</svg>`
   }
 
   /**
@@ -461,8 +476,8 @@ class StaticMaps {
           ) {
             marker.setSize(metadata.width, metadata.height)
           } else {
-            throw new Error(
-              `Cannot detectimage size of marker ${marker.img}. Please define manually!`
+            logger.error(
+              `Cannot detect image size of marker ${marker.img}. Please define manually!`
             )
           }
         }
@@ -498,7 +513,7 @@ class StaticMaps {
           .toBuffer()
       })
     })
-    return asyncQueue(queue)
+    return workOnQueue(queue)
   }
 
   /**
@@ -518,15 +533,28 @@ class StaticMaps {
   loadMarker() {
     return new Promise((resolve, reject) => {
       if (!this.markers.length) resolve(true)
-      const icons = uniqBy(
-        this.markers.map((m) => ({ file: m.img })),
-        "file"
-      )
+      const icons = this.markers
+        .map((m) => ({ file: m.img }))
+        .reduce((acc, curr) => {
+          if (!acc.some((item) => item.file === curr.file)) {
+            acc.push(curr)
+          }
+          return acc
+        }, [])
 
       let count = 1
       icons.forEach(async (ico) => {
         const icon = ico
-        const isUrl = !!url.parse(icon.file).hostname
+        let isUrl = false
+
+        try {
+          // Try to parse the URL to check if it's an absolute URL
+          new URL(icon.file)
+          isUrl = true
+        } catch (e) {
+          // If it throws, it means it's a relative path
+          isUrl = false
+        }
         try {
           // Load marker from remote url
           if (isUrl) {
@@ -551,12 +579,10 @@ class StaticMaps {
           this.markers.forEach((mark) => {
             const marker = mark
             marker.position = [
-              this.xToPx(geoutils.lonToX(marker.coord[0], this.zoom)) -
-                marker.offset[0],
-              this.yToPx(geoutils.latToY(marker.coord[1], this.zoom)) -
-                marker.offset[1],
+              this.xToPx(lonToX(marker.coord[0], this.zoom)) - marker.offset[0],
+              this.yToPx(latToY(marker.coord[1], this.zoom)) - marker.offset[1],
             ]
-            const imgData = find(icons, { file: marker.img })
+            const imgData = icons.find((icon) => icon.file === marker.img)
             marker.set(imgData.data)
           })
 
@@ -584,8 +610,7 @@ class StaticMaps {
 
       const contentType = headers["content-type"]
       if (!contentType.startsWith("image/"))
-        throw new Error("Tiles server response with wrong data")
-      // console.log(headers);
+        logger.error("Tiles server response with wrong data")
 
       return {
         success: true,
@@ -629,7 +654,7 @@ class StaticMaps {
           await Promise.all(sQueue)
         })
       }
-      await asyncQueue(aQueue)
+      await workOnQueue(aQueue)
       return tiles
     }
 
