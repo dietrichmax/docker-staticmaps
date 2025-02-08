@@ -3,10 +3,10 @@
  */
 import express, { Request, Response, NextFunction } from "express"
 import dotenv from "dotenv"
-import router from "./routes"
-import logger from "./utils/logger"
-import { authenticateApiKey } from "./middlewares/apiKeyAuth"
-import { headers } from "./middlewares/headers"
+import router from "./routes.js"
+import logger from "./utils/logger.js"
+import { authenticateApiKey } from "./middlewares/apiKeyAuth.js"
+import { headers } from "./middlewares/headers.js"
 
 /**
  * Load environment variables from a .env file.

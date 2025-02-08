@@ -2,9 +2,9 @@
  * @fileoverview This module provides functionality for rendering static maps with various shapes and markers.
  */
 
-import StaticMaps from "./staticmaps/staticmaps"
-import basemaps from "./utils/basemaps"
-import logger from "./utils/logger"
+import StaticMaps from "./staticmaps/staticmaps.js"
+import basemaps from "./utils/basemaps.js"
+import logger from "./utils/logger.js"
 
 /**
  * Helper function to extract specific parameters (color, weight, fill, etc.)

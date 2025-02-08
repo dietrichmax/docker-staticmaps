@@ -16,14 +16,16 @@ LABEL org.opencontainers.image.licenses=GPL
 WORKDIR /opt/app
 
 # Copy package.json and package-lock.json first to utilize Docker cache for dependencies
-COPY package.json package-lock.json ./
+COPY package*.json ./
 
-# Install only production dependencies to reduce size
-RUN npm ci --production && npm prune --production
+# Install dependencies, including dev dependencies (for building TypeScript)
+RUN npm install
 
-# Copy only necessary application files
-COPY dist ./dist
-COPY public ./public
+# Step 5: Copy the rest of the application code
+COPY . .
+
+# Build the TypeScript files
+RUN npm run build
 
 # Stage 2: Final Stage (Minimal Image)
 FROM node:20-alpine AS final
@@ -31,8 +33,12 @@ FROM node:20-alpine AS final
 # Set working directory
 WORKDIR /opt/app
 
-# Copy only the necessary artifacts (from build stage)
-COPY --from=build /opt/app /opt/app
+# Copy only the necessary built files
+COPY --from=build /opt/app/dist /opt/app/dist
+COPY --from=build /opt/app/package*.json /opt/app
+
+# Install production dependencies
+RUN npm install --production
 
 # Clean up npm cache (to save space)
 RUN rm -rf /opt/app/node_modules/.cache

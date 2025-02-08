@@ -1,16 +1,17 @@
 {
   "compilerOptions": {
     "types": ["node"],
+    "esModuleInterop": true,
     "module": "ESNext",
     "target": "ESNext",
     "moduleResolution": "Node",
     "strict": true,
-    "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "outDir": "./dist",
     "allowJs": true,
     "resolveJsonModule": true
+    
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"]

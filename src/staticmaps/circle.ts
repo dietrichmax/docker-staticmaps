@@ -1,4 +1,4 @@
-import logger from "../utils/logger"
+import logger from "../utils/logger.js"
 
 /**
  * Represents a circle with a center coordinate, radius, color, fill, and line width.

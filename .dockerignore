@@ -6,3 +6,4 @@ Dockerfile
 *.log
 *.md
 examples
+*release*

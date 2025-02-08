@@ -2,7 +2,7 @@
  * Import necessary modules from Express.
  */
 import { Router, Request, Response, NextFunction } from "express"
-import { render, validateParams } from "./utils"
+import { render, validateParams } from "./utils.js"
 
 /**
  * Custom async handler to properly type requests and responses.
