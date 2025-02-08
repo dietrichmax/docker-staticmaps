@@ -125,7 +125,7 @@ export function validateParams(params) {
       typeof val[0] === "number" &&
       typeof val[1] === "number"
     ) {
-      return [val[1], val[0]] // Handle POST request format [lat, lon] (convert to [lon, lat])
+      return [val[0], val[1]] // Handle POST request format [lat, lon] (convert to [lon, lat])
     } else if (
       typeof val === "object" &&
       val.lat !== undefined &&
