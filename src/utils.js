@@ -131,7 +131,7 @@ export function validateParams(params) {
       val.lat !== undefined &&
       val.lon !== undefined
     ) {
-      return [val.lon, val.lat] // Handle POST request format { lat: 48.8566, lon: 2.3522 }
+      return [val.lat, val.lon] // Handle POST request format { lat: 48.8566, lon: 2.3522 }
     }
     return null // Invalid format
   })
