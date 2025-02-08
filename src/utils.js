@@ -119,20 +119,20 @@ export function validateParams(params) {
   let center = safeParse(params.center, (val) => {
     if (typeof val === "string") {
       const coordinates = val.split(",").map(Number);
-      return [coordinates[1], coordinates[0]] // Handle GET request format "48.8566,2.3522"
+      return [coordinates[0], coordinates[1]] // Handle GET request format "48.8566,2.3522"
     } else if (
       Array.isArray(val) &&
       val.length === 2 &&
       typeof val[0] === "number" &&
       typeof val[1] === "number"
     ) {
-      return [val[0], val[1]] // Handle POST request format [lat, lon] (convert to [lon, lat])
+      return [val[1], val[0]] // Handle POST request format [lat, lon] (convert to [lon, lat])
     } else if (
       typeof val === "object" &&
       val.lat !== undefined &&
       val.lon !== undefined
     ) {
-      return [val.lat, val.lon] // Handle POST request format { lat: 48.8566, lon: 2.3522 }
+      return [val.lon, val.lat] // Handle POST request format { lat: 48.8566, lon: 2.3522 }
     }
     return null // Invalid format
   })

@@ -16,7 +16,6 @@ export function headers(req: Request, res: Response, next: NextFunction): void {
     "Strict-Transport-Security": "max-age=31536000; includeSubDomains; preload", // Enforce HTTPS
     "Content-Security-Policy":
       "default-src 'self'; script-src 'self'; img-src 'self' data:;",
-    "Cache-Control": "public, max-age=86400",
   }
 
   for (const [key, value] of Object.entries(securityHeaders)) {
