@@ -13,3 +13,5 @@ yarn-error.log*
 # build
 dist
 *release*
+*tar.gz
+*zip.
