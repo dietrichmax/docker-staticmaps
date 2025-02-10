@@ -16,7 +16,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 2  # Fetch the previous commit for comparison
+          fetch-depth: 2 # Fetch the previous commit for comparison
 
       - name: Get Previous Version
         id: old_version
@@ -48,7 +48,7 @@ jobs:
 
   release:
     needs: check-version
-    if: needs.check-version.outputs.version_changed == 'true'  # Run only if version changed
+    if: needs.check-version.outputs.version_changed == 'true' # Run only if version changed
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository

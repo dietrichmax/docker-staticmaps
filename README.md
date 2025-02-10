@@ -44,6 +44,8 @@ Request static maps from the `/staticmaps` endpoint using the following paramete
 - `format` (default: `png`) - Output format (`png`, `jpg`, or `webp`).
 - `basemap` (default: `osm`) - Choose a map base layer (see options below).
 
+---
+
 ### 🌍 Basemap
 
 Use predefined basemaps with the `basemap` parameter or specify a `custom` tile server with the `tileUrl` parameter.
@@ -66,18 +68,22 @@ Supported basemaps include:
 - `carto-dark` - [Carto](https://carto.com/location-data-services/basemaps/) Free usage for up to 75,000 mapviews per month, non-commercial services only.
 - `custom` - Use a custom tile URL with parameter `tileurl`
 
+---
+
 ### 🖊️ Polylines
 
-Add a polyline using the `polyline` parameter in the format:
+To add a polyline, use the `polyline` parameter in this format:
 
-`polyline=polylineStyle|polylineCoord1|polylineCoord2|...`
+```
+polyline=polylineStyle|polylineCoord1|polylineCoord2|...
+```
 
-- `polylineCoord` - Coordinates in `lat,lon` format, separated by `|`. At least two coordinates are required.
-- `polylineStyle` - Define `weight` (default `5`), `color` (default `blue`), e.g., `weight:6|color:0000ff`.
-
-**Example**: Polyline with weight `6` and color `0000ff`.
-
-Polyline with no `zoom`, `weight:6` and `color:0000ff`</summary>
+- **polylineCoord**: Coordinates in `lat, lon` format, separated by `|`. You need at least two coordinates.
+- **polylineStyle**: Customize the polyline with:
+  - `weight` (default: `5`)
+  - `color` (default: `blue`)
+  
+**Example**: Polyline with no `zoom`, `weight:6` and `color:0000ff`.
 
 ```
 http://localhost:3000/staticmaps?width=600&height=600&polyline=weight:6|color:0000ff|48.726304979176675,-3.9829935637739382|48.72623035828412,-3.9829726446543385|48.726126671101639,-3.9829546542797467|48.725965124843256,-3.9829070729298808|48.725871429380568,-3.9828726793245273|48.725764250990267,-3.9828064532306628|48.725679557682362,-3.9827385375789146|48.72567025076134,-3.9827310750289113|48.725529844164292,-3.9826617613709225|48.725412537198615,-3.9826296635284164|48.725351694726704,-3.9826201452878531|48.725258599474508,-3.9826063049230411|48.725157520450125,-3.9825900299314232|48.725077863838543,-3.9825779905509102|48.724930435729831,-3.9825514102373938|48.724815578113535,-3.9825237355887291|48.724760905376989,-3.9825013965800564|48.724677938456551,-3.9824534296566916|48.724379435330384,-3.9822469276001118|48.724304509274596,-3.9821850264836076|48.7242453124599,-3.9821320570321772|48.724206187829317,-3.9821063430223207|48.724117073204575,-3.9820862134785551
@@ -85,15 +91,22 @@ http://localhost:3000/staticmaps?width=600&height=600&polyline=weight:6|color:00
 
 ![Polyline Example](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/polylinepath.png)
 
+---
+
+
 ### 🔲 Polygons
 
-Add a polygon using the `polygon` parameter in the format:
+To add a polygon, use the `polygon` parameter in this format:
 
-`polygon=polygonStyle|polygonCoord1|polygonCoord2|...`
+```
+polygon=polygonStyle|polygonCoord1|polygonCoord2|...
+```
 
-- `polygonCoord` - Coordinates in `lat,lon` format, separated by `|`. First and last coordinates must be the same to close the polygon.
-- `polygonStyle` - Define `color` (default `blue`), `weight` (default `5`), and `fill` (default `green`).
-
+- **polygonCoord**: List of coordinates in `lat, lon` format, separated by `|`. The first and last coordinates should be the same to close the polygon.
+- **polygonStyle**: Customize the polygon with:
+  - `color` (default: `blue`)
+  - `weight` (default: `5`)
+  - `fill` (default: `green`)
 
 <details>
   <summary><b>Example:</b> Polygon with color <code>4874db</code>, weight <code>7</code>, and fill <code>eb7a34</code></summary>
@@ -102,13 +115,23 @@ Add a polygon using the `polygon` parameter in the format:
 
 ![Polygon Example](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/polygonexample.png)
 
+---
+
 ### 📍 Markers
 
-Add one or more markers using the `markers` parameter:
+To add one or more markers, use the `markers` parameter in this format:
 
-`markers=markerCoord1|markerCoord2|...`
+```
+markers=markerStyle|markerCoord1|markerCoord2|...
+```
 
-- `markerCoord` - Coordinates in `lat,lon` format, separated by `|`. At least one coordinate is required.
+- **markerCoord**: Coordinates for each marker in `lat, lon` format, separated by `|`. You need at least one coordinate.
+- **markerStyle**: Customize the marker with:
+  - `img`: URL or file path for a custom marker image (optional)
+  - `width` (default: `28`)
+  - `height` (default: `28`)
+  - `offsetX` (optional): Horizontal offset for the marker
+  - `offsetY` (optional): Vertical offset for the marker
 
 **Example**: Two markers.
 
@@ -118,14 +141,22 @@ http://localhost:3000/staticmaps?width=600&height=600&markers=48.726304979176675
 
 ![Markers Example](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/markers.png)
 
+---
+
 ### ⚪ Circles
 
-Add a circle using the `circle` parameter:
+To add a circle, use the `circle` parameter in this format:
 
-`circle=circleStyle|circleCoord`
+```
+circle=circleStyle|circleCoord
+```
 
-- `circleCoord` - Coordinates in `lat,lon` format.
-- `circleStyle` - Define `radius` (required), `color` (default `#0000bb`), `width` (default `3`), and `fill` (default `#AA0000`).
+- **circleCoord**: Coordinates for the circle's center in lat, lon format, separated by |. You need at least one coordinate.
+- **circleStyle**: Customize the circle with:
+  - `radius` (required)
+  - `color` (default: `#0000bb`)
+  - `width` (default: `3`)
+  - `fill` (default: `#AA0000`)
 
 **Example**: Circle with a radius of `20` meters.
 
@@ -134,6 +165,8 @@ http://localhost:3000/staticmaps?width=600&height=600&basemap=osm&circle=radius:
 ```
 
 ![Circle Example](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/circle.png)
+
+---
 
 ### 🔍 More usage examples
 
@@ -157,6 +190,8 @@ http://localhost:3000/staticmaps?width=600&height=600&basemap=osm&circle=radius:
 </details>
 
 ![Polyline & Markers](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/markersandpolyline.png)
+
+---
 
 Also, `POST` requests are supported:
 
@@ -322,6 +357,7 @@ Also, `POST` requests are supported:
 </details>
 
 ![POST request example](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/postrequest.png "screenshot of POST request example")
+
 
 ## 🛠️ Deployment
 

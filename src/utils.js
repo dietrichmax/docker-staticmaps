@@ -52,7 +52,7 @@ const parseShape = (key, defaultValues, params) => {
   if (typeof params[key] === "string") {
     const { extracted: newExtracted, coordinates } = extractParams(
       params[key].split("|"),
-      ["color", "weight", "fill", "radius", "width"]
+      ["color", "weight", "fill", "radius", "width", "img", "height"]
     )
     coords = parseCoordinates(coordinates)
     extracted = { ...defaultValues, ...newExtracted }
@@ -61,7 +61,7 @@ const parseShape = (key, defaultValues, params) => {
   else if (Array.isArray(params[key])) {
     const { extracted: newExtracted, coordinates } = extractParams(
       params[key],
-      ["color", "weight", "fill", "radius", "width"]
+      ["color", "weight", "fill", "radius", "width", "img", "height"]
     )
     coords = parseCoordinates(coordinates)
     extracted = { ...defaultValues, ...newExtracted }
@@ -152,16 +152,11 @@ export function validateParams(params) {
     params
   )
 
-  const markers = params.markers
-    ? typeof params.markers === "object"
-      ? { coords: parseCoordinates(params.markers.coords) }
-      : {
-          coords: params.markers.split("|").map((coord) => {
-            const [lat, lon] = coord.split(",").map(Number)
-            return [lon, lat] // Swap latitude and longitude
-          }),
-        }
-    : false
+  const markers = parseShape(
+    "markers",
+    { img: "./public/images/marker-28.png", width: 28, height: 28 },
+    params
+  )
 
   if (
     !params.center &&
@@ -190,6 +185,7 @@ export function validateParams(params) {
       zoomRange: params.zoomRange,
       zoom: parseInt(params.zoom),
       reverseY: params.reverseY,
+      simplify: params.simplify === "true",
       center,
       markers,
       polyline,
@@ -217,9 +213,9 @@ export async function render(options) {
           options.markers.coords.forEach((coord) =>
             map.addMarker({
               coord,
-              img: "./public/images/marker-28.png",
-              width: 42,
-              height: 42,
+              img: options.markers.img,
+              width: options.markers.width,
+              height: options.markers.height,
               offsetX: 13.6,
               offsetY: 27.6,
             })
@@ -232,6 +228,7 @@ export async function render(options) {
             coords: options.polyline.coords,
             color: options.polyline.color,
             width: options.polyline.weight,
+            simplify: options.simplify,
           })
         }
       },
@@ -242,6 +239,7 @@ export async function render(options) {
             color: options.polygon.color,
             width: options.polygon.weight,
             fill: options.polygon.fill,
+            simplify: options.simplify,
           })
         }
       },

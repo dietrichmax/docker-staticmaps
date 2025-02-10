@@ -29,7 +29,7 @@ export default class MultiPolygon {
     this.color = options.color || "#000000BB"
     this.fill = options.fill
     this.width = Number.isFinite(options.width) ? Number(options.width) : 3
-    this.simplify = options.simplify ?? true
+    this.simplify = options.simplify ?? false
   }
 
   /**

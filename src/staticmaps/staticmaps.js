@@ -50,6 +50,7 @@ class StaticMaps {
     this.paddingX = this.options.paddingX || 0
     this.paddingY = this.options.paddingY || 0
     this.padding = [this.paddingX, this.paddingY]
+    this.simplify = this.options.simplify || false
     this.tileSize = this.options.tileSize || 256
     this.tileRequestTimeout = this.options.tileRequestTimeout
     this.tileRequestHeader = this.options.tileRequestHeader
@@ -420,36 +421,33 @@ class StaticMaps {
    *  Render Polyline to SVG
    */
   lineToSVG(line) {
-    let svgElements = []
+    // Map coordinates to pixel positions
+    let points = line.coords.map(
+      (coord) =>
+        `${this.xToPx(lonToX(coord[0], this.zoom))},${this.yToPx(latToY(coord[1], this.zoom))}`
+    )
 
-    let points = line.coords.map((coord) => [
-      this.xToPx(lonToX(coord[0], this.zoom)),
-      this.yToPx(latToY(coord[1], this.zoom)),
-    ])
-
+    // Simplify points if necessary
     if (line.simplify) {
-      points = simplify(points)
+      {
+        /*points = simplify(points); CHECK!!!*/
+      }
     }
 
-    // Generate circles for smooth transitions
-    let circles = points
-      .map(
-        (point) =>
-          `<circle cx="${point[0]}" cy="${point[1]}" r="3" fill="${line.color}" />`
-      )
-      .join("\n")
+    // Define the SVG polyline/polygon tag
+    const shapeTag = line.type === "polyline" ? "polyline" : "polygon"
+    const fillValue = line.fill ? line.fill : "none"
 
-    // Create polyline for the main line
-    let polyline = `<${line.type === "polyline" ? "polyline" : "polygon"}
-              style="fill-rule: inherit;"
-              points="${points.join(" ")}"
-              stroke="${line.color}"
-              fill="${line.fill ? line.fill : "none"}"
-              stroke-width="${line.width}"/>`
-
-    svgElements.push(circles, polyline)
-
-    return `<svg xmlns="http://www.w3.org/2000/svg">${svgElements.join("\n")}</svg>`
+    return `
+      <svg xmlns="http://www.w3.org/2000/svg">
+        <${shapeTag}
+          style="fill-rule: inherit;"
+          points="${points.join(" ")}"
+          stroke="${line.color}"
+          fill="${fillValue}"
+          stroke-width="${line.width}"/>
+      </svg>
+    `
   }
 
   /**
@@ -466,10 +464,11 @@ class StaticMaps {
           return
 
         const markerInstance = await sharp(marker.imgData)
-
+        
         if (marker.width === null || marker.height === null) {
+          
           const metadata = await markerInstance.metadata()
-
+          
           if (
             Number.isFinite(metadata.width) &&
             Number.isFinite(metadata.height)
@@ -533,8 +532,9 @@ class StaticMaps {
   loadMarker() {
     return new Promise((resolve, reject) => {
       if (!this.markers.length) resolve(true)
+
       const icons = this.markers
-        .map((m) => ({ file: m.img }))
+        .map((m) => ({ file: m.img, height: m.height, width: m.width }))
         .reduce((acc, curr) => {
           if (!acc.some((item) => item.file === curr.file)) {
             acc.push(curr)
@@ -564,14 +564,19 @@ class StaticMaps {
               },
               url: icon.file,
               responseType: "buffer",
-            })
-            icon.data = await sharp(img.body).toBuffer()
+            });
+        
+            icon.data = await sharp(img.body)
+              .resize(icon.width, icon.height) // Resize to 28px x 28px
+              .toBuffer();
           } else {
             // Load marker from local fs
-            icon.data = await sharp(icon.file).toBuffer()
+            icon.data = await sharp(icon.file)
+            .resize(icon.width, icon.height) // Resize to 28px x 28px
+              .toBuffer();
           }
         } catch (err) {
-          reject(err)
+          logger.error(err);
         }
 
         if (count++ === icons.length) {

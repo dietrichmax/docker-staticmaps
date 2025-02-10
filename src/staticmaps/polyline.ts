@@ -26,7 +26,7 @@ interface PolylineOptions {
 
   /**
    * Optional flag to simplify the polyline.
-   * @default true
+   * @default false
    */
   simplify?: boolean
 }
@@ -55,7 +55,7 @@ export default class Polyline {
     this.color = options.color ?? "#000000BB"
     this.fill = options.fill
     this.width = Number.isFinite(options.width) ? Number(options.width) : 3
-    this.simplify = options.simplify ?? true
+    this.simplify = options.simplify || false
 
     // Determine whether it's a polygon or polyline
     const firstCoord = this.coords[0]
