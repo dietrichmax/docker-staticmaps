@@ -5,6 +5,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write # Ensure correct permissions
+
 jobs:
   check-version:
     runs-on: ubuntu-latest
@@ -36,9 +39,11 @@ jobs:
         id: check
         run: |
           if [ "$CURR_VERSION" != "$PREV_VERSION" ]; then
+            echo "version changed: true"
             echo "::set-output name=changed::true"
             echo "::set-output name=version::$CURR_VERSION"
           else
+            echo "version changed: false"
             echo "::set-output name=changed::false"
           fi
 
@@ -52,6 +57,8 @@ jobs:
     needs: check-version
     if: needs.check-version.outputs.version_changed == 'true'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # Set proper permissions for release creation
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -67,4 +74,5 @@ jobs:
           draft: false
           prerelease: false
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }} # Ensure permissions are set
+
