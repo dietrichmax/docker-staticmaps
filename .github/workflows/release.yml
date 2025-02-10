@@ -3,7 +3,7 @@ name: Release on Version Change
 on:
   push:
     branches:
-      - main  # Adjust as needed
+      - main
 
 jobs:
   check-version:
