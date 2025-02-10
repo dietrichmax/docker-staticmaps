@@ -1,6 +1,6 @@
 {
   "name": "docker-staticmaps",
-  "version": "0.2.0",
+  "version": "0.2.2",
   "description": "API for generating static map images",
   "author": "Max Dietrich <mail@mxd.codes>",
   "repository": "github:dietrichmax/docker-staticmaps",
