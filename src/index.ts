@@ -63,6 +63,13 @@ app.use(express.urlencoded({ extended: true }))
 app.use("/staticmaps", authenticateApiKey, router)
 
 /**
+ * Health check endpoint to verify service availability.
+ */
+app.get("/health", (req: Request, res: Response) => {
+  res.status(200).json({ status: "ok", uptime: process.uptime() })
+})
+
+/**
  * Global error handler middleware to catch and log errors, then send a 500 response.
  * @param err - The error object.
  * @param req - The Express request object.
