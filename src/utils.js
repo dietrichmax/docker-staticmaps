@@ -118,7 +118,7 @@ export function validateParams(params) {
 
   let center = safeParse(params.center, (val) => {
     if (typeof val === "string") {
-      const coordinates = val.split(",").map(Number);
+      const coordinates = val.split(",").map(Number)
       return [coordinates[0], coordinates[1]] // Handle GET request format "48.8566,2.3522"
     } else if (
       Array.isArray(val) &&
