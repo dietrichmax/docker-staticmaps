@@ -340,7 +340,7 @@ To run the container in detached mode:
 ```bash
 docker run -d \
   --name='docker-staticmaps' \
-  -p '80:3000/tcp' \
+  -p '3000:3000/tcp' \
   -e ALLOW_API_KEYLESS_ACCESS=true \
   -e API_KEY="your_api_key" \
   'mxdcodes/docker-staticmaps:latest'
