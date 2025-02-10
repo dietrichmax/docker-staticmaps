@@ -136,7 +136,7 @@ markers=markerStyle|markerCoord1|markerCoord2|...
 **Example**: Two markers.
 
 ```
-http://localhost:3000/staticmaps?width=600&height=600&markers=48.726304979176675,-3.9829935637739382|48.724117073204575,-3.9820862134785551
+http://localhost:3000/staticmaps?width=600&height=600&markers=width:35|height:35|48.8566,2.3522|37.7749,-122.4194
 ```
 
 ![Markers Example](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/markers.png)
