@@ -19,7 +19,7 @@ WORKDIR /opt/app
 COPY package*.json ./
 
 # Install dependencies using npm ci for reproducibility
-RUN npm ci
+RUN npm install
 
 # Copy the rest of the application code and build
 COPY . .
@@ -37,7 +37,7 @@ COPY --from=build /opt/app/public ./public
 COPY --from=build /opt/app/package*.json ./
 
 # Install production dependencies, clean up cache, and create a non-root user in one layer
-RUN npm ci --only=production && \
+RUN npm install --production && \
     rm -rf node_modules/.cache && \
     addgroup -S appgroup && \
     adduser -S appuser -G appgroup && \
