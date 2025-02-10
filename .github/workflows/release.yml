@@ -48,7 +48,7 @@ jobs:
 
   release:
     needs: check-version
-    if: needs.check-version.outputs.version_changed == 'true' # Run only if version changed
+    if: needs.check-version.outputs.version_changed == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
