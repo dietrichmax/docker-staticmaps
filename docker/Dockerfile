@@ -18,13 +18,11 @@ WORKDIR /opt/app
 # Copy package.json and package-lock.json first to utilize Docker cache for dependencies
 COPY package*.json ./
 
-# Install dependencies, including dev dependencies (for building TypeScript)
-RUN npm install
+# Install dependencies using npm ci for reproducibility
+RUN npm ci
 
-# Step 5: Copy the rest of the application code
+# Copy the rest of the application code and build
 COPY . .
-
-# Build the TypeScript files
 RUN npm run build
 
 # Stage 2: Final Stage (Minimal Image)
@@ -33,21 +31,17 @@ FROM node:20-alpine AS final
 # Set working directory
 WORKDIR /opt/app
 
-# Copy only the necessary built files
-COPY --from=build /opt/app/dist /opt/app/dist
-COPY --from=build /opt/app/package*.json /opt/app
+# Copy only necessary files from the build stage
+COPY --from=build /opt/app/dist ./dist
+COPY --from=build /opt/app/public ./public
+COPY --from=build /opt/app/package*.json ./
 
-# Install production dependencies
-RUN npm install --production
-
-# Clean up npm cache (to save space)
-RUN rm -rf /opt/app/node_modules/.cache
-
-# Remove build dependencies (any leftover dev dependencies)
-RUN npm prune --production
-
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
-RUN chown -R appuser:appgroup /opt/app
+# Install production dependencies, clean up cache, and create a non-root user in one layer
+RUN npm ci --only=production && \
+    rm -rf node_modules/.cache && \
+    addgroup -S appgroup && \
+    adduser -S appuser -G appgroup && \
+    chown -R appuser:appgroup /opt/app
 
 # Switch to non-root user for security
 USER appuser
@@ -55,7 +49,7 @@ USER appuser
 # Expose port
 EXPOSE 3000
 
-# Add healthcheck to monitor service status
+# Define a healthcheck for the container
 HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
   CMD curl -f http://localhost:3000 || exit 1
 
