@@ -13,26 +13,52 @@ import logger from "./utils/logger.js"
  * @returns {{coords: Array}} - An object containing the coordinates extracted from the array.
  */
 function extractParams(array, paramsList) {
-  const extracted = {}
-  const coordinates = []
+  const extracted = {};
+  const coordinates = [];
+
+  // list of allowed colors
+  const allowedColors = ["blue", "green", "red", "yellow", "orange", "purple", "black", "white"]; // Modify as needed
 
   array.forEach((item) => {
-    const param = paramsList.find((p) => item.startsWith(`${p}:`))
+    const param = paramsList.find((p) => item.startsWith(`${p}:`));
     if (param) {
-      extracted[param] =
-        param === "weight" || param === "radius" || param === "width"
-          ? parseInt(item.replace(`${param}:`, ""))
-          : item.replace(
+      const value = decodeURIComponent(item.replace(`${param}:`, "")); // Decode URL-encoded values
+      if (param === "color" || param === "fill") {
+        // Check if the value is an allowed color
+        if (allowedColors.includes(value)) {
+          extracted[param] = value; // If it's allowed, keep it
+        } else {
+          extracted[param] = item.replace(
               `${param}:`,
               param === "color" || param === "fill" ? "#" : ""
             )
-    } else {
-      coordinates.push(item)
-    }
-  })
+        }
+      } else {
+         // For numeric parameters like weight, radius, and width
+        extracted[param] =
+          param === "weight" || param === "radius" || param === "width"
+            ? parseInt(value)
+            : value;
+      }
 
-  return { extracted, coordinates }
+      // Debugging log to check parameter extraction
+      logger.debug(extracted[param]);
+    } else {
+      coordinates.push(item);
+    }
+  });
+
+  // Set default values if `color` or `fill` are not provided
+  if (extracted["color"] === undefined) {
+    extracted["color"] = "blue"; // Default to blue if color isn't provided
+  }
+  if (extracted["fill"] === undefined) {
+    extracted["fill"] = "red"; // Default to red if fill isn't provided
+  }
+
+  return { extracted, coordinates };
 }
+
 
 /**
  * Parses and validates shape options based on the provided parameters.
