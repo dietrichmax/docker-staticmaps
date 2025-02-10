@@ -24,6 +24,24 @@ const app = express()
 const PORT: number = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000
 
 /**
+ * Middleware to log incoming requests.
+ */
+app.use((req: Request, res: Response, next: NextFunction) => {
+  const { authorization, cookie, ...safeHeaders } = req.headers // Remove sensitive headers
+  const logHeaders = process.env.NODE_ENV === "development"
+
+  logger.info("Incoming request", {
+    method: req.method,
+    url: req.url,
+    ip: req.ip,
+    headers: logHeaders ? req.headers : safeHeaders,
+    params: req.params,
+    body: req.method !== "GET" ? req.body : undefined, // Log body only for non-GET requests
+  })
+  next()
+})
+
+/**
  * Apply the custom headers middleware to all incoming requests.
  */
 app.use(headers)
@@ -52,7 +70,16 @@ app.use("/staticmaps", authenticateApiKey, router)
  * @param next - The next middleware function in the stack.
  */
 app.use((err: Error, req: Request, res: Response, next: NextFunction): void => {
-  logger.error(err)
+  logger.error("Unhandled error occurred", {
+    error: err.message,
+    stack: err.stack,
+    method: req.method,
+    url: req.url,
+    ip: req.ip,
+    headers: req.headers,
+    params: req.params,
+    body: req.method !== "GET" ? req.body : undefined,
+  })
   res.status(500).json({ error: "Internal server error" })
 })
 
@@ -60,11 +87,11 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction): void => {
  * Start the Express application and log the URL where it is running.
  */
 app.listen(PORT, () => {
-  logger.info(
-    `🗺️  docker-staticmaps running at http://localhost:${PORT}/staticmaps`
-  )
+  logger.info(`🗺️  docker-staticmaps running at http://localhost:${PORT}/staticmaps`, {
+    port: PORT,
+    environment: process.env.NODE_ENV || "development",
+  })
 })
-
 /**
  * Export the app instance for further use or testing.
  */
