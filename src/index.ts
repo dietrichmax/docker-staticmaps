@@ -33,16 +33,18 @@ const PORT: number = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
  */
 app.use((req: Request, res: Response, next: NextFunction) => {
   const { authorization, cookie, ...safeHeaders } = req.headers; // Remove sensitive headers
-  const logHeaders = process.env.NODE_ENV === 'development';
 
-  logger.info('Incoming request', {
-    method: req.method,
-    url: req.url,
-    ip: req.ip,
-    headers: logHeaders ? req.headers : safeHeaders,
-    params: req.params,
-    body: req.method !== 'GET' ? req.body : undefined, // Log body only for non-GET requests
-  });
+// Utility function to truncate strings that exceed a given length.
+const truncate = (str: string, maxLength = 100): string =>
+  str.length > maxLength ? `${str.substring(0, maxLength)}...` : str;
+
+// Log only the most important fields for an incoming request.
+logger.info('Incoming request', {
+  method: req.method,
+  url: truncate(req.url, 100), // Truncate the URL if it's too long.
+  ip: req.ip,
+});
+
   next();
 });
 

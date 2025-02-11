@@ -3,8 +3,19 @@
  */
 type LogLevel = "DEBUG" | "INFO" | "WARN" | "ERROR"
 
+// Set the current log level from the environment (defaults to "INFO")
+const currentLogLevel: LogLevel = (process.env.LOG_LEVEL as LogLevel) || "INFO"
+
+// Define priorities for each log level
+const levelPriority: Record<LogLevel, number> = {
+  DEBUG: 0,
+  INFO: 1,
+  WARN: 2,
+  ERROR: 3,
+}
+
 /**
- * Logs a message to the console with a given level and timestamp.
+ * Logs a message to the console with a given level and timestamp, if the level meets the threshold.
  *
  * @param level - The log level (DEBUG, INFO, WARN, ERROR).
  * @param message - The message to log.
@@ -15,6 +26,11 @@ const log = (
   message: string,
   meta?: Record<string, unknown>
 ): void => {
+  // Only log if the message's level is at or above the configured level
+  if (levelPriority[level] < levelPriority[currentLogLevel]) {
+    return
+  }
+
   const timestamp = new Date().toISOString()
   let colorCode = ""
 
@@ -35,7 +51,7 @@ const log = (
 
   let logMessage = `${colorCode}[${timestamp}] [${level}]\x1b[0m ${message}`
   if (meta && Object.keys(meta).length > 0) {
-    logMessage += ` ${JSON.stringify(meta, null, 2)}`
+    logMessage += ` ${JSON.stringify(meta)}`
   }
 
   console.log(logMessage)
