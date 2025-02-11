@@ -40,9 +40,6 @@ function extractParams(array, paramsList) {
             ? parseInt(value)
             : value;
       }
-
-      // Debugging log to check parameter extraction
-      logger.debug(extracted[param]);
     } else {
       coordinates.push(item);
     }
