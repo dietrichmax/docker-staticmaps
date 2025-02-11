@@ -13,5 +13,3 @@ services:
       - "3000:3000"
     environment:
       - API_KEY=${API_KEY}
-    volumes:
-      - ./src:/opt/app
