@@ -9,5 +9,13 @@ documentation:
   - "README.md"
   - "examples/**"
 
-core:
+server:
   - "src/**"
+
+web:
+  - "public/**"
+
+config:
+  - ".env"
+  - "tsconfig.json"
+  - ".prettierrc.json"
