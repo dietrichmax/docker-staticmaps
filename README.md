@@ -382,6 +382,7 @@ Also, `POST` requests are supported:
 | `PORT` | `number` | `3000` | Port number for the API 🖥️ |
 | `API_KEY` | `string` |  | Optional API key for authentication 🔑 |
 | `ALLOW_API_KEYLESS_ACCESS` | `string` |  | Allow access without an API key (true/false) 🔓 |
+| `LOG_LEVEL` | `string` | `INFO` | Level of logging detail, e.g. `DEBUG`, `INFO`,  `WARN` or `ERROR` 🔥 |
 
 ### 🐳 Using Docker
 
