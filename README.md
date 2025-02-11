@@ -4,10 +4,7 @@
 
 **API for generating static map images**
 
-[![Shield: Buy me a coffee](https://img.shields.io/badge/Buy%20me%20a%20coffee-Support-yellow?logo=buymeacoffee)](https://buymeacoffee.com/mxdcodes) 
-[![Shield: Docker Pulls](https://img.shields.io/docker/pulls/mxdcodes/docker-staticmaps?label=Docker%20Pull)](https://hub.docker.com/r/mxdcodes/docker-staticmaps)
-[![Build](https://github.com/dietrichmax/docker-staticmaps/actions/workflows/docker-build.yml/badge.svg)](https://github.com/dietrichmax/docker-staticmaps/actions/workflows/docker-build.yml)
-[![Shield: License: AGPL v3](https://img.shields.io/github/license/dietrichmax/docker-staticmaps)](https://www.gnu.org/licenses/agpl-3.0)
+[![Shield: Buy me a coffee](https://img.shields.io/badge/Buy%20me%20a%20coffee-Support-yellow?logo=buymeacoffee)](https://buymeacoffee.com/mxdcodes) [![Shield: Docker Pulls](https://img.shields.io/docker/pulls/mxdcodes/docker-staticmaps?label=Docker%20Pull)](https://hub.docker.com/r/mxdcodes/docker-staticmaps) [![Build](https://github.com/dietrichmax/docker-staticmaps/actions/workflows/docker-build.yml/badge.svg)](https://github.com/dietrichmax/docker-staticmaps/actions/workflows/docker-build.yml) [![Shield: License: AGPL v3](https://img.shields.io/github/license/dietrichmax/docker-staticmaps)](https://www.gnu.org/licenses/agpl-3.0)
 
 </div>
 
@@ -38,18 +35,18 @@ Request static maps from the `/staticmaps` endpoint using the following paramete
 ### Required Parameters
 
 | Parameter | Default | Description |
-|-----------|---------|-------------|
+| --- | --- | --- |
 | `center` | (required) | Coordinates in the format `lon,lat` (e.g., `-119.49280,37.81084`). |
-| `zoom` | (required) | Zoom level (1 to 18). |  
+| `zoom` | (required) | Zoom level (1 to 18). |
 
 ### Optional Parameters
 
-| Parameter | Default | Description |
-|-----------|---------|-------------|
-| `width` | `300` | Image width in pixels. |
-| `height` | `300` | Image height in pixels. |
-| `format` | `png` | Output format (`png`, `jpg`, or `webp`). |
-| `basemap` | `osm` | Choose a map base layer (see basemap options). |  
+| Parameter | Default | Description                                    |
+| --------- | ------- | ---------------------------------------------- |
+| `width`   | `300`   | Image width in pixels.                         |
+| `height`  | `300`   | Image height in pixels.                        |
+| `format`  | `png`   | Output format (`png`, `jpg`, or `webp`).       |
+| `basemap` | `osm`   | Choose a map base layer (see basemap options). |
 
 ---
 
@@ -87,10 +84,10 @@ polyline=polylineStyle|polylineCoord1|polylineCoord2|...
 
 - **polylineCoord**: Coordinates in `lat, lon` format, separated by `|`. You need at least two coordinates.
 - **polylineStyle**: Customize the polyline with:
-  
-  | Parameter | Default  | Description                                |
-  |-----------|---------|--------------------------------------------|
-  | `weight`  | `6`     | Sets the stroke width of the polyline.     |
+
+  | Parameter | Default   | Description                               |
+  | --------- | --------- | ----------------------------------------- |
+  | `weight`  | `6`       | Sets the stroke width of the polyline.    |
   | `color`   | `#0000ff` | Defines the stroke color of the polyline. |
 
 **Example**: Polyline with no `zoom`, `weight:6` and `color:0000ff`.
@@ -103,7 +100,6 @@ http://localhost:3000/staticmaps?width=600&height=600&polyline=weight:6|color:00
 
 ---
 
-
 ### 🔲 Polygons
 
 To add a polygon, use the `polygon` parameter in this format:
@@ -115,11 +111,11 @@ polygon=polygonStyle|polygonCoord1|polygonCoord2|...
 - **polygonCoord**: List of coordinates in `lat, lon` format, separated by `|`. The first and last coordinates should be the same to close the polygon.
 - **polygonStyle**: Customize the polygon with:
 
-  | Parameter | Default | Description |
-  |-----------|---------|-------------|
-  | `color` | `blue` | Defines the stroke color of the polygon. |
-  | `weight` | `5` | Sets the stroke width of the polygon. |
-  | `fill` | `green` | Specifies the fill color of the polygon. |
+  | Parameter | Default | Description                              |
+  | --------- | ------- | ---------------------------------------- |
+  | `color`   | `blue`  | Defines the stroke color of the polygon. |
+  | `weight`  | `5`     | Sets the stroke width of the polygon.    |
+  | `fill`    | `green` | Specifies the fill color of the polygon. |
 
 <details>
   <summary><b>Example:</b> Polygon with color <code>4874db</code>, weight <code>7</code>, and fill <code>eb7a34</code></summary>
@@ -141,13 +137,13 @@ markers=markerStyle|markerCoord1|markerCoord2|...
 - **markerCoord**: Coordinates for each marker in `lat, lon` format, separated by `|`. You need at least one coordinate.
 - **markerStyle**: Customize the marker with:
 
-  | Parameter  | Default | Description |
-  |------------|---------|-------------|
-  | `img` | (optional) | URL or file path for a custom marker image. |
-  | `width` | `28` | Sets the width of the marker. |
-  | `height` | `28` | Sets the height of the marker. |
-  | `offsetX` | (optional) | Horizontal offset for the marker position. |
-  | `offsetY` | (optional) | Vertical offset for the marker position. |  
+  | Parameter | Default    | Description                                 |
+  | --------- | ---------- | ------------------------------------------- |
+  | `img`     | (optional) | URL or file path for a custom marker image. |
+  | `width`   | `28`       | Sets the width of the marker.               |
+  | `height`  | `28`       | Sets the height of the marker.              |
+  | `offsetX` | (optional) | Horizontal offset for the marker position.  |
+  | `offsetY` | (optional) | Vertical offset for the marker position.    |
 
 **Example**: Two markers.
 
@@ -170,14 +166,12 @@ circle=circleStyle|circleCoord
 - **circleCoord**: Coordinates for the circle's center in lat, lon format, separated by |. You need at least one coordinate.
 - **circleStyle**: Customize the circle with:
 
-  | Parameter | Default | Description |
-  |-----------|---------|-------------|
-  | `radius` | (required) | Specifies the radius of the element. |
-  | `color` | `#0000bb` | Defines the stroke color of the element. |
-  | `width` | `3` | Sets the stroke width of the element. |
-  | `fill` | `#AA0000` | Specifies the fill color of the element. |  
-
-
+  | Parameter | Default    | Description                              |
+  | --------- | ---------- | ---------------------------------------- |
+  | `radius`  | (required) | Specifies the radius of the element.     |
+  | `color`   | `#0000bb`  | Defines the stroke color of the element. |
+  | `width`   | `3`        | Sets the stroke width of the element.    |
+  | `fill`    | `#AA0000`  | Specifies the fill color of the element. |
 
 **Example**: Circle with a radius of `20` meters.
 
@@ -378,7 +372,6 @@ Also, `POST` requests are supported:
 </details>
 
 ![POST request example](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/postrequest.png "screenshot of POST request example")
-
 
 ## 🛠️ Deployment
 

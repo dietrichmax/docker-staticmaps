@@ -2,7 +2,7 @@ name: Update Release Draft
 
 on:
   pull_request:
-    types: [closed]  # Trigger when a PR is closed
+    types: [closed] # Trigger when a PR is closed
 
 permissions:
   contents: write

@@ -7,6 +7,8 @@ import router from "./routes.js"
 import logger from "./utils/logger.js"
 import { authenticateApiKey } from "./middlewares/apiKeyAuth.js"
 import { headers } from "./middlewares/headers.js"
+import path from "path"
+import { fileURLToPath } from "url"
 
 /**
  * Load environment variables from a .env file.
@@ -62,6 +64,25 @@ app.use(express.urlencoded({ extended: true }))
  */
 app.use("/staticmaps", authenticateApiKey, router)
 
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+console.log(__filename)
+app.use(
+  express.static(path.join(__dirname, "public"), {
+    setHeaders: (res, path) => {
+      logger.debug(`Serving: ${path}`) // Debug log
+    },
+  })
+)
+
+// Correct path to public folder
+app.use(express.static(path.join(__dirname, "..", "public")))
+
+// Serve index.html on root "/"
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "..", "public", "index.html"))
+})
+
 /**
  * Health check endpoint to verify service availability.
  */
@@ -94,10 +115,13 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction): void => {
  * Start the Express application and log the URL where it is running.
  */
 app.listen(PORT, () => {
-  logger.info(`🗺️  docker-staticmaps running at http://localhost:${PORT}/staticmaps`, {
-    port: PORT,
-    environment: process.env.NODE_ENV || "development",
-  })
+  logger.info(
+    `🗺️  docker-staticmaps running at http://localhost:${PORT}/staticmaps`,
+    {
+      port: PORT,
+      environment: process.env.NODE_ENV || "development",
+    }
+  )
 })
 /**
  * Export the app instance for further use or testing.
