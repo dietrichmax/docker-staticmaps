@@ -31,7 +31,7 @@ docker run -p '3000:3000/tcp' -e ALLOW_API_KEYLESS_ACCESS=true mxdcodes/docker-s
 
 Example API Request:
 ```bash
-curl "ttp://localhost:3000/staticmaps?center=-119.49280,37.81084&zoom=9"
+curl "http://localhost:3000/staticmaps?center=-119.49280,37.81084&zoom=9"
 ```
 
 ![Minimal Example](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/minimalexample.png)
