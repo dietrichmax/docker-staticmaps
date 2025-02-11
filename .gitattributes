@@ -1,5 +1,0 @@
-node_modules/ export-ignore
-.env export-ignore
-dist/ export-ignore
-.github/ export-ignore
-examples/ export-ignore

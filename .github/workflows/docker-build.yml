@@ -1,4 +1,4 @@
-name: Build, Test & Publish
+name: Docker Build & Publish
 
 on:
   push:

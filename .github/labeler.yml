@@ -1,0 +1,13 @@
+cli:
+  - ".github/**"
+
+build:
+  - "docker/**"
+  - "package.json"
+
+documentation:
+  - "README.md"
+  - "examples/**"
+
+core:
+  - "src/**"
