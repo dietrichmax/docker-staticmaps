@@ -393,6 +393,7 @@ docker run -d \
   -p '3000:3000/tcp' \
   -e ALLOW_API_KEYLESS_ACCESS=true \
   -e API_KEY="your_api_key" \
+  -e LOG_LEVEL="INFO" \
   'mxdcodes/docker-staticmaps:latest'
 ```
 
@@ -409,6 +410,7 @@ services:
     environment:
       - ALLOW_API_KEYLESS_ACCESS=true
       - API_KEY=your_api_key
+      - LOG_LEVEL="INFO"
 ```
 
 ### 💻 Development
