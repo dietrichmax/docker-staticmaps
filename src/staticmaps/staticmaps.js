@@ -464,11 +464,10 @@ class StaticMaps {
           return
 
         const markerInstance = await sharp(marker.imgData)
-        
+
         if (marker.width === null || marker.height === null) {
-          
           const metadata = await markerInstance.metadata()
-          
+
           if (
             Number.isFinite(metadata.width) &&
             Number.isFinite(metadata.height)
@@ -564,19 +563,19 @@ class StaticMaps {
               },
               url: icon.file,
               responseType: "buffer",
-            });
-        
+            })
+
             icon.data = await sharp(img.body)
               .resize(icon.width, icon.height) // Resize to 28px x 28px
-              .toBuffer();
+              .toBuffer()
           } else {
             // Load marker from local fs
             icon.data = await sharp(icon.file)
-            .resize(icon.width, icon.height) // Resize to 28px x 28px
-              .toBuffer();
+              .resize(icon.width, icon.height) // Resize to 28px x 28px
+              .toBuffer()
           }
         } catch (err) {
-          logger.error(err);
+          logger.error(err)
         }
 
         if (count++ === icons.length) {

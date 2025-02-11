@@ -15,7 +15,7 @@ export function headers(req: Request, res: Response, next: NextFunction): void {
     "Permissions-Policy": "geolocation=(), microphone=(), camera=()", // Disable certain browser features
     "Strict-Transport-Security": "max-age=31536000; includeSubDomains; preload", // Enforce HTTPS
     "Content-Security-Policy":
-      "default-src 'self'; script-src 'self'; img-src 'self' data:;",
+      "default-src 'self'; img-src 'self' * blob:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline';",
   }
 
   for (const [key, value] of Object.entries(securityHeaders)) {

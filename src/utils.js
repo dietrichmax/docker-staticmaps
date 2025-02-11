@@ -13,49 +13,57 @@ import logger from "./utils/logger.js"
  * @returns {{coords: Array}} - An object containing the coordinates extracted from the array.
  */
 function extractParams(array, paramsList) {
-  const extracted = {};
-  const coordinates = [];
+  const extracted = {}
+  const coordinates = []
 
   // list of allowed colors
-  const allowedColors = ["blue", "green", "red", "yellow", "orange", "purple", "black", "white"]; // Modify as needed
+  const allowedColors = [
+    "blue",
+    "green",
+    "red",
+    "yellow",
+    "orange",
+    "purple",
+    "black",
+    "white",
+  ] // Modify as needed
 
   array.forEach((item) => {
-    const param = paramsList.find((p) => item.startsWith(`${p}:`));
+    const param = paramsList.find((p) => item.startsWith(`${p}:`))
     if (param) {
-      const value = decodeURIComponent(item.replace(`${param}:`, "")); // Decode URL-encoded values
+      const value = decodeURIComponent(item.replace(`${param}:`, "")) // Decode URL-encoded values
       if (param === "color" || param === "fill") {
         // Check if the value is an allowed color
         if (allowedColors.includes(value)) {
-          extracted[param] = value; // If it's allowed, keep it
+          extracted[param] = value // If it's allowed, keep it
         } else {
           extracted[param] = item.replace(
-              `${param}:`,
-              param === "color" || param === "fill" ? "#" : ""
-            )
+            `${param}:`,
+            param === "color" || param === "fill" ? "#" : ""
+          )
         }
       } else {
-         // For numeric parameters like weight, radius, and width
+        // For numeric parameters like weight, radius, and width
         extracted[param] =
           param === "weight" || param === "radius" || param === "width"
             ? parseInt(value)
-            : value;
+            : value
       }
     } else {
-      coordinates.push(item);
+      coordinates.push(item)
     }
-  });
+  })
 
   // Set default values if `color` or `fill` are not provided
   if (extracted["color"] === undefined) {
-    extracted["color"] = "blue"; // Default to blue if color isn't provided
+    extracted["color"] = "blue" // Default to blue if color isn't provided
   }
   if (extracted["fill"] === undefined) {
-    extracted["fill"] = "red"; // Default to red if fill isn't provided
+    extracted["fill"] = "red" // Default to red if fill isn't provided
   }
 
-  return { extracted, coordinates };
+  return { extracted, coordinates }
 }
-
 
 /**
  * Parses and validates shape options based on the provided parameters.
