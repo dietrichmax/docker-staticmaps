@@ -86,12 +86,13 @@ polyline=polylineStyle|polylineCoord1|polylineCoord2|...
 ```
 
 - **polylineCoord**: Coordinates in `lat, lon` format, separated by `|`. You need at least two coordinates.
-- **polylineStyle**: Customize the polyline with: 
-| Parameter | Default | Description |
-|-----------|---------|-------------|
-| `weight` | `6` | Sets the stroke width of the polyline. |
-| `color` | `0000ff` | Defines the stroke color of the polyline. |  
+- **polylineStyle**: Customize the polyline with:
   
+  | Parameter | Default  | Description                                |
+  |-----------|---------|--------------------------------------------|
+  | `weight`  | `6`     | Sets the stroke width of the polyline.     |
+  | `color`   | `#0000ff` | Defines the stroke color of the polyline. |
+
 **Example**: Polyline with no `zoom`, `weight:6` and `color:0000ff`.
 
 ```
@@ -113,11 +114,12 @@ polygon=polygonStyle|polygonCoord1|polygonCoord2|...
 
 - **polygonCoord**: List of coordinates in `lat, lon` format, separated by `|`. The first and last coordinates should be the same to close the polygon.
 - **polygonStyle**: Customize the polygon with:
-| Parameter | Default | Description |
-|-----------|---------|-------------|
-| `color` | `blue` | Defines the stroke color of the polygon. |
-| `weight` | `5` | Sets the stroke width of the polygon. |
-| `fill` | `green` | Specifies the fill color of the polygon. |  
+
+  | Parameter | Default | Description |
+  |-----------|---------|-------------|
+  | `color` | `blue` | Defines the stroke color of the polygon. |
+  | `weight` | `5` | Sets the stroke width of the polygon. |
+  | `fill` | `green` | Specifies the fill color of the polygon. |
 
 <details>
   <summary><b>Example:</b> Polygon with color <code>4874db</code>, weight <code>7</code>, and fill <code>eb7a34</code></summary>
@@ -138,13 +140,14 @@ markers=markerStyle|markerCoord1|markerCoord2|...
 
 - **markerCoord**: Coordinates for each marker in `lat, lon` format, separated by `|`. You need at least one coordinate.
 - **markerStyle**: Customize the marker with:
-| Parameter  | Default | Description |
-|------------|---------|-------------|
-| `img` | (optional) | URL or file path for a custom marker image. |
-| `width` | `28` | Sets the width of the marker. |
-| `height` | `28` | Sets the height of the marker. |
-| `offsetX` | (optional) | Horizontal offset for the marker position. |
-| `offsetY` | (optional) | Vertical offset for the marker position. |  
+
+  | Parameter  | Default | Description |
+  |------------|---------|-------------|
+  | `img` | (optional) | URL or file path for a custom marker image. |
+  | `width` | `28` | Sets the width of the marker. |
+  | `height` | `28` | Sets the height of the marker. |
+  | `offsetX` | (optional) | Horizontal offset for the marker position. |
+  | `offsetY` | (optional) | Vertical offset for the marker position. |  
 
 **Example**: Two markers.
 
@@ -166,6 +169,7 @@ circle=circleStyle|circleCoord
 
 - **circleCoord**: Coordinates for the circle's center in lat, lon format, separated by |. You need at least one coordinate.
 - **circleStyle**: Customize the circle with:
+
   | Parameter | Default | Description |
   |-----------|---------|-------------|
   | `radius` | (required) | Specifies the radius of the element. |
