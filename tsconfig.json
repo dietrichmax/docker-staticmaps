@@ -1,17 +1,24 @@
 {
   "compilerOptions": {
-    "types": ["node"],
-    "esModuleInterop": true,
-    "module": "ESNext",
-    "target": "ESNext",
-    "moduleResolution": "Node",
-    "strict": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "outDir": "./dist",
+    "module": "ESNext", // Module code generation (CommonJS, ESNext, etc.)
+    "target": "ESNext", // Defines the ECMAScript target version (e.g., ES5, ES6/ES2015, etc.)
+    "esModuleInterop": true, // Allows default import from modules without default export
     "allowJs": true,
-    "resolveJsonModule": true
+    "strict": true, // Enables strict type-checking options
+    "skipLibCheck": true, // Skips type checking of declaration files
+    "forceConsistentCasingInFileNames": true, // Ensures file name casing consistency
+    "outDir": "./dist", // Output directory for compiled files
+    "rootDir": "./src", // Root directory of your source files
+    "baseUrl": "./", // Base directory for resolving non-relative module names
+    "paths": { // Map module imports to specific paths
+      "*": ["node_modules/*", "src/types/*"],
+    },
+    "noImplicitAny": true, // Disallows usage of `any` type without explicit declaration
+    "moduleResolution": "node" // Module resolution strategy (node, classic)
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules", // Exclude the `node_modules` directory
+    "dist" // Exclude the output directory
+  ]
 }

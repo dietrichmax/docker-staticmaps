@@ -1,14 +1,13 @@
-import got from "got"
 import sharp from "sharp"
 
-import Image from "./image.js"
-import IconMarker from "./marker.js"
-import Polyline from "./polyline.js"
-import MultiPolygon from "./multipolygon.js"
-import Circle from "./circle.js"
-import Text from "./text.js"
-import Bound from "./bound.js"
-import TileServerConfig from "./tileserverconfig.js"
+import Image from "./image"
+import IconMarker from "./marker"
+import Polyline from "./polyline"
+import MultiPolygon from "./multipolygon"
+import Circle from "./circle"
+import Text from "./text"
+import Bound from "./bound"
+import TileServerConfig from "./tileserverconfig"
 import {
   workOnQueue,
   lonToX,
@@ -18,8 +17,8 @@ import {
   simplify,
   meterToPixel,
   chunk,
-} from "./utils.js"
-import logger from "../utils/logger.js"
+} from "./utils"
+import logger from "../utils/logger"
 
 const RENDER_CHUNK_SIZE = 1000
 
@@ -118,7 +117,7 @@ class StaticMaps {
       !this.multipolygons &&
       !(center && zoom)
     ) {
-      tlogger.error(
+      throw Error(
         "Cannot render empty map: Add  center || lines || markers || polygons."
       )
     }
@@ -429,9 +428,7 @@ class StaticMaps {
 
     // Simplify points if necessary
     if (line.simplify) {
-      {
-        /*points = simplify(points); CHECK!!!*/
-      }
+      points = simplify(points)
     }
 
     // Define the SVG polyline/polygon tag
@@ -474,7 +471,7 @@ class StaticMaps {
           ) {
             marker.setSize(metadata.width, metadata.height)
           } else {
-            logger.error(
+            throw Error(
               `Cannot detect image size of marker ${marker.img}. Please define manually!`
             )
           }
@@ -554,29 +551,36 @@ class StaticMaps {
           // If it throws, it means it's a relative path
           isUrl = false
         }
-        try {
-          // Load marker from remote url
-          if (isUrl) {
-            const img = await got.get({
-              https: {
-                rejectUnauthorized: false,
-              },
-              url: icon.file,
-              responseType: "buffer",
-            })
 
-            icon.data = await sharp(img.body)
+        try {
+          // Load marker from remote URL
+          if (isUrl) {
+            const response = await fetch(icon.file, {
+              method: 'GET',
+              headers: {
+                // You can add custom headers if necessary
+              },
+            });
+
+            if (!response.ok) {
+              throw new Error('Failed to fetch the image');
+            }
+
+            const arrayBuffer = await response.arrayBuffer(); // Get the response as a binary array buffer
+
+            icon.data = await sharp(Buffer.from(arrayBuffer))
               .resize(icon.width, icon.height) // Resize to 28px x 28px
-              .toBuffer()
+              .toBuffer();
           } else {
             // Load marker from local fs
             icon.data = await sharp(icon.file)
               .resize(icon.width, icon.height) // Resize to 28px x 28px
-              .toBuffer()
+              .toBuffer();
           }
         } catch (err) {
-          logger.error(err)
+          throw new Error(err);
         }
+
 
         if (count++ === icons.length) {
           // Pre loaded all icons
@@ -601,20 +605,26 @@ class StaticMaps {
    */
   async getTile(data) {
     const options = {
-      url: data.url,
-      responseType: "buffer",
-      // resolveWithFullResponse: true,
+      method: 'GET',
       headers: this.tileRequestHeader || {},
       timeout: this.tileRequestTimeout,
-    }
-
+    };
+  
     try {
-      const res = await got.get(options)
-      const { body, headers } = res
+      const res = await fetch(data.url, options);
+  
+      if (!res.ok) {
+        throw new Error(`Failed to fetch tile: ${res.statusText}`);
+      }
+  
+      const contentType = res.headers.get('content-type');
+      if (contentType && !contentType.startsWith('image/')) {
+        throw new Error('Tiles server response with wrong data');
+      }
 
-      const contentType = headers["content-type"]
-      if (!contentType.startsWith("image/"))
-        logger.error("Tiles server response with wrong data")
+      // Use arrayBuffer() to handle binary data and convert it to a Node.js Buffer
+      const arrayBuffer = await res.arrayBuffer();
+      const body = Buffer.from(arrayBuffer);  // Convert ArrayBuffer to Buffer
 
       return {
         success: true,
@@ -623,12 +633,12 @@ class StaticMaps {
           box: data.box,
           body,
         },
-      }
+      };
     } catch (error) {
       return {
         success: false,
-        error,
-      }
+        error: error.message || error,
+      };
     }
   }
 
