@@ -49,7 +49,7 @@ const log = (
       break
   }
 
-  let logMessage = `${colorCode}[${timestamp}] [${level}]\x1b[0m ${message}`
+  let logMessage = `${colorCode}[${timestamp}] | [${level}]\x1b[0m | ${message}`
   if (meta && Object.keys(meta).length > 0) {
     logMessage += ` ${JSON.stringify(meta)}`
   }
