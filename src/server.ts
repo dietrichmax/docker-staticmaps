@@ -63,12 +63,14 @@ app.use(express.json())
  */
 app.use(express.urlencoded({ extended: true }))
 
-
 // Redirect /staticmaps to /api/staticmaps and preserve query parameters
-app.get('/staticmaps', (req, res) => {
+app.get("/staticmaps", (req, res) => {
   // Redirect to /api/staticmaps with the same query string
-  res.redirect(301, `/api/staticmaps${req.originalUrl.split('?')[1] ? '?' + req.originalUrl.split('?')[1] : ''}`);
-});
+  res.redirect(
+    301,
+    `/api/staticmaps${req.originalUrl.split("?")[1] ? "?" + req.originalUrl.split("?")[1] : ""}`
+  )
+})
 /**
  * Use the authenticateApiKey middleware to secure the /api route.
  * Only requests with a valid API key will be allowed to access it.

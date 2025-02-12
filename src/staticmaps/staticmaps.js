@@ -556,31 +556,30 @@ class StaticMaps {
           // Load marker from remote URL
           if (isUrl) {
             const response = await fetch(icon.file, {
-              method: 'GET',
+              method: "GET",
               headers: {
                 // You can add custom headers if necessary
               },
-            });
+            })
 
             if (!response.ok) {
-              throw new Error('Failed to fetch the image');
+              throw new Error("Failed to fetch the image")
             }
 
-            const arrayBuffer = await response.arrayBuffer(); // Get the response as a binary array buffer
+            const arrayBuffer = await response.arrayBuffer() // Get the response as a binary array buffer
 
             icon.data = await sharp(Buffer.from(arrayBuffer))
               .resize(icon.width, icon.height) // Resize to 28px x 28px
-              .toBuffer();
+              .toBuffer()
           } else {
             // Load marker from local fs
             icon.data = await sharp(icon.file)
               .resize(icon.width, icon.height) // Resize to 28px x 28px
-              .toBuffer();
+              .toBuffer()
           }
         } catch (err) {
-          throw new Error(err);
+          throw new Error(err)
         }
-
 
         if (count++ === icons.length) {
           // Pre loaded all icons
@@ -605,26 +604,26 @@ class StaticMaps {
    */
   async getTile(data) {
     const options = {
-      method: 'GET',
+      method: "GET",
       headers: this.tileRequestHeader || {},
       timeout: this.tileRequestTimeout,
-    };
-  
+    }
+
     try {
-      const res = await fetch(data.url, options);
-  
+      const res = await fetch(data.url, options)
+
       if (!res.ok) {
-        throw new Error(`Failed to fetch tile: ${res.statusText}`);
+        throw new Error(`Failed to fetch tile: ${res.statusText}`)
       }
-  
-      const contentType = res.headers.get('content-type');
-      if (contentType && !contentType.startsWith('image/')) {
-        throw new Error('Tiles server response with wrong data');
+
+      const contentType = res.headers.get("content-type")
+      if (contentType && !contentType.startsWith("image/")) {
+        throw new Error("Tiles server response with wrong data")
       }
 
       // Use arrayBuffer() to handle binary data and convert it to a Node.js Buffer
-      const arrayBuffer = await res.arrayBuffer();
-      const body = Buffer.from(arrayBuffer);  // Convert ArrayBuffer to Buffer
+      const arrayBuffer = await res.arrayBuffer()
+      const body = Buffer.from(arrayBuffer) // Convert ArrayBuffer to Buffer
 
       return {
         success: true,
@@ -633,12 +632,12 @@ class StaticMaps {
           box: data.box,
           body,
         },
-      };
+      }
     } catch (error) {
       return {
         success: false,
         error: error.message || error,
-      };
+      }
     }
   }
 

@@ -36,28 +36,28 @@
 
     <p>
       <strong>Current Static Map URL:</strong>
-      <a id="staticMapUrlDisplay">/staticmaps?</span>
+      <span id="staticMapUrlDisplay">/staticmaps?</span>
     </p>
 
     <script src="ol.js"></script>
     <script>
-      let map;
-      let currentBasemap = "osm"; // Default base map
-      const center = [-3.9829, 48.7263]; // Starting center
-      const zoom = 12; // Starting zoom
-      const height = 400;
-      let isLoading = false;
-      let staticMapImgElement = null;
+      let map
+      let currentBasemap = "osm" // Default base map
+      const center = [-3.9829, 48.7263] // Starting center
+      const zoom = 12 // Starting zoom
+      const height = 400
+      let isLoading = false
+      let staticMapImgElement = null
 
       // Initialize the map
       function initializeMap() {
         const osmLayer = new ol.layer.Tile({
           source: new ol.source.OSM(),
-        });
+        })
 
         const layerGroup = new ol.layer.Group({
           layers: [osmLayer],
-        });
+        })
 
         map = new ol.Map({
           target: "map",
@@ -67,28 +67,29 @@
             zoom: zoom,
             projection: "EPSG:3857",
           }),
-        });
+        })
 
         // Update static map URL on every moveend event
         map.on("moveend", function () {
-          const view = map.getView();
-          const centerLonLat = ol.proj.toLonLat(view.getCenter());
-          updateStaticMapUrl(centerLonLat, view.getZoom(), currentBasemap);
-        });
+          const view = map.getView()
+          const centerLonLat = ol.proj.toLonLat(view.getCenter())
+          updateStaticMapUrl(centerLonLat, view.getZoom(), currentBasemap)
+        })
 
         // Update map size on window resize
         window.addEventListener("resize", () => {
-          map.updateSize();
-        });
+          map.updateSize()
+        })
       }
 
       // Update static map URL dynamically
       function updateStaticMapUrl(centerLonLat, zoom, currentBasemap) {
-        const mapWidth = document.getElementById("map").offsetWidth;
+        const mapWidth = document.getElementById("map").offsetWidth
         const staticMapUrl = `/staticmaps?width=${mapWidth}&height=${height}&center=${encodeURIComponent(
           centerLonLat.toString()
-        )}&zoom=${zoom}&basemap=${currentBasemap}`;
-        document.getElementById("staticMapUrlDisplay").textContent = staticMapUrl;
+        )}&zoom=${zoom}&basemap=${currentBasemap}`
+        document.getElementById("staticMapUrlDisplay").textContent =
+          staticMapUrl
       }
 
       // Switch between basemaps (OSM and OSMTopo)
@@ -97,69 +98,77 @@
           source: new ol.source.XYZ({
             url: "https://tile.opentopomap.org/{z}/{x}/{y}.png",
           }),
-        });
+        })
 
         const osmLayer = new ol.layer.Tile({
           source: new ol.source.OSM(),
-        });
+        })
 
-        const layerGroup = map.getLayers().item(0);
-        layerGroup.getLayers().clear();
+        const layerGroup = map.getLayers().item(0)
+        layerGroup.getLayers().clear()
 
         if (currentBasemap === "osm") {
-          layerGroup.getLayers().push(osmtopoLayer);
-          currentBasemap = "otm";
-          document.getElementById("toggleBasemap").innerText = "Switch to OSM";
+          layerGroup.getLayers().push(osmtopoLayer)
+          currentBasemap = "otm"
+          document.getElementById("toggleBasemap").innerText = "Switch to OSM"
         } else {
-          layerGroup.getLayers().push(osmLayer);
-          currentBasemap = "osm";
-          document.getElementById("toggleBasemap").innerText = "Switch to OSMTopo";
+          layerGroup.getLayers().push(osmLayer)
+          currentBasemap = "osm"
+          document.getElementById("toggleBasemap").innerText =
+            "Switch to OSMTopo"
         }
       }
 
       // Generate a static map image
       function generateStaticMap() {
-        if (isLoading) return;
-        isLoading = true;
+        if (isLoading) return
+        isLoading = true
 
-        const mapWidth = document.getElementById("map").offsetWidth;
-        const view = map.getView();
-        const centerLonLat = ol.proj.toLonLat(view.getCenter());
-        const currentZoom = view.getZoom();
+        const mapWidth = document.getElementById("map").offsetWidth
+        const view = map.getView()
+        const centerLonLat = ol.proj.toLonLat(view.getCenter())
+        const currentZoom = view.getZoom()
         const staticMapUrl = `/staticmaps?width=${mapWidth}&height=${height}&center=${encodeURIComponent(
           centerLonLat.toString()
-        )}&zoom=${currentZoom}&basemap=${currentBasemap}`;
+        )}&zoom=${currentZoom}&basemap=${currentBasemap}`
 
         // Update the URL display
-        document.getElementById("staticMapUrlDisplay").textContent = staticMapUrl;
+        document.getElementById("staticMapUrlDisplay").textContent =
+          staticMapUrl
 
         fetch(staticMapUrl)
-          .then(response => response.blob())
-          .then(blob => {
-            const imgURL = URL.createObjectURL(blob);
+          .then((response) => response.blob())
+          .then((blob) => {
+            const imgURL = URL.createObjectURL(blob)
             if (staticMapImgElement) {
-              staticMapImgElement.src = imgURL;
+              staticMapImgElement.src = imgURL
             } else {
-              staticMapImgElement = document.createElement("img");
-              staticMapImgElement.src = imgURL;
-              staticMapImgElement.style.width = "100%";
-              staticMapImgElement.style.height = `${height}px`;
-              staticMapImgElement.style.marginTop = "20px";
-              document.body.appendChild(staticMapImgElement);
+              staticMapImgElement = document.createElement("img")
+              staticMapImgElement.src = imgURL
+              staticMapImgElement.style.width = "100%"
+              staticMapImgElement.style.height = `${height}px`
+              staticMapImgElement.style.marginTop = "20px"
+              document.body.appendChild(staticMapImgElement)
             }
           })
-          .catch(error => console.error("Error generating static map:", error))
+          .catch((error) =>
+            console.error("Error generating static map:", error)
+          )
           .finally(() => {
-            isLoading = false;
-          });
+            isLoading = false
+          })
       }
 
       // Event listeners for buttons
-      document.getElementById("toggleBasemap").addEventListener("click", toggleBasemap);
-      document.getElementById("generateStaticMap").addEventListener("click", generateStaticMap);
+      document
+        .getElementById("toggleBasemap")
+        .addEventListener("click", toggleBasemap)
+      document
+        .getElementById("generateStaticMap")
+        .addEventListener("click", generateStaticMap)
 
       // Initialize the map when the page loads
-      window.onload = initializeMap;
+      window.onload = initializeMap
     </script>
   </body>
 </html>
