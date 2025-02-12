@@ -338,7 +338,7 @@ export async function generateMap(
   }
   if (options.circle?.coords?.length) {
     map.addCircle({
-      coords: options.circle.coords[0],
+      coord: options.circle.coords[0],
       radius: options.circle.radius,
       color: options.circle.color,
       width: options.circle.width,
