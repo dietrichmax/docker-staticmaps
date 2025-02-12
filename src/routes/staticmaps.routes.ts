@@ -1,8 +1,13 @@
+import { Router, Request, Response, NextFunction } from "express";
+import { handleMapRequest } from "../controllers/staticmaps.controller.js";
+
 /**
- * Import necessary modules from Express.
+ * Define the custom MapRequest type that extends the Express Request type.
+ * Use ParsedQs for the query property to match the default Express behavior.
  */
-import { Router, Request, Response, NextFunction } from "express"
-import { handleMapRequest } from "../controllers/staticmaps.controller.js"
+export interface MapRequest extends Request {
+  query: { [key: string]: string | string[] | undefined };
+}
 
 /**
  * Custom async handler to properly type requests and responses.
@@ -10,23 +15,14 @@ import { handleMapRequest } from "../controllers/staticmaps.controller.js"
  * @returns A middleware function that handles errors using next().
  */
 const asyncHandler =
-  (fn: (req: Request, res: Response, next: NextFunction) => Promise<void>) =>
-  (req: Request, res: Response, next: NextFunction) => {
-    Promise.resolve(fn(req, res, next)).catch(next)
-  }
+  (fn: (req: MapRequest, res: Response, next: NextFunction) => Promise<void>) =>
+  (req: MapRequest, res: Response, next: NextFunction) => {
+    Promise.resolve(fn(req, res, next)).catch(next);
+  };
 
-/**
- * Create a new Express router instance.
- */
-const router = Router()
+const router = Router();
 
-/**
- * Use the helper function for both GET and POST routes.
- */
-router.get("/", asyncHandler(handleMapRequest))
-router.post("/", asyncHandler(handleMapRequest))
+router.get("/", asyncHandler(handleMapRequest));
+router.post("/", asyncHandler(handleMapRequest));
 
-/**
- * Export the router instance for use in other parts of the application.
- */
-export default router
+export default router;

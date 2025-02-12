@@ -3,15 +3,13 @@ import basemaps from "../utils/basemaps.js"
 import logger from "../utils/logger.js"
 import { Request, Response } from "express"
 
-// Define types for request and response
-interface MapRequest extends Request {
-  query: {
-    [key: string]: string | string[] | undefined
-  }
-  body: {
-    [key: string]: any
-  }
+/**
+ * Define the custom MapRequest type that extends the Express Request type.
+ */
+export interface MapRequest extends Request {
+  query: { [key: string]: string | string[] | undefined }; // This type should match your expected structure
 }
+
 
 /**
  * Handles a map request and generates the corresponding map image.
