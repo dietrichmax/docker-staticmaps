@@ -6,13 +6,13 @@ export default class Bound {
    * Options passed to the Bound instance.
    * @type {{ coords: [number, number][] }}
    */
-  private options: { coords: [number, number][] }
+  options: { coords: [number, number][] }
 
   /**
    * The coordinates used to calculate the bounding box.
    * @type {[number, number][]}
    */
-  private coords: [number, number][]
+  coords: [number, number][]
 
   /**
    * Creates a new Bound instance with the provided options.

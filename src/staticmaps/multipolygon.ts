@@ -14,11 +14,11 @@ export interface MultiPolygonOptions {
  * Class to handle MultiPolygon operations.
  */
 export default class MultiPolygon {
-  private coords: number[][][]
-  private color: string
-  private fill?: boolean
-  private width: number
-  private simplify: boolean
+  coords: number[][][]
+  color: string
+  fill?: boolean
+  width: number
+  simplify: boolean
 
   /**
    * Constructor for the MultiPolygon class.
@@ -33,8 +33,9 @@ export default class MultiPolygon {
   }
 
   /**
-   * Calculate the coordinates of the envelope / bounding box: (min_lon, min_lat, max_lon, max_lat)
-   * @returns An array representing the extent [min_lon, min_lat, max_lon, max_lat].
+   * Calculates the extent of the MultiPolygon.
+   *
+   * @returns {Array<number>} - The bounding box of the MultiPolygon: [minLon, minLat, maxLon, maxLat]
    */
   extent(): [number, number, number, number] {
     const allPoints = this.coords.flat() // Flattening the coordinates array

@@ -17,17 +17,18 @@ export interface IconOptions {
  * Class to handle icon operations.
  */
 export default class Icon {
-  private coord?: [number, number]
-  private img?: string
-  private height: number | null
-  private width: number | null
-  private drawWidth: number
-  private drawHeight: number
-  private resizeMode: string
-  private offsetX: number
-  private offsetY: number
-  private offset: [number, number]
-  private imgData?: string
+  coord?: [number, number]
+  img?: string
+  height: number | null
+  width: number | null
+  drawWidth: number
+  drawHeight: number
+  resizeMode: string
+  offsetX: number
+  offsetY: number
+  offset: [number, number]
+  imgData?: string
+  position?: [number, number]
 
   /**
    * Constructor for the Icon class.

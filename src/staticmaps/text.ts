@@ -65,16 +65,16 @@ interface TextOptions {
  * Class to handle Text operations.
  */
 export default class Text {
-  private coord?: [number, number]
-  private text?: string
+  coord?: [number, number]
+  text?: string
   public readonly color: string
   public readonly width: string
   public readonly fill: string
   public readonly size: number
   public readonly font: string
   public readonly anchor: "start" | "middle" | "end"
-  private offsetX: number
-  private offsetY: number
+  offsetX: number
+  offsetY: number
   public readonly offset: [number, number]
 
   /**

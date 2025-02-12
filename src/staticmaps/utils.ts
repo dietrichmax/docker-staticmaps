@@ -151,3 +151,25 @@ export function chunk<T>(array: T[], size: number): T[][] {
   }
   return result
 }
+
+/**
+ * Converts tile coordinates (x, y, z) to a QuadKey.
+ *
+ * @param {number} x - The x coordinate of the tile.
+ * @param {number} y - The y coordinate of the tile.
+ * @param {number} z - The zoom level of the tile.
+ * @returns {string} - The corresponding QuadKey as a string.
+ */
+export function tileXYToQuadKey(x: number, y: number, z: number): string {
+  const quadKey: string[] = []
+  for (let i = z; i > 0; i--) {
+    let digit = "0"
+    const mask = 1 << (i - 1)
+    if ((x & mask) !== 0) digit = (parseInt(digit) + 1).toString()
+    if ((y & mask) !== 0) {
+      digit = (parseInt(digit) + 2).toString()
+    }
+    quadKey.push(digit)
+  }
+  return quadKey.join("")
+}

@@ -8,14 +8,10 @@
     "skipLibCheck": true, // Skips type checking of declaration files
     "forceConsistentCasingInFileNames": true, // Ensures file name casing consistency
     "outDir": "./dist", // Output directory for compiled files
-    "rootDir": "./src", // Root directory of your source files
     "baseUrl": "./", // Base directory for resolving non-relative module names
-    "paths": {
-      // Map module imports to specific paths
-      "*": ["node_modules/*", "src/types/*"]
-    },
     "noImplicitAny": true, // Disallows usage of `any` type without explicit declaration
-    "moduleResolution": "node" // Module resolution strategy (node, classic)
+    "moduleResolution": "node", // Module resolution strategy (node, classic)
+    "sourceMap": true
   },
   "include": ["src/**/*"],
   "exclude": [

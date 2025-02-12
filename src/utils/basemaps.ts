@@ -16,7 +16,7 @@ interface Basemaps {
 /**
  * A collection of predefined basemaps with their corresponding URLs.
  */
-const basemaps: Basemaps[] = [
+export const basemaps: Basemaps[] = [
   {
     basemap: "streets",
     url: "https://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
@@ -80,5 +80,3 @@ const basemaps: Basemaps[] = [
     url: "https://cartodb-basemaps-a.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}.png",
   },
 ]
-
-export default basemaps
