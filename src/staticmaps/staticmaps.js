@@ -1,13 +1,13 @@
 import sharp from "sharp"
 
-import Image from "./image"
-import IconMarker from "./marker"
-import Polyline from "./polyline"
-import MultiPolygon from "./multipolygon"
-import Circle from "./circle"
-import Text from "./text"
-import Bound from "./bound"
-import TileServerConfig from "./tileserverconfig"
+import Image from "./image.js"
+import IconMarker from "./marker.js"
+import Polyline from "./polyline.js"
+import MultiPolygon from "./multipolygon.js"
+import Circle from "./circle.js"
+import Text from "./text.js"
+import Bound from "./bound.js"
+import TileServerConfig from "./tileserverconfig.js"
 import {
   workOnQueue,
   lonToX,
@@ -17,8 +17,8 @@ import {
   simplify,
   meterToPixel,
   chunk,
-} from "./utils"
-import logger from "../utils/logger"
+} from "./utils.js"
+import logger from "../utils/logger.js"
 
 const RENDER_CHUNK_SIZE = 1000
 

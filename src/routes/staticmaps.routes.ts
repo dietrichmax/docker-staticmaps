@@ -2,7 +2,7 @@
  * Import necessary modules from Express.
  */
 import { Router, Request, Response, NextFunction } from "express"
-import { handleMapRequest } from "../controllers/staticmaps.controller"
+import { handleMapRequest } from "../controllers/staticmaps.controller.js"
 
 /**
  * Custom async handler to properly type requests and responses.

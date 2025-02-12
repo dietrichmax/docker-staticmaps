@@ -1,5 +1,5 @@
 import { Router } from "express"
-import staticmapRoutes from "./staticmaps.routes"
+import staticmapRoutes from "./staticmaps.routes.js"
 
 const router = Router()
 

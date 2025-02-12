@@ -3,7 +3,7 @@
  */
 import express, { Request, Response, NextFunction } from "express"
 import dotenv from "dotenv"
-import routes from "./routes"
+import routes from "./routes/index.js"
 import logger from "./utils/logger.js"
 import { authenticateApiKey } from "./middlewares/apiKeyAuth.js"
 import { headers } from "./middlewares/headers.js"

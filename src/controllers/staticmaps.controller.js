@@ -1,6 +1,6 @@
-import StaticMaps from "../staticmaps/staticmaps"
-import basemaps from "../utils/basemaps"
-import logger from "../utils/logger"
+import StaticMaps from "../staticmaps/staticmaps.js"
+import basemaps from "../utils/basemaps.js"
+import logger from "../utils/logger.js"
 
 /**
  * Handles a map request and generates the corresponding map image.
