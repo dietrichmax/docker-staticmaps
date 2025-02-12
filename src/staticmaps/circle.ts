@@ -1,5 +1,3 @@
-import logger from "../utils/logger.js"
-
 /**
  * Represents a circle with a center coordinate, radius, color, fill, and line width.
  */
@@ -34,10 +32,10 @@ export default class Circle {
     this.width = Number.isFinite(options.width) ? Number(options.width) : 3
 
     if (!this.coord || !Array.isArray(this.coord) || this.coord.length < 2) {
-      logger.error("Specify center of circle")
+      throw Error("Specify center of circle")
     }
     if (!this.radius || isNaN(this.radius)) {
-      logger.error("Specify valid radius for circle")
+      throw Error("Specify valid radius for circle")
     }
   }
 

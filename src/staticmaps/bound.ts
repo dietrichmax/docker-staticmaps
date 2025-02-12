@@ -1,5 +1,3 @@
-import logger from "../utils/logger.js"
-
 /**
  * Represents a bounding box or envelope for a set of coordinates.
  */
@@ -37,7 +35,7 @@ export default class Bound {
    */
   extent(): [number, number, number, number] {
     if (!this.coords || this.coords.length === 0) {
-      logger.error("Coordinates are required to calculate the bounding box.")
+      throw Error("Coordinates are required to calculate the bounding box.")
     }
 
     let minLon = Infinity
