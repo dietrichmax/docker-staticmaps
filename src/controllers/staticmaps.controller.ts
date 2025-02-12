@@ -1,13 +1,16 @@
 import StaticMaps from "../staticmaps/staticmaps.js"
-import basemaps from "../utils/basemaps.js"
+import { basemaps } from "../utils/basemaps.js"
 import logger from "../utils/logger.js"
 import { Request, Response } from "express"
+import IconMarker from "../staticmaps/marker.js"
+import Polyline from "../staticmaps/polyline.js"
+import Circle from "../staticmaps/circle.js"
 
 /**
  * Define the custom MapRequest type that extends the Express Request type.
  */
 export interface MapRequest extends Request {
-  query: { [key: string]: string | string[] | undefined }; // This type should match your expected structure
+  query: { [key: string]: string | string[] | undefined } // This type should match your expected structure
 }
 
 
@@ -304,13 +307,13 @@ export function getMapParams(params: Record<string, any>): {
  * @returns {Promise<Buffer>} A promise that resolves to a Buffer containing the generated map image.
  */
 export async function generateMap(
-  options: Record<string, any>
+  options: any
 ): Promise<Buffer> {
   const map = new StaticMaps(options)
 
   if (options.markers?.coords?.length) {
-    options.markers.coords.forEach((coord: any) =>
-      map.addMarker({
+    options.markers.coords.forEach((coord: any) => {
+      const marker = new IconMarker({
         coord,
         img: options.markers.img,
         width: options.markers.width,
@@ -318,32 +321,37 @@ export async function generateMap(
         offsetX: 13.6,
         offsetY: 27.6,
       })
-    )
+      map.addMarker(marker)
+    })
   }
   if (options.polyline?.coords?.length > 1) {
-    map.addLine({
+
+    const polyline = new Polyline({
       coords: options.polyline.coords,
       color: options.polyline.color,
       width: options.polyline.weight,
       simplify: options.simplify,
     })
+    map.addLine(polyline)
   }
   if (options.polygon?.coords?.length > 1) {
-    map.addPolygon({
+    const polygon = new Polyline({
       coords: options.polygon.coords,
       color: options.polygon.color,
       width: options.polygon.weight,
       fill: options.polygon.fill,
     })
+    map.addPolygon(polygon)
   }
   if (options.circle?.coords?.length) {
-    map.addCircle({
+    const circle = new Circle({
       coord: options.circle.coords[0],
       radius: options.circle.radius,
       color: options.circle.color,
       width: options.circle.width,
       fill: options.circle.fill,
     })
+    map.addCircle(circle)
   }
   await map.render(options.center, options.zoom)
   if (!map.image) {

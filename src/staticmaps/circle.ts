@@ -2,11 +2,11 @@
  * Represents a circle with a center coordinate, radius, color, fill, and line width.
  */
 export default class Circle {
-  private coord: [number, number]
-  private radius: number
-  private color: string
-  private fill: string
-  private width: number
+  coord: [number, number]
+  radius: number
+  color: string
+  fill: string
+  width: number
 
   /**
    * Creates a new Circle instance with the provided options.
@@ -17,6 +17,7 @@ export default class Circle {
    * @param options.color - The color of the circle's outline (default: "#000000BB").
    * @param options.fill - The fill color of the circle (default: "#AA0000BB").
    * @param options.width - The width of the circle's outline in pixels (default: 3).
+   * @method extent - asdasd.
    */
   constructor(options: {
     coord: [number, number]

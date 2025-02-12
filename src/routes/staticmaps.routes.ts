@@ -1,12 +1,12 @@
-import { Router, Request, Response, NextFunction } from "express";
-import { handleMapRequest } from "../controllers/staticmaps.controller.js";
+import { Router, Request, Response, NextFunction } from "express"
+import { handleMapRequest } from "../controllers/staticmaps.controller.js"
 
 /**
  * Define the custom MapRequest type that extends the Express Request type.
  * Use ParsedQs for the query property to match the default Express behavior.
  */
 export interface MapRequest extends Request {
-  query: { [key: string]: string | string[] | undefined };
+  query: { [key: string]: string | string[] | undefined }
 }
 
 /**
@@ -17,12 +17,12 @@ export interface MapRequest extends Request {
 const asyncHandler =
   (fn: (req: MapRequest, res: Response, next: NextFunction) => Promise<void>) =>
   (req: MapRequest, res: Response, next: NextFunction) => {
-    Promise.resolve(fn(req, res, next)).catch(next);
-  };
+    Promise.resolve(fn(req, res, next)).catch(next)
+  }
 
-const router = Router();
+const router = Router()
 
-router.get("/", asyncHandler(handleMapRequest));
-router.post("/", asyncHandler(handleMapRequest));
+router.get("/", asyncHandler(handleMapRequest))
+router.post("/", asyncHandler(handleMapRequest))
 
-export default router;
+export default router

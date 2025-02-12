@@ -35,11 +35,11 @@ interface PolylineOptions {
  * Class to handle Polyline operations.
  */
 export default class Polyline {
-  private coords: [number, number][]
-  private color: string
-  private fill?: string
-  private width: number
-  private simplify: boolean
+  coords: [number, number][]
+  color: string
+  fill?: string
+  width: number
+  simplify: boolean
 
   /**
    * Type of the polyline (either "polygon" or "polyline").
