@@ -265,7 +265,7 @@ Also, `POST` requests are supported:
 
 <details>
   <summary>Example with markers, polyline, polygon and circle</summary>
-  <p><code>curl -X POST http://192.168.50.26:3000/staticmaps \
+  <p><code>curl -X POST http://192.168.50.26:3000/api/staticmaps \
 -H "Content-Type: application/json" \
 -H "x-api-key: yourSecretApiKeyHere" \
 -d '{
