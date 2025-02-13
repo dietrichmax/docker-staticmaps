@@ -8,11 +8,11 @@
 
 </div>
 
-**docker-staticmaps** is an open-source API for generating static map images. Easily create maps with markers, polygons, circles, or polylines, making it perfect for embedding map images on websites. Ideal for continuous operation in personal use scenarios.
+**docker-staticmaps** is an open-source API for generating static map images. Easily create maps with markers, polygons, circles, polylines or text, making it perfect for embedding map images on websites. Ideal for continuous operation in personal use scenarios.
 
 ## 🚀 Features
 
-- ✅ **Generate static maps** with markers, polygons, circles, and polylines.
+- ✅ **Generate static maps** with markers, polygons, circles, polylines and text.
 - 🌍 **Supports multiple basemaps** (OpenStreetMap, Esri, Stamen, Carto).
 - ⚡ **Flexible REST API** for easy integration.
 - 🐳 **Lightweight containerized solution** for fast deployment.
@@ -44,6 +44,7 @@ curl "http://localhost:3000/api/staticmaps?center=-119.49280,37.81084&zoom=9"
   - [Polygons](#-polygons)
   - [Markers](#-markers)
   - [Circles](#-circles)
+  - [Text](#-text)
   - [More usage examples](#-more-usage-examples)
 - [Development](#-development)
 
@@ -150,6 +151,8 @@ polyline=polylineStyle|polylineCoord1|polylineCoord2|...
   | `weight`  | `6`       | Sets the stroke width of the polyline.    |
   | `color`   | `#0000ff` | Defines the stroke color of the polyline. |
 
+Note: Polylines with only two coordinates are rendered as geodesic line.
+
 **Example**: Polyline with no `zoom`, `weight:6` and `color:0000ff`.
 
 ```
@@ -243,6 +246,39 @@ http://localhost:3000/api/staticmaps?width=600&height=600&basemap=osm&circle=rad
 
 ---
 
+### 🔤 Text
+
+To add text, use the `text` parameter in this format:
+
+```
+text=textStyle|textCoord
+```
+
+- **textCoord**: Coordinates for the text's anchor in lat, lon format.   
+- **textStyle**: Customize the text with:
+
+  | Parameter | Default    | Description                                      |
+  | --------- | ---------- | ------------------------------------------------ |
+  | `text`    | (required) | The text to render.                              |
+  | `color`   | `#000000BB`| Stroke color of the text                         |
+  | `width`   | `1`        | Stroke width of the text                         |
+  | `fill`    | `#000000`  | Fill color of the text                           |
+  | `size`    | `12`       | Font-size of the text                            |
+  | `font`    | `Arial`    | Font-family of the text                          |
+  | `anchor`  | `start`    | Determines the text anchor alignment.            |
+  | `offsetX` | `0`        | Horizontal offset relative to the coordinate.    |
+  | `offsetY` | `0`        | Vertical offset relative to the coordinate.      |
+
+**Example**: Text "Hello World" with custom styling.
+
+```
+http://localhost:3000/api/staticmaps?width=600&height=600&zoom=2&center=2.3522,48.8566&text=text:Hello%20World|size:20|offsetX:-12|offsetY:22|48.8566,2.3522
+```
+
+![Text Example](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/text.png)
+
+---
+
 ### 🔍 More usage examples
 
 <details>
@@ -254,7 +290,7 @@ http://localhost:3000/api/staticmaps?width=600&height=600&basemap=osm&circle=rad
 
 <details>
   <summary>Markers and Polyline Example</summary>
-  <p><code>http://localhost:3000/api/staticmaps?width=600&height=600&polyline=weight:6|color:0000ff|48.726304979176675,-3.9829935637739382|48.72623035828412,-3.9829726446543385|48.726126671101639,-3.9829546542797467|48.725965124843256,-3.9829070729298808|48.725871429380568,-3.9828726793245273|48.725764250990267,-3.9828064532306628|48.725679557682362,-3.9827385375789146|48.72567025076134,-3.9827310750289113|48.725529844164292,-3.9826617613709225|48.725412537198615,-3.9826296635284164|48.725351694726704,-3.9826201452878531|48.725258599474508,-3.9826063049230411|48.725157520450125,-3.9825900299314232|48.725077863838543,-3.9825779905509102|48.724930435729831,-3.9825514102373938|48.724815578113535,-3.9825237355887291|48.724760905376989,-3.9825013965800564|48.724677938456551,-3.9824534296566916|48.724379435330384,-3.9822469276001118|48.724304509274596,-3.9821850264836076|48.7242453124599,-3.9821320570321772|48.724206187829317,-3.9821063430223207|48.724117073204575,-3.9820862134785551&markers=48.726304979176675,-3.9829935637739382|48.724117073204575,-3.9820862134785551</code></p>
+  <p><code>http://localhost:3000/api/staticmaps?width=600&height=400&markers=48.8566,2.3522|40.712,-74.006&polyline=weight:3|48.8566,2.3522|40.7128,-74.006</code></p>
 </details>
 
 ![Polyline & Markers](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/markersandpolyline.png)
