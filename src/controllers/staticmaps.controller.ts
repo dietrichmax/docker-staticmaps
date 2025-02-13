@@ -5,6 +5,7 @@ import { Request, Response } from "express"
 import IconMarker from "../staticmaps/marker.js"
 import Polyline from "../staticmaps/polyline.js"
 import Circle from "../staticmaps/circle.js"
+import Text from "../staticmaps/text.js"
 
 /**
  * Define the custom MapRequest type that extends the Express Request type.
@@ -147,6 +148,12 @@ const parseShape = (
       "width",
       "img",
       "height",
+      "text",
+      "size",
+      "font",
+      "anchor",
+      "offsetX",
+      "offsetY"
     ])
     feature = { ...feature, ...extracted }
     feature.coords = parseCoordinates(coordinates)
@@ -176,6 +183,7 @@ function safeParse(value: any, parser: Function = (v: any) => v): any {
  */
 export function parseCoordinates(coords: any): Array<Array<number>> {
   if (!Array.isArray(coords)) return []
+
   return coords
     .map((coord) => {
       if (Array.isArray(coord) && coord.length === 2)
@@ -253,6 +261,7 @@ export function getMapParams(params: Record<string, any>): {
     polygon: { color: "#4874db", weight: 3, fill: "#00FF003F" },
     circle: { color: "#4874db", width: 3, fill: "#0000bb", radius: 10 },
     markers: { img: "./public/images/marker-28.png", width: 28, height: 28 },
+    text: { color: "#000000BB", width: 1, fill: "#000000", size: 12, font: "Arial", anchor: "start"}
   }
 
   // Parse each feature from the request parameters.
@@ -346,6 +355,22 @@ export async function generateMap(options: any): Promise<Buffer> {
       fill: options.circle.fill,
     })
     map.addCircle(circle)
+  }
+  
+  if (options.text?.coords?.length) {
+    const text = new Text({
+      coord: options.text.coords[0],
+      text: options.text.text,
+      color: options.text.color,
+      width: options.text.width,
+      fill: options.text.fill,
+      size: options.text.size,
+      font: options.text.font,
+      anchor: options.text.anchor,
+      offsetX: parseInt(options.text.offsetX) || 0,
+      offsetY: parseInt(options.text.offsetY) || 0,
+    })
+    map.addText(text)
   }
   await map.render(options.center, options.zoom)
   if (!map.image) {
