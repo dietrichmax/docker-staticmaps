@@ -1,5 +1,5 @@
 import { Router, Request, Response, NextFunction } from "express"
-import { handleMapRequest } from "../controllers/staticmaps.controller.js"
+import { handleMapRequest } from "../controllers/staticmaps.controller"
 
 /**
  * Define the custom MapRequest type that extends the Express Request type.

@@ -3,10 +3,10 @@
  */
 import express, { Request, Response, NextFunction } from "express"
 import dotenv from "dotenv"
-import routes from "./routes/index.js"
-import logger from "./utils/logger.js"
-import { authenticateApiKey } from "./middlewares/apiKeyAuth.js"
-import { headers } from "./middlewares/headers.js"
+import routes from "./routes/index"
+import logger from "./utils/logger"
+import { authenticateApiKey } from "./middlewares/apiKeyAuth"
+import { headers } from "./middlewares/headers"
 import path from "path"
 import { fileURLToPath } from "url"
 
