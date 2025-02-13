@@ -65,45 +65,6 @@ export function xToLon(x: number, zoom: number): number {
 }
 
 /**
- * Smooth a list of points using a moving average filter.
- *
- * @param points - List of [x, y] coordinate pairs.
- * @param windowSize - Number of points to average.
- * @returns Smoothed list of points.
- */
-export function simplify(
-  points: [number, number][],
-  windowSize = 3
-): [number, number][] {
-  if (!points || points.length <= 2) return points
-
-  const smoothedPoints: [number, number][] = []
-
-  for (let i = 0; i < points.length; i++) {
-    let xSum = 0,
-      ySum = 0,
-      count = 0
-
-    for (
-      let j = -Math.floor(windowSize / 2);
-      j <= Math.floor(windowSize / 2);
-      j++
-    ) {
-      const index = i + j
-      if (index >= 0 && index < points.length) {
-        xSum += points[index][0]
-        ySum += points[index][1]
-        count++
-      }
-    }
-
-    smoothedPoints.push([xSum / count, ySum / count])
-  }
-
-  return smoothedPoints
-}
-
-/**
  * Convert meters to pixels at a given zoom level and latitude.
  *a
  * @param meter - Distance in meters.
@@ -172,4 +133,65 @@ export function tileXYToQuadKey(x: number, y: number, z: number): string {
     quadKey.push(digit)
   }
   return quadKey.join("")
+}
+
+/**
+ * Creates a geodesic (great circle) line between two coordinates.
+ *
+ * @param start - Starting coordinate as [latitude, longitude] in degrees.
+ * @param end - Ending coordinate as [latitude, longitude] in degrees.
+ * @param segments - Optional number of segments to divide the route into (default is 50).
+ * @returns An array of coordinates [latitude, longitude] in degrees along the geodesic.
+ */
+export function createGeodesicLine(
+  start: [number, number],
+  end: [number, number],
+  segments: number = 24
+): [number, number][] {
+  // Helper functions for conversion
+  const toRadians = (deg: number): number => (deg * Math.PI) / 180;
+  const toDegrees = (rad: number): number => (rad * 180) / Math.PI;
+
+  // Convert start and end coordinates from degrees to radians
+  const lat1 = toRadians(start[0]);
+  const lon1 = toRadians(start[1]);
+  const lat2 = toRadians(end[0]);
+  const lon2 = toRadians(end[1]);
+
+  // Calculate the angular distance using the spherical law of cosines
+  const delta = Math.acos(
+    Math.sin(lat1) * Math.sin(lat2) +
+      Math.cos(lat1) * Math.cos(lat2) * Math.cos(lon2 - lon1)
+  );
+
+  // If the two points are identical (or extremely close), return the endpoints.
+  if (delta === 0) {
+    return [start, end];
+  }
+
+  // Array to hold the geodesic points
+  const geodesicPoints: [number, number][] = [];
+
+  // Generate points along the great circle using spherical linear interpolation (slerp)
+  for (let i = 0; i <= segments; i++) {
+    const f = i / segments; // fraction along the route
+
+    // Interpolation coefficients
+    const A = Math.sin((1 - f) * delta) / Math.sin(delta);
+    const B = Math.sin(f * delta) / Math.sin(delta);
+
+    // Compute the interpolated point in Cartesian coordinates (on the unit sphere)
+    const x = A * Math.cos(lat1) * Math.cos(lon1) + B * Math.cos(lat2) * Math.cos(lon2);
+    const y = A * Math.cos(lat1) * Math.sin(lon1) + B * Math.cos(lat2) * Math.sin(lon2);
+    const z = A * Math.sin(lat1) + B * Math.sin(lat2);
+
+    // Convert the Cartesian point back to latitude and longitude (in radians)
+    const latInterp = Math.atan2(z, Math.sqrt(x * x + y * y));
+    const lonInterp = Math.atan2(y, x);
+
+    // Convert back to degrees and store the result
+    geodesicPoints.push([toDegrees(latInterp), toDegrees(lonInterp)]);
+  }
+
+  return geodesicPoints;
 }

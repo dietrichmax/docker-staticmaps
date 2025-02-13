@@ -1,3 +1,5 @@
+import { createGeodesicLine } from "./utils.js"
+
 /**
  * Interface for Polyline options.
  */
@@ -24,11 +26,6 @@ interface PolylineOptions {
    */
   width?: number
 
-  /**
-   * Optional flag to simplify the polyline.
-   * @default false
-   */
-  simplify?: boolean
 }
 
 /**
@@ -39,7 +36,6 @@ export default class Polyline {
   color: string
   fill?: string
   width: number
-  simplify: boolean
 
   /**
    * Type of the polyline (either "polygon" or "polyline").
@@ -48,15 +44,23 @@ export default class Polyline {
 
   /**
    * Constructor for the Polyline class.
-   * @param options - Options for the polyline including coordinates, color, fill, width, and simplify flag.
+   * @param options - Options for the polyline including coordinates, color, fill, width flag.
    */
   constructor(options: PolylineOptions) {
     this.coords = options.coords
     this.color = options.color ?? "#000000BB"
     this.fill = options.fill
     this.width = Number.isFinite(options.width) ? Number(options.width) : 3
-    this.simplify = options.simplify || false
 
+    this.coords =
+      options.coords.length === 2
+        ? (() => {
+          createGeodesicLine(this.coords[0], this.coords[1])
+            const geodesicCoords = createGeodesicLine(this.coords[0],this.coords[1])
+            return geodesicCoords
+          })() // Immediately Invoked Function Expression (IIFE) to execute the logic
+        : options.coords // Assuming this is already of type `number[][]`*/
+        
     // Determine whether it's a polygon or polyline
     const firstCoord = this.coords[0]
     const lastCoord = this.coords[this.coords.length - 1]
