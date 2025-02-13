@@ -1,11 +1,11 @@
-import StaticMaps from "../staticmaps/staticmaps.js"
-import { basemaps } from "../utils/basemaps.js"
-import logger from "../utils/logger.js"
+import StaticMaps from "../staticmaps/staticmaps"
+import { basemaps } from "../utils/basemaps"
+import logger from "../utils/logger"
 import { Request, Response } from "express"
-import IconMarker from "../staticmaps/marker.js"
-import Polyline from "../staticmaps/polyline.js"
-import Circle from "../staticmaps/circle.js"
-import Text from "../staticmaps/text.js"
+import IconMarker from "../staticmaps/marker"
+import Polyline from "../staticmaps/polyline"
+import Circle from "../staticmaps/circle"
+import Text from "../staticmaps/text"
 
 /**
  * Define the custom MapRequest type that extends the Express Request type.
@@ -386,7 +386,7 @@ export async function generateMap(options: any): Promise<Buffer> {
  * @param {string|null} [basemap] - The desired base map type (e.g., "osm", "topo").
  * @returns {string} The tile URL string.
  */
-export function getTileUrl(customUrl: string, basemap: string) {
+export function getTileUrl(customUrl: string|null, basemap: string|null) {
   if (customUrl) return customUrl
   if (basemap) {
     const tile = basemaps.find(({ basemap: b }) => b === basemap)
