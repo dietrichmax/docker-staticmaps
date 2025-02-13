@@ -15,6 +15,12 @@ LABEL org.opencontainers.image.licenses=GPL
 # Create app directory
 WORKDIR /opt/app
 
+# Install necessary packages
+RUN apk update
+RUN apk --no-cache add msttcorefonts-installer fontconfig && \
+    update-ms-fonts && \
+    fc-cache -f -v
+
 # Copy package.json and package-lock.json first to utilize Docker cache for dependencies
 COPY package*.json ./
 
@@ -35,6 +41,9 @@ WORKDIR /opt/app
 COPY --from=build /opt/app/dist ./dist
 COPY --from=build /opt/app/public ./public
 COPY --from=build /opt/app/package*.json ./
+
+# Copy fonts from the build stage to the final stage
+COPY --from=build /usr/share/fonts /usr/share/fonts
 
 # Install production dependencies, clean up cache, and create a non-root user in one layer
 RUN npm install --production && \
