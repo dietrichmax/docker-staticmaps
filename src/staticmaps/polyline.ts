@@ -1,4 +1,4 @@
-import { createGeodesicLine } from "./utils.js"
+import { createGeodesicLine } from "./utils"
 
 /**
  * Interface for Polyline options.
