@@ -1,4 +1,4 @@
-import sharp, { SharpOptions } from "sharp"
+import sharp from "sharp"
 import Image from "./image.js"
 import IconMarker from "./marker.js"
 import Polyline from "./polyline.js"
@@ -13,7 +13,6 @@ import {
   latToY,
   yToLat,
   xToLon,
-  simplify,
   meterToPixel,
   chunk,
   tileXYToQuadKey,
@@ -34,7 +33,6 @@ interface MapOptions {
   tileLayers?: Array<TileServerConfigOptions>
   paddingX?: number
   paddingY?: number
-  simplify?: boolean
   tileSize?: number
   tileRequestTimeout?: number
   tileRequestHeader?: any // Define more specific type if necessary
@@ -69,7 +67,6 @@ class StaticMaps {
   width: number
   height: number
   padding: number[]
-  simplify: boolean
   tileSize: number
   tileRequestTimeout?: number
   tileRequestHeader?: any
@@ -116,7 +113,6 @@ class StaticMaps {
     this.paddingX = this.options.paddingX || 0
     this.paddingY = this.options.paddingY || 0
     this.padding = [this.paddingX, this.paddingY]
-    this.simplify = this.options.simplify || false
     this.tileSize = this.options.tileSize || 256
     this.tileRequestTimeout = this.options.tileRequestTimeout
     this.tileRequestHeader = this.options.tileRequestHeader
@@ -599,11 +595,6 @@ class StaticMaps {
         `${this.xToPx(lonToX(coord[0], this.zoom))},${this.yToPx(latToY(coord[1], this.zoom))}`
     )
 
-    // Simplify points if necessary
-    if (line.simplify) {
-      points = simplify(points) // Ensure simplify function is available or imported
-    }
-
     // Define the SVG polyline/polygon tag
     const shapeTag = line.type === "polyline" ? "polyline" : "polygon"
     const fillValue = line.fill || "none"
@@ -615,7 +606,9 @@ class StaticMaps {
           points="${points.join(" ")}"
           stroke="${line.color}"
           fill="${fillValue}"
-          stroke-width="${line.width}"/>
+          stroke-width="${line.width}"
+          stroke-linejoin="bevel"
+        />
       </svg>
     `
   }

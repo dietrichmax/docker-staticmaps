@@ -221,7 +221,6 @@ export function getMapParams(params: Record<string, any>): {
     zoomRange: [1, 18],
     zoom: 10,
     reverseY: false,
-    simplify: true,
     format: "png",
   }
 
@@ -292,7 +291,6 @@ export function getMapParams(params: Record<string, any>): {
       zoomRange: params.zoomRange,
       zoom: parseInt(params.zoom),
       reverseY: params.reverseY,
-      simplify: params.simplify === "true",
       format: params.format || "png",
       center,
       ...features,
@@ -306,9 +304,7 @@ export function getMapParams(params: Record<string, any>): {
  * @param {Record<string, any>} options - The configuration options for generating the map.
  * @returns {Promise<Buffer>} A promise that resolves to a Buffer containing the generated map image.
  */
-export async function generateMap(
-  options: any
-): Promise<Buffer> {
+export async function generateMap(options: any): Promise<Buffer> {
   const map = new StaticMaps(options)
 
   if (options.markers?.coords?.length) {
@@ -325,12 +321,10 @@ export async function generateMap(
     })
   }
   if (options.polyline?.coords?.length > 1) {
-
     const polyline = new Polyline({
       coords: options.polyline.coords,
       color: options.polyline.color,
       width: options.polyline.weight,
-      simplify: options.simplify,
     })
     map.addLine(polyline)
   }

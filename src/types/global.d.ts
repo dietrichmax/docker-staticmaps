@@ -1,5 +1,4 @@
 interface RequestInit {
-    // ...
-    timeout?: number; // make timeout optional
-  }
-  
+  // ...
+  timeout?: number // make timeout optional
+}

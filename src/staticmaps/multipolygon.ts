@@ -7,7 +7,6 @@ export interface MultiPolygonOptions {
   color?: string
   fill?: boolean
   width?: number
-  simplify?: boolean
 }
 
 /**
@@ -18,18 +17,16 @@ export default class MultiPolygon {
   color: string
   fill?: boolean
   width: number
-  simplify: boolean
 
   /**
    * Constructor for the MultiPolygon class.
-   * @param options - MultiPolygon options including coordinates, color, fill, width, and simplify flag.
+   * @param options - MultiPolygon options including coordinates, color, fill, width flag.
    */
   constructor(options: MultiPolygonOptions) {
     this.coords = options.coords
     this.color = options.color || "#000000BB"
     this.fill = options.fill
     this.width = Number.isFinite(options.width) ? Number(options.width) : 3
-    this.simplify = options.simplify ?? false
   }
 
   /**
