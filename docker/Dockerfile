@@ -58,5 +58,8 @@ USER appuser
 # Expose port
 EXPOSE 3000
 
+HEALTHCHECK --interval=30s --timeout=5s --retries=3 --start-period=1m \
+  CMD wget --no-verbose --tries=1 -O - http://127.0.0.1:3000/health || exit 1
+
 # Start the application
 CMD ["npm", "run", "start"]
