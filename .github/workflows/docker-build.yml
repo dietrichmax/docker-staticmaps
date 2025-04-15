@@ -67,5 +67,7 @@ jobs:
           tags: |
             ${{ secrets.DOCKER_HUB_USERNAME}}/docker-staticmaps:${{ github.sha }}
             ${{ secrets.DOCKER_HUB_USERNAME}}/docker-staticmaps:latest
+            ${{ secrets.DOCKER_HUB_USERNAME}}/docker-staticmaps:${{ github.ref_name }}
             ghcr.io/${{ github.repository }}:${{ github.sha }}
             ghcr.io/${{ github.repository }}:latest
+            ghcr.io/${{ github.repository }}:${{ github.ref_name }}
