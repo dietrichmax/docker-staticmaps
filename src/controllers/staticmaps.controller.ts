@@ -351,149 +351,88 @@ export function getMapParams(params: Record<string, any>): {
 export async function generateMap(options: any): Promise<Buffer> {
   const map = new StaticMaps(options)
 
-  // Process multiple markers
-  if (Array.isArray(options.markers)) {
-    options.markers.forEach((markerOpt: any) => {
-      if (markerOpt.coords && markerOpt.coords.length) {
-        // Here, if you expect each markers parameter to provide one or more coordinates, loop over them.
-        markerOpt.coords.forEach((coord: any) => {
-          const marker = new IconMarker({
-            coord,
-            img: markerOpt.img,
-            width: markerOpt.width,
-            height: markerOpt.height,
-            // Adjust offsets if necessary or allow them to be set as parameters.
-            offsetX: 13.6,
-            offsetY: 27.6,
-          })
-          map.addMarker(marker)
-        })
-      }
-    })
-  } else if (options.markers && options.markers.coords?.length) {
-    // Fallback for a single marker instance.
-    options.markers.coords.forEach((coord: any) => {
+  // Helper: Ensure item is always an array
+  const toArray = (item: any) => (Array.isArray(item) ? item : item ? [item] : [])
+
+  // MARKERS
+  toArray(options.markers).forEach((markerOpt: any) => {
+    (markerOpt.coords || []).forEach((coord: any) => {
       const marker = new IconMarker({
         coord,
-        img: options.markers.img,
-        width: options.markers.width,
-        height: options.markers.height,
+        img: markerOpt.img,
+        width: markerOpt.width,
+        height: markerOpt.height,
         offsetX: 13.6,
         offsetY: 27.6,
       })
       map.addMarker(marker)
     })
-  }
-  
-  // Process multiple polylines if they exist
-  if (Array.isArray(options.polyline)) {
-    options.polyline.forEach((line: any) => {
-      if (line.coords && line.coords.length > 1) {
-        const polyline = new Polyline({
-          coords: line.coords,
-          color: line.color,
-          width: line.weight,
-        })
-        map.addLine(polyline)
-      }
-    })
-  } else if (options.polyline && options.polyline.coords?.length > 1) {
-    // For backward compatibility if polyline is not an array.
-    const polyline = new Polyline({
-      coords: options.polyline.coords,
-      color: options.polyline.color,
-      width: options.polyline.weight,
-    })
-    map.addLine(polyline)
-  }
+  })
 
-  // Process multiple polygons
-  if (Array.isArray(options.polygon)) {
-    options.polygon.forEach((poly: any) => {
-      if (poly.coords && poly.coords.length > 1) {
-        const polygon = new Polyline({
-          coords: poly.coords,
-          color: poly.color,
-          width: poly.weight,
-          fill: poly.fill,
-        })
-        map.addPolygon(polygon)
-      }
-    })
-  } else if (options.polygon && options.polygon.coords?.length > 1) {
-    const polygon = new Polyline({
-      coords: options.polygon.coords,
-      color: options.polygon.color,
-      width: options.polygon.weight,
-      fill: options.polygon.fill,
-    })
-    map.addPolygon(polygon)
-  }
+  // POLYLINES
+  toArray(options.polyline).forEach((line: any) => {
+    if (line.coords?.length > 1) {
+      const polyline = new Polyline({
+        coords: line.coords,
+        color: line.color,
+        width: line.weight,
+      })
+      map.addLine(polyline)
+    }
+  })
 
-  // Process multiple circles
-  if (Array.isArray(options.circle)) {
-    options.circle.forEach((circ: any) => {
-      if (circ.coords && circ.coords.length) {
-        const circle = new Circle({
-          coord: circ.coords[0],
-          radius: circ.radius,
-          color: circ.color,
-          width: circ.width,
-          fill: circ.fill,
-        })
-        map.addCircle(circle)
-      }
-    })
-  } else if (options.circle && options.circle.coords?.length) {
-    const circle = new Circle({
-      coord: options.circle.coords[0],
-      radius: options.circle.radius,
-      color: options.circle.color,
-      width: options.circle.width,
-      fill: options.circle.fill,
-    })
-    map.addCircle(circle)
-  }
-  
-  // Process multiple texts
-  if (Array.isArray(options.text)) {
-    options.text.forEach((txt: any) => {
-      if (txt.coords && txt.coords.length) {
-        const text = new Text({
-          coord: txt.coords[0],
-          text: txt.text,
-          color: txt.color,
-          width: txt.width,
-          fill: txt.fill,
-          size: txt.size,
-          font: txt.font,
-          anchor: txt.anchor,
-          offsetX: parseInt(txt.offsetX) || 0,
-          offsetY: parseInt(txt.offsetY) || 0,
-        })
-        map.addText(text)
-      }
-    })
-  } else if (options.text && options.text.coords?.length) {
-    const text = new Text({
-      coord: options.text.coords[0],
-      text: options.text.text,
-      color: options.text.color,
-      width: options.text.width,
-      fill: options.text.fill,
-      size: options.text.size,
-      font: options.text.font,
-      anchor: options.text.anchor,
-      offsetX: parseInt(options.text.offsetX) || 0,
-      offsetY: parseInt(options.text.offsetY) || 0,
-    })
-    map.addText(text)
-  }
+  // POLYGONS
+  toArray(options.polygon).forEach((poly: any) => {
+    if (poly.coords?.length > 1) {
+      const polygon = new Polyline({
+        coords: poly.coords,
+        color: poly.color,
+        width: poly.weight,
+        fill: poly.fill,
+      })
+      map.addPolygon(polygon)
+    }
+  })
+
+  // CIRCLES
+  toArray(options.circle).forEach((circ: any) => {
+    if (circ.coords?.length) {
+      const circle = new Circle({
+        coord: circ.coords[0],
+        radius: circ.radius,
+        color: circ.color,
+        width: circ.width,
+        fill: circ.fill,
+      })
+      map.addCircle(circle)
+    }
+  })
+
+  // TEXTS
+  toArray(options.text).forEach((txt: any) => {
+    if (txt.coords?.length) {
+      const text = new Text({
+        coord: txt.coords[0],
+        text: txt.text,
+        color: txt.color,
+        width: txt.width,
+        fill: txt.fill,
+        size: txt.size,
+        font: txt.font,
+        anchor: txt.anchor,
+        offsetX: parseInt(txt.offsetX) || 0,
+        offsetY: parseInt(txt.offsetY) || 0,
+      })
+      map.addText(text)
+    }
+  })
 
   await map.render(options.center, options.zoom)
+
   if (!map.image) {
     throw new Error("Map image is undefined")
   }
+
   return map.image.buffer(`image/${options.format}`, { quality: 100 })
 }
 
