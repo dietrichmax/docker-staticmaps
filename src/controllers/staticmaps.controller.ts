@@ -14,7 +14,6 @@ export interface MapRequest extends Request {
   query: { [key: string]: string | string[] | undefined } // This type should match your expected structure
 }
 
-
 /**
  * Handles a map request and generates the corresponding map image.
  *
@@ -137,7 +136,7 @@ function parseMultipleShapes(
   if (!raw) return []
 
   const shapeValues: string[] = Array.isArray(raw) ? raw : [raw]
-  
+
   return shapeValues.map((valueString) => {
     const items = valueString.split("|")
     const { extracted, coordinates } = extractParams(items, [
@@ -192,7 +191,7 @@ const parseShape = (
       "font",
       "anchor",
       "offsetX",
-      "offsetY"
+      "offsetY",
     ])
     feature = { ...feature, ...extracted }
     feature.coords = parseCoordinates(coordinates)
@@ -277,31 +276,64 @@ export function getMapParams(params: Record<string, any>): {
     polygon: { color: "#4874db", weight: 3, fill: "#00FF003F" },
     circle: { color: "#4874db", width: 3, fill: "#0000bb", radius: 10 },
     markers: { img: "./public/images/marker-28.png", width: 28, height: 28 },
-    text: { color: "#000000BB", width: 1, fill: "#000000", size: 12, font: "Arial", anchor: "start"}
+    text: {
+      color: "#000000BB",
+      width: 1,
+      fill: "#000000",
+      size: 12,
+      font: "Arial",
+      anchor: "start",
+    },
   }
 
   // Parse each feature from the request parameters.
   const features: Record<string, any> = {}
   // For features that support multiple shapes, use parseMultipleShapes.
-  features["polyline"] = parseMultipleShapes("polyline", shapeDefaults.polyline, params)
-  features["polygon"]  = parseMultipleShapes("polygon", shapeDefaults.polygon, params)
-  features["circle"]   = parseMultipleShapes("circle", shapeDefaults.circle, params)
-  features["text"]     = parseMultipleShapes("text", shapeDefaults.text, params)
-  features["markers"]  = parseMultipleShapes("markers", shapeDefaults.markers, params)
+  features["polyline"] = parseMultipleShapes(
+    "polyline",
+    shapeDefaults.polyline,
+    params
+  )
+  features["polygon"] = parseMultipleShapes(
+    "polygon",
+    shapeDefaults.polygon,
+    params
+  )
+  features["circle"] = parseMultipleShapes(
+    "circle",
+    shapeDefaults.circle,
+    params
+  )
+  features["text"] = parseMultipleShapes("text", shapeDefaults.text, params)
+  features["markers"] = parseMultipleShapes(
+    "markers",
+    shapeDefaults.markers,
+    params
+  )
 
-    // Check that at least one coordinate source is provided.
-    const center = safeParse(params.center, (val: any) => {
-      // ... existing parsing logic for center
-      if (typeof val === "string") {
-        const [lat, lon] = val.split(",").map(Number)
-        return [lat, lon]
-      } else if (Array.isArray(val) && val.length === 2 && typeof val[0] === "number" && typeof val[1] === "number") {
-        return [val[1], val[0]]
-      } else if (val && typeof val === "object" && val.lat !== undefined && val.lon !== undefined) {
-        return [val.lon, val.lat]
-      }
-      return null
-    })
+  // Check that at least one coordinate source is provided.
+  const center = safeParse(params.center, (val: any) => {
+    // ... existing parsing logic for center
+    if (typeof val === "string") {
+      const [lat, lon] = val.split(",").map(Number)
+      return [lat, lon]
+    } else if (
+      Array.isArray(val) &&
+      val.length === 2 &&
+      typeof val[0] === "number" &&
+      typeof val[1] === "number"
+    ) {
+      return [val[1], val[0]]
+    } else if (
+      val &&
+      typeof val === "object" &&
+      val.lat !== undefined &&
+      val.lon !== undefined
+    ) {
+      return [val.lon, val.lat]
+    }
+    return null
+  })
 
   const missingParams: string[] = []
   if (
@@ -309,13 +341,13 @@ export function getMapParams(params: Record<string, any>): {
     !Object.values(features).some(
       (feature) =>
         feature &&
-        ((Array.isArray(feature) && feature.some((f) => f.coords && f.coords.length)) ||
-         (!Array.isArray(feature) && feature.coords && feature.coords.length))
+        ((Array.isArray(feature) &&
+          feature.some((f) => f.coords && f.coords.length)) ||
+          (!Array.isArray(feature) && feature.coords && feature.coords.length))
     )
   ) {
     missingParams.push("{center} or {coordinates}")
   }
-
 
   return {
     missingParams,
@@ -352,11 +384,12 @@ export async function generateMap(options: any): Promise<Buffer> {
   const map = new StaticMaps(options)
 
   // Helper: Ensure item is always an array
-  const toArray = (item: any) => (Array.isArray(item) ? item : item ? [item] : [])
+  const toArray = (item: any) =>
+    Array.isArray(item) ? item : item ? [item] : []
 
   // MARKERS
   toArray(options.markers).forEach((markerOpt: any) => {
-    (markerOpt.coords || []).forEach((coord: any) => {
+    ;(markerOpt.coords || []).forEach((coord: any) => {
       const marker = new IconMarker({
         coord,
         img: markerOpt.img,
@@ -443,7 +476,7 @@ export async function generateMap(options: any): Promise<Buffer> {
  * @param {string|null} [basemap] - The desired base map type (e.g., "osm", "topo").
  * @returns {string} The tile URL string.
  */
-export function getTileUrl(customUrl: string|null, basemap: string|null) {
+export function getTileUrl(customUrl: string | null, basemap: string | null) {
   if (customUrl) return customUrl
   if (basemap) {
     const tile = basemaps.find(({ basemap: b }) => b === basemap)

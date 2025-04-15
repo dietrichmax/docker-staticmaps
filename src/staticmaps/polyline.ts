@@ -25,7 +25,6 @@ interface PolylineOptions {
    * @default 3
    */
   width?: number
-
 }
 
 /**
@@ -55,12 +54,15 @@ export default class Polyline {
     this.coords =
       options.coords.length === 2
         ? (() => {
-          createGeodesicLine(this.coords[0], this.coords[1])
-            const geodesicCoords = createGeodesicLine(this.coords[0],this.coords[1])
+            createGeodesicLine(this.coords[0], this.coords[1])
+            const geodesicCoords = createGeodesicLine(
+              this.coords[0],
+              this.coords[1]
+            )
             return geodesicCoords
           })() // Immediately Invoked Function Expression (IIFE) to execute the logic
         : options.coords // Assuming this is already of type `number[][]`*/
-        
+
     // Determine whether it's a polygon or polyline
     const firstCoord = this.coords[0]
     const lastCoord = this.coords[this.coords.length - 1]

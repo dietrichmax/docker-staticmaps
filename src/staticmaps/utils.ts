@@ -149,49 +149,51 @@ export function createGeodesicLine(
   segments: number = 24
 ): [number, number][] {
   // Helper functions for conversion
-  const toRadians = (deg: number): number => (deg * Math.PI) / 180;
-  const toDegrees = (rad: number): number => (rad * 180) / Math.PI;
+  const toRadians = (deg: number): number => (deg * Math.PI) / 180
+  const toDegrees = (rad: number): number => (rad * 180) / Math.PI
 
   // Convert start and end coordinates from degrees to radians
-  const lat1 = toRadians(start[0]);
-  const lon1 = toRadians(start[1]);
-  const lat2 = toRadians(end[0]);
-  const lon2 = toRadians(end[1]);
+  const lat1 = toRadians(start[0])
+  const lon1 = toRadians(start[1])
+  const lat2 = toRadians(end[0])
+  const lon2 = toRadians(end[1])
 
   // Calculate the angular distance using the spherical law of cosines
   const delta = Math.acos(
     Math.sin(lat1) * Math.sin(lat2) +
       Math.cos(lat1) * Math.cos(lat2) * Math.cos(lon2 - lon1)
-  );
+  )
 
   // If the two points are identical (or extremely close), return the endpoints.
   if (delta === 0) {
-    return [start, end];
+    return [start, end]
   }
 
   // Array to hold the geodesic points
-  const geodesicPoints: [number, number][] = [];
+  const geodesicPoints: [number, number][] = []
 
   // Generate points along the great circle using spherical linear interpolation (slerp)
   for (let i = 0; i <= segments; i++) {
-    const f = i / segments; // fraction along the route
+    const f = i / segments // fraction along the route
 
     // Interpolation coefficients
-    const A = Math.sin((1 - f) * delta) / Math.sin(delta);
-    const B = Math.sin(f * delta) / Math.sin(delta);
+    const A = Math.sin((1 - f) * delta) / Math.sin(delta)
+    const B = Math.sin(f * delta) / Math.sin(delta)
 
     // Compute the interpolated point in Cartesian coordinates (on the unit sphere)
-    const x = A * Math.cos(lat1) * Math.cos(lon1) + B * Math.cos(lat2) * Math.cos(lon2);
-    const y = A * Math.cos(lat1) * Math.sin(lon1) + B * Math.cos(lat2) * Math.sin(lon2);
-    const z = A * Math.sin(lat1) + B * Math.sin(lat2);
+    const x =
+      A * Math.cos(lat1) * Math.cos(lon1) + B * Math.cos(lat2) * Math.cos(lon2)
+    const y =
+      A * Math.cos(lat1) * Math.sin(lon1) + B * Math.cos(lat2) * Math.sin(lon2)
+    const z = A * Math.sin(lat1) + B * Math.sin(lat2)
 
     // Convert the Cartesian point back to latitude and longitude (in radians)
-    const latInterp = Math.atan2(z, Math.sqrt(x * x + y * y));
-    const lonInterp = Math.atan2(y, x);
+    const latInterp = Math.atan2(z, Math.sqrt(x * x + y * y))
+    const lonInterp = Math.atan2(y, x)
 
     // Convert back to degrees and store the result
-    geodesicPoints.push([toDegrees(latInterp), toDegrees(lonInterp)]);
+    geodesicPoints.push([toDegrees(latInterp), toDegrees(lonInterp)])
   }
 
-  return geodesicPoints;
+  return geodesicPoints
 }
