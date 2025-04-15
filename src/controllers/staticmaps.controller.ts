@@ -121,6 +121,45 @@ function extractParams(
 }
 
 /**
+ * Parses multiple shapes for a given key if provided as an array in the params.
+ *
+ * @param {string} key - The key corresponding to the shape in the params object.
+ * @param {Record<string, any>} defaults - Default properties for the shape.
+ * @param {Record<string, any>} params - An object containing all parameters.
+ * @returns {Array<Record<string, any>>} - An array of parsed feature objects.
+ */
+function parseMultipleShapes(
+  key: string,
+  defaults: Record<string, any>,
+  params: Record<string, any>
+): Array<Record<string, any>> {
+  const raw = params[key]
+  if (!raw) return []
+
+  const shapeValues: string[] = Array.isArray(raw) ? raw : [raw]
+  
+  return shapeValues.map((valueString) => {
+    const items = valueString.split("|")
+    const { extracted, coordinates } = extractParams(items, [
+      "color",
+      "weight",
+      "fill",
+      "radius",
+      "width",
+      "img",
+      "height",
+      "text",
+      "size",
+      "font",
+      "anchor",
+      "offsetX",
+      "offsetY",
+    ])
+    return { ...defaults, ...extracted, coords: parseCoordinates(coordinates) }
+  })
+}
+
+/**
  * A unified helper to parse shape parameters (polyline, polygon, circle, markers).
  *
  * @param {string} key - The key corresponding to the shape in the params object.
@@ -232,29 +271,6 @@ export function getMapParams(params: Record<string, any>): {
     format: "png",
   }
 
-  const missingParams: string[] = []
-  const center = safeParse(params.center, (val: any) => {
-    if (typeof val === "string") {
-      const [lat, lon] = val.split(",").map(Number)
-      return [lat, lon]
-    } else if (
-      Array.isArray(val) &&
-      val.length === 2 &&
-      typeof val[0] === "number" &&
-      typeof val[1] === "number"
-    ) {
-      return [val[1], val[0]]
-    } else if (
-      val &&
-      typeof val === "object" &&
-      val.lat !== undefined &&
-      val.lon !== undefined
-    ) {
-      return [val.lon, val.lat]
-    }
-    return null
-  })
-
   // Define defaults for each feature
   const shapeDefaults = {
     polyline: { weight: 5, color: "blue" },
@@ -266,21 +282,40 @@ export function getMapParams(params: Record<string, any>): {
 
   // Parse each feature from the request parameters.
   const features: Record<string, any> = {}
-  for (const key of Object.keys(
-    shapeDefaults
-  ) as (keyof typeof shapeDefaults)[]) {
-    features[key] = parseShape(key, shapeDefaults[key], params)
-  }
+  // For features that support multiple shapes, use parseMultipleShapes.
+  features["polyline"] = parseMultipleShapes("polyline", shapeDefaults.polyline, params)
+  features["polygon"]  = parseMultipleShapes("polygon", shapeDefaults.polygon, params)
+  features["circle"]   = parseMultipleShapes("circle", shapeDefaults.circle, params)
+  features["text"]     = parseMultipleShapes("text", shapeDefaults.text, params)
+  features["markers"]  = parseMultipleShapes("markers", shapeDefaults.markers, params)
 
-  // Ensure that at least one coordinate source is provided.
+    // Check that at least one coordinate source is provided.
+    const center = safeParse(params.center, (val: any) => {
+      // ... existing parsing logic for center
+      if (typeof val === "string") {
+        const [lat, lon] = val.split(",").map(Number)
+        return [lat, lon]
+      } else if (Array.isArray(val) && val.length === 2 && typeof val[0] === "number" && typeof val[1] === "number") {
+        return [val[1], val[0]]
+      } else if (val && typeof val === "object" && val.lat !== undefined && val.lon !== undefined) {
+        return [val.lon, val.lat]
+      }
+      return null
+    })
+
+  const missingParams: string[] = []
   if (
     !center &&
     !Object.values(features).some(
-      (feature) => feature && feature.coords && feature.coords.length
+      (feature) =>
+        feature &&
+        ((Array.isArray(feature) && feature.some((f) => f.coords && f.coords.length)) ||
+         (!Array.isArray(feature) && feature.coords && feature.coords.length))
     )
   ) {
     missingParams.push("{center} or {coordinates}")
   }
+
 
   return {
     missingParams,
@@ -316,7 +351,27 @@ export function getMapParams(params: Record<string, any>): {
 export async function generateMap(options: any): Promise<Buffer> {
   const map = new StaticMaps(options)
 
-  if (options.markers?.coords?.length) {
+  // Process multiple markers
+  if (Array.isArray(options.markers)) {
+    options.markers.forEach((markerOpt: any) => {
+      if (markerOpt.coords && markerOpt.coords.length) {
+        // Here, if you expect each markers parameter to provide one or more coordinates, loop over them.
+        markerOpt.coords.forEach((coord: any) => {
+          const marker = new IconMarker({
+            coord,
+            img: markerOpt.img,
+            width: markerOpt.width,
+            height: markerOpt.height,
+            // Adjust offsets if necessary or allow them to be set as parameters.
+            offsetX: 13.6,
+            offsetY: 27.6,
+          })
+          map.addMarker(marker)
+        })
+      }
+    })
+  } else if (options.markers && options.markers.coords?.length) {
+    // Fallback for a single marker instance.
     options.markers.coords.forEach((coord: any) => {
       const marker = new IconMarker({
         coord,
@@ -329,7 +384,21 @@ export async function generateMap(options: any): Promise<Buffer> {
       map.addMarker(marker)
     })
   }
-  if (options.polyline?.coords?.length > 1) {
+  
+  // Process multiple polylines if they exist
+  if (Array.isArray(options.polyline)) {
+    options.polyline.forEach((line: any) => {
+      if (line.coords && line.coords.length > 1) {
+        const polyline = new Polyline({
+          coords: line.coords,
+          color: line.color,
+          width: line.weight,
+        })
+        map.addLine(polyline)
+      }
+    })
+  } else if (options.polyline && options.polyline.coords?.length > 1) {
+    // For backward compatibility if polyline is not an array.
     const polyline = new Polyline({
       coords: options.polyline.coords,
       color: options.polyline.color,
@@ -337,7 +406,21 @@ export async function generateMap(options: any): Promise<Buffer> {
     })
     map.addLine(polyline)
   }
-  if (options.polygon?.coords?.length > 1) {
+
+  // Process multiple polygons
+  if (Array.isArray(options.polygon)) {
+    options.polygon.forEach((poly: any) => {
+      if (poly.coords && poly.coords.length > 1) {
+        const polygon = new Polyline({
+          coords: poly.coords,
+          color: poly.color,
+          width: poly.weight,
+          fill: poly.fill,
+        })
+        map.addPolygon(polygon)
+      }
+    })
+  } else if (options.polygon && options.polygon.coords?.length > 1) {
     const polygon = new Polyline({
       coords: options.polygon.coords,
       color: options.polygon.color,
@@ -346,7 +429,22 @@ export async function generateMap(options: any): Promise<Buffer> {
     })
     map.addPolygon(polygon)
   }
-  if (options.circle?.coords?.length) {
+
+  // Process multiple circles
+  if (Array.isArray(options.circle)) {
+    options.circle.forEach((circ: any) => {
+      if (circ.coords && circ.coords.length) {
+        const circle = new Circle({
+          coord: circ.coords[0],
+          radius: circ.radius,
+          color: circ.color,
+          width: circ.width,
+          fill: circ.fill,
+        })
+        map.addCircle(circle)
+      }
+    })
+  } else if (options.circle && options.circle.coords?.length) {
     const circle = new Circle({
       coord: options.circle.coords[0],
       radius: options.circle.radius,
@@ -357,7 +455,26 @@ export async function generateMap(options: any): Promise<Buffer> {
     map.addCircle(circle)
   }
   
-  if (options.text?.coords?.length) {
+  // Process multiple texts
+  if (Array.isArray(options.text)) {
+    options.text.forEach((txt: any) => {
+      if (txt.coords && txt.coords.length) {
+        const text = new Text({
+          coord: txt.coords[0],
+          text: txt.text,
+          color: txt.color,
+          width: txt.width,
+          fill: txt.fill,
+          size: txt.size,
+          font: txt.font,
+          anchor: txt.anchor,
+          offsetX: parseInt(txt.offsetX) || 0,
+          offsetY: parseInt(txt.offsetY) || 0,
+        })
+        map.addText(text)
+      }
+    })
+  } else if (options.text && options.text.coords?.length) {
     const text = new Text({
       coord: options.text.coords[0],
       text: options.text.text,
@@ -372,6 +489,7 @@ export async function generateMap(options: any): Promise<Buffer> {
     })
     map.addText(text)
   }
+
   await map.render(options.center, options.zoom)
   if (!map.image) {
     throw new Error("Map image is undefined")
