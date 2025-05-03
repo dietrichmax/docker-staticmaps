@@ -22,7 +22,7 @@
 With Docker:
 
 ```bash
-docker run -p '3000:3000/tcp' -e ALLOW_API_KEYLESS_ACCESS=true mxdcodes/docker-staticmaps:latest
+docker run -p '3000:3000/tcp' mxdcodes/docker-staticmaps:latest
 ```
 
 Example API Request:
