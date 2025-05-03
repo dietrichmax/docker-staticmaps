@@ -56,7 +56,6 @@ curl "http://localhost:3000/api/staticmaps?center=-119.49280,37.81084&zoom=9"
 | --- | --- | --- | --- |
 | `PORT` | `number` | `3000` | Port number for the API 🖥️ |
 | `API_KEY` | `string` |  | Optional API key for authentication 🔑 |
-| `ALLOW_API_KEYLESS_ACCESS` | `string` | `false` | Allow access without an API key (true/false) 🔓 |
 | `LOG_LEVEL` | `string` | `INFO` | Level of logging detail, e.g. `DEBUG`, `INFO`, `WARN` or `ERROR` 🔥 |
 
 ### 🐳 Deployment using Docker
@@ -67,7 +66,6 @@ To run the container in detached mode:
 docker run -d \
   --name='docker-staticmaps' \
   -p '3000:3000/tcp' \
-  -e ALLOW_API_KEYLESS_ACCESS=true \
   -e API_KEY="your_api_key" \
   -e LOG_LEVEL="INFO" \
   'mxdcodes/docker-staticmaps:latest'
@@ -84,7 +82,6 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - ALLOW_API_KEYLESS_ACCESS=true
       - API_KEY=your_api_key
       - LOG_LEVEL="INFO"
 ```
