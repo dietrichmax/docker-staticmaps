@@ -136,64 +136,48 @@ export function tileXYToQuadKey(x: number, y: number, z: number): string {
 }
 
 /**
- * Creates a geodesic (great circle) line between two coordinates.
- *
- * @param start - Starting coordinate as [latitude, longitude] in degrees.
- * @param end - Ending coordinate as [latitude, longitude] in degrees.
- * @param segments - Optional number of segments to divide the route into (default is 50).
- * @returns An array of coordinates [latitude, longitude] in degrees along the geodesic.
+ * Generate a geodesic line between two coordinates.
+ * @param start - [lat, lon]
+ * @param end - [lat, lon]
+ * @param segments - Number of interpolation points
+ * @returns Array of [lon, lat] points (for GeoJSON, static maps, etc.)
  */
 export function createGeodesicLine(
   start: [number, number],
   end: [number, number],
-  segments: number = 24
+  segments: number = 70
 ): [number, number][] {
-  // Helper functions for conversion
   const toRadians = (deg: number): number => (deg * Math.PI) / 180
   const toDegrees = (rad: number): number => (rad * 180) / Math.PI
 
-  // Convert start and end coordinates from degrees to radians
   const lat1 = toRadians(start[0])
   const lon1 = toRadians(start[1])
   const lat2 = toRadians(end[0])
   const lon2 = toRadians(end[1])
 
-  // Calculate the angular distance using the spherical law of cosines
   const delta = Math.acos(
     Math.sin(lat1) * Math.sin(lat2) +
-      Math.cos(lat1) * Math.cos(lat2) * Math.cos(lon2 - lon1)
+    Math.cos(lat1) * Math.cos(lat2) * Math.cos(lon2 - lon1)
   )
 
-  // If the two points are identical (or extremely close), return the endpoints.
-  if (delta === 0) {
-    return [start, end]
-  }
+  if (delta === 0) return [[start[1], start[0]], [end[1], end[0]]] // [lon, lat]
 
-  // Array to hold the geodesic points
-  const geodesicPoints: [number, number][] = []
+  const geodesic: [number, number][] = []
 
-  // Generate points along the great circle using spherical linear interpolation (slerp)
   for (let i = 0; i <= segments; i++) {
-    const f = i / segments // fraction along the route
-
-    // Interpolation coefficients
+    const f = i / segments
     const A = Math.sin((1 - f) * delta) / Math.sin(delta)
     const B = Math.sin(f * delta) / Math.sin(delta)
 
-    // Compute the interpolated point in Cartesian coordinates (on the unit sphere)
-    const x =
-      A * Math.cos(lat1) * Math.cos(lon1) + B * Math.cos(lat2) * Math.cos(lon2)
-    const y =
-      A * Math.cos(lat1) * Math.sin(lon1) + B * Math.cos(lat2) * Math.sin(lon2)
+    const x = A * Math.cos(lat1) * Math.cos(lon1) + B * Math.cos(lat2) * Math.cos(lon2)
+    const y = A * Math.cos(lat1) * Math.sin(lon1) + B * Math.cos(lat2) * Math.sin(lon2)
     const z = A * Math.sin(lat1) + B * Math.sin(lat2)
 
-    // Convert the Cartesian point back to latitude and longitude (in radians)
-    const latInterp = Math.atan2(z, Math.sqrt(x * x + y * y))
-    const lonInterp = Math.atan2(y, x)
+    const lat = Math.atan2(z, Math.sqrt(x * x + y * y))
+    const lon = Math.atan2(y, x)
 
-    // Convert back to degrees and store the result
-    geodesicPoints.push([toDegrees(latInterp), toDegrees(lonInterp)])
+    geodesic.push([toDegrees(lon), toDegrees(lat)]) // [lon, lat]
   }
 
-  return geodesicPoints
+  return geodesic
 }

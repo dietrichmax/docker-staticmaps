@@ -225,7 +225,7 @@ export function parseCoordinates(coords: any): Array<Array<number>> {
   return coords
     .map((coord) => {
       if (Array.isArray(coord) && coord.length === 2)
-        return [coord[1], coord[0]] // Swap to [longitude, latitude]
+        return [coord[0], coord[1]] // Swap to [longitude, latitude]
       if (typeof coord === "string") {
         const [lat, lon] = coord.split(",").map(Number)
         return [lon, lat] // Return [longitude, latitude]

@@ -54,11 +54,10 @@ export default class Polyline {
     this.coords =
       options.coords.length === 2
         ? (() => {
+            const fixedStart: [number, number] = [this.coords[0][1], this.coords[0][0]]
+            const fixedEnd: [number, number] = [this.coords[1][1], this.coords[1][0]]
             createGeodesicLine(this.coords[0], this.coords[1])
-            const geodesicCoords = createGeodesicLine(
-              this.coords[0],
-              this.coords[1]
-            )
+            const geodesicCoords = createGeodesicLine(fixedStart, fixedEnd)
             return geodesicCoords
           })() // Immediately Invoked Function Expression (IIFE) to execute the logic
         : options.coords // Assuming this is already of type `number[][]`*/
