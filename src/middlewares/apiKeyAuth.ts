@@ -15,7 +15,9 @@ const apiKey = process.env.API_KEY
 const requireApiKey = Boolean(apiKey)
 
 if (requireApiKey) {
-  logger.info("API key authentication enabled; all requests must supply a valid key.")
+  logger.info(
+    "API key authentication enabled; all requests must supply a valid key."
+  )
 } else {
   logger.info("No API_KEY provided; running in keyless mode.")
 }

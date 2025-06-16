@@ -157,10 +157,14 @@ export function createGeodesicLine(
 
   const delta = Math.acos(
     Math.sin(lat1) * Math.sin(lat2) +
-    Math.cos(lat1) * Math.cos(lat2) * Math.cos(lon2 - lon1)
+      Math.cos(lat1) * Math.cos(lat2) * Math.cos(lon2 - lon1)
   )
 
-  if (delta === 0) return [[start[1], start[0]], [end[1], end[0]]] // [lon, lat]
+  if (delta === 0)
+    return [
+      [start[1], start[0]],
+      [end[1], end[0]],
+    ] // [lon, lat]
 
   const geodesic: [number, number][] = []
 
@@ -169,8 +173,10 @@ export function createGeodesicLine(
     const A = Math.sin((1 - f) * delta) / Math.sin(delta)
     const B = Math.sin(f * delta) / Math.sin(delta)
 
-    const x = A * Math.cos(lat1) * Math.cos(lon1) + B * Math.cos(lat2) * Math.cos(lon2)
-    const y = A * Math.cos(lat1) * Math.sin(lon1) + B * Math.cos(lat2) * Math.sin(lon2)
+    const x =
+      A * Math.cos(lat1) * Math.cos(lon1) + B * Math.cos(lat2) * Math.cos(lon2)
+    const y =
+      A * Math.cos(lat1) * Math.sin(lon1) + B * Math.cos(lat2) * Math.sin(lon2)
     const z = A * Math.sin(lat1) + B * Math.sin(lat2)
 
     const lat = Math.atan2(z, Math.sqrt(x * x + y * y))
@@ -180,4 +186,72 @@ export function createGeodesicLine(
   }
 
   return geodesic
+}
+
+export function chaikinSmooth(
+  coords: [number, number][],
+  iterations = 2
+): [number, number][] {
+  for (let i = 0; i < iterations; i++) {
+    const newCoords: [number, number][] = []
+    for (let j = 0; j < coords.length - 1; j++) {
+      const [x0, y0] = coords[j]
+      const [x1, y1] = coords[j + 1]
+      const q: [number, number] = [0.75 * x0 + 0.25 * x1, 0.75 * y0 + 0.25 * y1]
+      const r: [number, number] = [0.25 * x0 + 0.75 * x1, 0.25 * y0 + 0.75 * y1]
+      newCoords.push(q, r)
+    }
+    coords = [coords[0], ...newCoords, coords[coords.length - 1]]
+  }
+  return coords
+}
+
+export function douglasPeucker(
+  coords: [number, number][],
+  epsilon: number
+): [number, number][] {
+  const dmax = (
+    points: [number, number][],
+    from: number,
+    to: number
+  ): { index: number; dist: number } => {
+    let maxDist = 0
+    let index = from
+    const [x1, y1] = points[from]
+    const [x2, y2] = points[to]
+    const dx = x2 - x1
+    const dy = y2 - y1
+    const len2 = dx * dx + dy * dy
+
+    for (let i = from + 1; i < to; i++) {
+      const [x0, y0] = points[i]
+      const t = len2 === 0 ? 0 : ((x0 - x1) * dx + (y0 - y1) * dy) / len2
+      const px = x1 + t * dx
+      const py = y1 + t * dy
+      const dist = Math.sqrt((x0 - px) ** 2 + (y0 - py) ** 2)
+      if (dist > maxDist) {
+        index = i
+        maxDist = dist
+      }
+    }
+    return { index, dist: maxDist }
+  }
+
+  const simplify = (
+    points: [number, number][],
+    from: number,
+    to: number
+  ): [number, number][] => {
+    const { index, dist } = dmax(points, from, to)
+    if (dist > epsilon) {
+      const rec1 = simplify(points, from, index)
+      const rec2 = simplify(points, index, to)
+      return rec1.slice(0, -1).concat(rec2)
+    } else {
+      return [points[from], points[to]]
+    }
+  }
+
+  if (coords.length < 3) return coords
+  return simplify(coords, 0, coords.length - 1)
 }

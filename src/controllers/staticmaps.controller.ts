@@ -159,50 +159,6 @@ function parseMultipleShapes(
 }
 
 /**
- * A unified helper to parse shape parameters (polyline, polygon, circle, markers).
- *
- * @param {string} key - The key corresponding to the shape in the params object.
- * @param {Record<string, any>} defaults - Default properties for the shape.
- * @param {Record<string, any>} params - An object containing all parameters.
- * @returns {Record<string, any> | null} - Parsed feature object with coordinates, or null if no valid data is found.
- */
-const parseShape = (
-  key: string,
-  defaults: Record<string, any>,
-  params: Record<string, any>
-): Record<string, any> | null => {
-  if (!params[key]) return null
-  let feature = { ...defaults }
-  let items
-
-  if (typeof params[key] === "string" || Array.isArray(params[key])) {
-    items =
-      typeof params[key] === "string" ? params[key].split("|") : params[key]
-    const { extracted, coordinates } = extractParams(items, [
-      "color",
-      "weight",
-      "fill",
-      "radius",
-      "width",
-      "img",
-      "height",
-      "text",
-      "size",
-      "font",
-      "anchor",
-      "offsetX",
-      "offsetY",
-    ])
-    feature = { ...feature, ...extracted }
-    feature.coords = parseCoordinates(coordinates)
-  } else if (params[key]?.coords) {
-    feature = { ...feature, ...params[key] }
-    feature.coords = parseCoordinates(params[key].coords)
-  }
-  return feature
-}
-
-/**
  * Safely parses a value using the provided parser.
  *
  * @param {*} value - The value to be parsed.

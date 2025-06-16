@@ -16,6 +16,8 @@ import {
   meterToPixel,
   chunk,
   tileXYToQuadKey,
+  douglasPeucker,
+  chaikinSmooth,
 } from "./utils"
 import logger from "../utils/logger"
 
@@ -589,29 +591,51 @@ class StaticMaps {
    * @returns {string} - SVG string for the line.
    */
   lineToSVG(line: any): string {
-    // Map coordinates to pixel positions
-    let points = line.coords.map(
-      (coord: [number, number]) =>
-        `${this.xToPx(lonToX(coord[0], this.zoom))},${this.yToPx(latToY(coord[1], this.zoom))}`
-    )
+    const rawPixels = line.coords.map(([lon, lat]: [number, number]) => [
+      this.xToPx(lonToX(lon, this.zoom)),
+      this.yToPx(latToY(lat, this.zoom)),
+    ])
 
-    // Define the SVG polyline/polygon tag
-    const shapeTag = line.type === "polyline" ? "polyline" : "polygon"
-    const fillValue = line.fill || "none"
+    if (rawPixels.length < 2) return ""
+
+    let pointsToUse: [number, number][]
+
+    if (line.type === "polygon") {
+      // No smoothing for polygons!
+      pointsToUse = rawPixels
+    } else {
+      // Smooth only middle points of polylines
+      const first = rawPixels[0]
+      const last = rawPixels[rawPixels.length - 1]
+      const middle = rawPixels.slice(1, -1)
+      const simplified = douglasPeucker(middle, 2)
+      const smoothedMiddle = chaikinSmooth(simplified, 2)
+
+      pointsToUse = [first, ...smoothedMiddle, last]
+    }
+
+    const d =
+      `M${pointsToUse[0][0]},${pointsToUse[0][1]} ` +
+      pointsToUse
+        .slice(1)
+        .map(([x, y]) => `L${x},${y}`)
+        .join(" ")
 
     return `
-      <svg xmlns="http://www.w3.org/2000/svg">
-        <${shapeTag}
-          style="fill-rule: inherit;"
-          points="${points.join(" ")}"
-          stroke="${line.color}"
-          fill="${fillValue}"
-          stroke-width="${line.width}"
-          stroke-linejoin="bevel"
-        />
-      </svg>
-    `
+    <svg xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="${d}${line.type === "polygon" ? " Z" : ""}"
+        fill="${line.fill || "none"}"
+        stroke="${line.color}"
+        stroke-width="${line.width}"
+        stroke-linejoin="round"
+        stroke-linecap="round"
+        shape-rendering="geometricPrecision"
+      />
+    </svg>
+  `
   }
+
   /**
    * Draws markers to the basemap.
    *
