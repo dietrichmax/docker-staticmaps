@@ -605,13 +605,10 @@ class StaticMaps {
       pointsToUse = rawPixels
     } else {
       // Smooth only middle points of polylines
-      const first = rawPixels[0]
-      const last = rawPixels[rawPixels.length - 1]
-      const middle = rawPixels.slice(1, -1)
-      const simplified = douglasPeucker(middle, 2)
-      const smoothedMiddle = chaikinSmooth(simplified, 2)
+      const simplified = douglasPeucker(rawPixels, 2)
+      const smoothedPoints = chaikinSmooth(simplified, 2)
 
-      pointsToUse = [first, ...smoothedMiddle, last]
+      pointsToUse = [...smoothedPoints]
     }
 
     const d =
