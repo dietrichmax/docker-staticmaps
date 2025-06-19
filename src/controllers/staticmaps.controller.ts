@@ -8,50 +8,55 @@ import Circle from "../staticmaps/circle"
 import Text from "../staticmaps/text"
 
 /**
- * Define the custom MapRequest type that extends the Express Request type.
+ * Custom Request type for map requests.
+ * Query params can be strings, arrays of strings, or undefined.
  */
 export interface MapRequest extends Request {
-  query: { [key: string]: string | string[] | undefined } // This type should match your expected structure
+  query: { [key: string]: string | string[] | undefined };
+  body: Record<string, any>; // if you use body for POST requests, define as needed
 }
 
 /**
- * Handles a map request and generates the corresponding map image.
+ * Handle a map request to generate a static map image.
  *
- * @param {MapRequest} req - The HTTP request object.
- * @param {Response} res - The HTTP response object.
- * @returns {Promise<void>} A promise that resolves once the response is sent.
+ * @param req - The incoming HTTP request (with typed query and body).
+ * @param res - The HTTP response.
  */
 export async function handleMapRequest(
   req: MapRequest,
   res: Response
 ): Promise<void> {
-  const params = req.method === "GET" ? req.query : req.body
-  const { missingParams, options } = getMapParams(params)
+  // Use query params for GET, body params for POST/others
+  const params: Record<string, any> =
+    req.method === "GET" ? req.query : req.body;
 
-  if (missingParams.length) {
-    logger.warn("Missing parameters", { missingParams })
-    res.status(422).json({ error: "Missing parameters", missingParams })
-    return // Explicit return to end the function after sending the response
+  // getMapParams expects a Record<string, any>, so cast accordingly
+  const { missingParams, options } = getMapParams(params);
+
+  if (missingParams.length > 0) {
+    logger.warn("Missing parameters", { missingParams });
+    res.status(422).json({ error: "Missing parameters", missingParams });
+    return;
   }
 
-  logger.debug("Request params:", { params })
-  logger.debug("Missing parameters:", { missingParams })
+  logger.debug("Request params:", { params });
 
   try {
-    const img = await generateMap(options)
+    const img = await generateMap(options);
     logger.info("Image successfully rendered", {
       format: options.format,
       size: img.length,
-    })
+    });
+
     res
       .set({
         "Content-Type": `image/${options.format}`,
-        "Content-Length": String(img.length),
+        "Content-Length": img.length.toString(),
       })
-      .end(img) // Sends the image as a response
+      .end(img);
   } catch (error) {
-    logger.error("Error rendering image", { error })
-    res.status(500).json({ error: "Internal Server Error" })
+    logger.error("Error rendering image", { error });
+    res.status(500).json({ error: "Internal Server Error" });
   }
 }
 
@@ -62,25 +67,25 @@ export async function handleMapRequest(
  *
  * @param {string[]} items - Array of strings representing the items to parse.
  * @param {string[]} paramsList - List of parameter keys that can be extracted from the items.
- * @returns {{extracted: Record<string, any>, coordinates: string[]}} - An object containing the extracted parameters and leftover coordinates.
+ * @returns {{extracted: ExtractedParams, coordinates: string[]}} - An object containing the extracted parameters and leftover coordinates.
  */
 
 interface ExtractedParams {
-  color?: string
-  weight?: number
-  fill?: string
-  radius?: number
-  width?: number
-  img?: string
-  height?: number
-  [key: string]: any // Allow other properties dynamically if needed
+  color?: string;
+  weight?: number;
+  fill?: string;
+  radius?: number;
+  width?: number;
+  img?: string;
+  height?: number;
+  [key: string]: any; // Allow other properties dynamically if needed
 }
 
 function extractParams(
   items: string[],
   paramsList: string[]
 ): { extracted: ExtractedParams; coordinates: string[] } {
-  const allowedColors = [
+  const allowedColors = new Set([
     "blue",
     "green",
     "red",
@@ -89,34 +94,53 @@ function extractParams(
     "purple",
     "black",
     "white",
-  ]
+  ]);
 
-  return items.reduce(
+  const result = items.reduce(
     (acc, item) => {
-      let matched = false
+      let matched = false;
+
       for (const param of paramsList) {
-        const prefix = `${param}:`
+        const prefix = `${param}:`;
         if (item.startsWith(prefix)) {
-          const value = decodeURIComponent(item.slice(prefix.length))
+          const rawValue = item.slice(prefix.length);
+          const value = decodeURIComponent(rawValue);
+
+          logger.debug(`Parsing param: ${param} with raw value: ${rawValue} decoded as: ${value}`);
+
           if (param === "color" || param === "fill") {
-            acc.extracted[param as keyof ExtractedParams] =
-              allowedColors.includes(value) ? value : `#${value}`
+            acc.extracted[param] = allowedColors.has(value.toLowerCase())
+              ? value.toLowerCase()
+              : `#${value}`;
           } else if (["weight", "radius", "width"].includes(param)) {
-            acc.extracted[param as keyof ExtractedParams] = parseInt(value)
+            const parsedInt = parseInt(value, 10);
+            if (!isNaN(parsedInt)) {
+              acc.extracted[param] = parsedInt;
+            } else {
+              logger.warn(`Failed to parse integer for param '${param}': ${value}`);
+            }
           } else {
-            acc.extracted[param as keyof ExtractedParams] = value
+            acc.extracted[param] = value;
           }
-          matched = true
-          break
+
+          matched = true;
+          break;
         }
       }
+
       if (!matched) {
-        acc.coordinates.push(item) // Ensure TypeScript knows this is a string
+        logger.debug(`Item treated as coordinate: ${item}`);
+        acc.coordinates.push(item);
       }
-      return acc
+
+      return acc;
     },
     { extracted: {} as ExtractedParams, coordinates: [] as string[] }
-  )
+  );
+
+  logger.debug("Extraction result", result);
+
+  return result;
 }
 
 /**
@@ -240,6 +264,8 @@ export function getMapParams(params: Record<string, any>): {
   missingParams: string[]
   options: Record<string, any>
 } {
+  logger.debug("Parsing map parameters", params);
+
   const defaultParams = {
     width: 800,
     height: 600,
@@ -255,7 +281,7 @@ export function getMapParams(params: Record<string, any>): {
     zoom: 10,
     reverseY: false,
     format: "png",
-  }
+  };
 
   // Define defaults for each feature
   const shapeDefaults = {
@@ -271,94 +297,90 @@ export function getMapParams(params: Record<string, any>): {
       font: "Arial",
       anchor: "start",
     },
-  }
+  };
 
   // Parse each feature from the request parameters.
-  const features: Record<string, any> = {}
-  // For features that support multiple shapes, use parseMultipleShapes.
-  features["polyline"] = parseMultipleShapes(
-    "polyline",
-    shapeDefaults.polyline,
-    params
-  )
-  features["polygon"] = parseMultipleShapes(
-    "polygon",
-    shapeDefaults.polygon,
-    params
-  )
-  features["circle"] = parseMultipleShapes(
-    "circle",
-    shapeDefaults.circle,
-    params
-  )
-  features["text"] = parseMultipleShapes("text", shapeDefaults.text, params)
-  features["markers"] = parseMultipleShapes(
-    "markers",
-    shapeDefaults.markers,
-    params
-  )
+  const features: Record<string, any> = {};
+
+  features["polyline"] = parseMultipleShapes("polyline", shapeDefaults.polyline, params);
+  logger.debug("Parsed polylines:", features["polyline"]);
+
+  features["polygon"] = parseMultipleShapes("polygon", shapeDefaults.polygon, params);
+  logger.debug("Parsed polygons:", features["polygon"]);
+
+  features["circle"] = parseMultipleShapes("circle", shapeDefaults.circle, params);
+  logger.debug("Parsed circles:", features["circle"]);
+
+  features["text"] = parseMultipleShapes("text", shapeDefaults.text, params);
+  logger.debug("Parsed texts:", features["text"]);
+
+  features["markers"] = parseMultipleShapes("markers", shapeDefaults.markers, params);
+  logger.debug("Parsed markers:", features["markers"]);
 
   // Check that at least one coordinate source is provided.
   const center = safeParse(params.center, (val: any) => {
-    // ... existing parsing logic for center
     if (typeof val === "string") {
-      const [lat, lon] = val.split(",").map(Number)
-      return [lat, lon]
+      const [lat, lon] = val.split(",").map(Number);
+      return [lat, lon];
     } else if (
       Array.isArray(val) &&
       val.length === 2 &&
       typeof val[0] === "number" &&
       typeof val[1] === "number"
     ) {
-      return [val[1], val[0]]
+      // val is an array of numbers, so this branch is valid
+      return [val[1], val[0]];
     } else if (
       val &&
       typeof val === "object" &&
+      !Array.isArray(val) && // add this check to exclude arrays here
       val.lat !== undefined &&
       val.lon !== undefined
     ) {
-      return [val.lon, val.lat]
+      return [val.lon, val.lat];
     }
-    return null
-  })
+    return null;
+  });
 
-  const missingParams: string[] = []
-  if (
-    !center &&
-    !Object.values(features).some(
-      (feature) =>
-        feature &&
-        ((Array.isArray(feature) &&
-          feature.some((f) => f.coords && f.coords.length)) ||
-          (!Array.isArray(feature) && feature.coords && feature.coords.length))
-    )
-  ) {
-    missingParams.push("{center} or {coordinates}")
+  const missingParams: string[] = [];
+  const hasCoordinates = Object.values(features).some((feature) =>
+    feature &&
+    ((Array.isArray(feature) && feature.some((f) => f.coords && f.coords.length)) ||
+     (!Array.isArray(feature) && feature.coords && feature.coords.length))
+  );
+
+  if (!center && !hasCoordinates) {
+    missingParams.push("{center} or {coordinates}");
+    logger.debug("Missing required parameters: center or coordinates");
   }
+
+  const options = {
+    ...defaultParams,
+    width: parseInt(params.width, 10) || 300,
+    height: parseInt(params.height, 10) || 300,
+    paddingX: parseInt(params.paddingX, 10),
+    paddingY: parseInt(params.paddingY, 10),
+    tileUrl: getTileUrl(params.tileUrl, params.basemap),
+    tileSubdomains: params.tileSubdomains,
+    tileLayers: params.tileLayers,
+    tileSize: parseInt(params.tileSize, 10) || 256,
+    tileRequestTimeout: params.tileRequestTimeout,
+    tileRequestHeader: params.tileRequestHeader,
+    tileRequestLimit: params.tileRequestLimit,
+    zoomRange: params.zoomRange,
+    zoom: parseInt(params.zoom, 10),
+    reverseY: params.reverseY,
+    format: params.format || "png",
+    center,
+    ...features,
+  };
+
+  logger.debug("Final parsed options:", options);
 
   return {
     missingParams,
-    options: {
-      ...defaultParams,
-      width: parseInt(params.width) || 300,
-      height: parseInt(params.height) || 300,
-      paddingX: parseInt(params.paddingX),
-      paddingY: parseInt(params.paddingY),
-      tileUrl: getTileUrl(params.tileUrl, params.basemap),
-      tileSubdomains: params.tileSubdomains,
-      tileLayers: params.tileLayers,
-      tileSize: parseInt(params.tileSize) || 256,
-      tileRequestTimeout: params.tileRequestTimeout,
-      tileRequestHeader: params.tileRequestHeader,
-      tileRequestLimit: params.tileRequestLimit,
-      zoomRange: params.zoomRange,
-      zoom: parseInt(params.zoom),
-      reverseY: params.reverseY,
-      format: params.format || "png",
-      center,
-      ...features,
-    },
-  }
+    options,
+  };
 }
 
 /**
@@ -368,15 +390,17 @@ export function getMapParams(params: Record<string, any>): {
  * @returns {Promise<Buffer>} A promise that resolves to a Buffer containing the generated map image.
  */
 export async function generateMap(options: any): Promise<Buffer> {
-  const map = new StaticMaps(options)
+  logger.debug("Starting map generation with options:", options);
 
-  // Helper: Ensure item is always an array
-  const toArray = (item: any) =>
-    Array.isArray(item) ? item : item ? [item] : []
+  const map = new StaticMaps(options);
+
+  // Helper: ensure item is always an array
+  const toArray = (item: any) => (Array.isArray(item) ? item : item ? [item] : []);
 
   // MARKERS
-  toArray(options.markers).forEach((markerOpt: any) => {
-    ;(markerOpt.coords || []).forEach((coord: any) => {
+  toArray(options.markers).forEach((markerOpt: any, i: number) => {
+    (markerOpt.coords || []).forEach((coord: any, j: number) => {
+      logger.debug(`Adding marker [${i}][${j}]`, { coord, img: markerOpt.img });
       const marker = new IconMarker({
         coord,
         img: markerOpt.img,
@@ -384,53 +408,63 @@ export async function generateMap(options: any): Promise<Buffer> {
         height: markerOpt.height,
         offsetX: 13.6,
         offsetY: 27.6,
-      })
-      map.addMarker(marker)
-    })
-  })
+      });
+      map.addMarker(marker);
+    });
+  });
 
   // POLYLINES
-  toArray(options.polyline).forEach((line: any) => {
+  toArray(options.polyline).forEach((line: any, i: number) => {
     if (line.coords?.length > 1) {
+      logger.debug(`Adding polyline [${i}]`, { coordsCount: line.coords.length, color: line.color, width: line.weight });
       const polyline = new Polyline({
         coords: line.coords,
         color: line.color,
         width: line.weight,
-      })
-      map.addLine(polyline)
+      });
+      map.addLine(polyline);
+    } else {
+      logger.debug(`Skipping polyline [${i}] due to insufficient coordinates`, { coords: line.coords });
     }
-  })
+  });
 
   // POLYGONS
-  toArray(options.polygon).forEach((poly: any) => {
+  toArray(options.polygon).forEach((poly: any, i: number) => {
     if (poly.coords?.length > 1) {
+      logger.debug(`Adding polygon [${i}]`, { coordsCount: poly.coords.length, color: poly.color, width: poly.weight, fill: poly.fill });
       const polygon = new Polyline({
         coords: poly.coords,
         color: poly.color,
         width: poly.weight,
         fill: poly.fill,
-      })
-      map.addPolygon(polygon)
+      });
+      map.addPolygon(polygon);
+    } else {
+      logger.debug(`Skipping polygon [${i}] due to insufficient coordinates`, { coords: poly.coords });
     }
-  })
+  });
 
   // CIRCLES
-  toArray(options.circle).forEach((circ: any) => {
+  toArray(options.circle).forEach((circ: any, i: number) => {
     if (circ.coords?.length) {
+      logger.debug(`Adding circle [${i}]`, { coord: circ.coords[0], radius: circ.radius, color: circ.color });
       const circle = new Circle({
         coord: circ.coords[0],
         radius: circ.radius,
         color: circ.color,
         width: circ.width,
         fill: circ.fill,
-      })
-      map.addCircle(circle)
+      });
+      map.addCircle(circle);
+    } else {
+      logger.debug(`Skipping circle [${i}] due to missing coordinates`);
     }
-  })
+  });
 
   // TEXTS
-  toArray(options.text).forEach((txt: any) => {
+  toArray(options.text).forEach((txt: any, i: number) => {
     if (txt.coords?.length) {
+      logger.debug(`Adding text [${i}]`, { coord: txt.coords[0], text: txt.text, font: txt.font, size: txt.size });
       const text = new Text({
         coord: txt.coords[0],
         text: txt.text,
@@ -440,20 +474,28 @@ export async function generateMap(options: any): Promise<Buffer> {
         size: txt.size,
         font: txt.font,
         anchor: txt.anchor,
-        offsetX: parseInt(txt.offsetX) || 0,
-        offsetY: parseInt(txt.offsetY) || 0,
-      })
-      map.addText(text)
+        offsetX: parseInt(txt.offsetX, 10) || 0,
+        offsetY: parseInt(txt.offsetY, 10) || 0,
+      });
+      map.addText(text);
+    } else {
+      logger.debug(`Skipping text [${i}] due to missing coordinates`);
     }
-  })
+  });
 
-  await map.render(options.center, options.zoom)
+  logger.debug("Rendering map with center and zoom", { center: options.center, zoom: options.zoom });
+  await map.render(options.center, options.zoom);
 
   if (!map.image) {
-    throw new Error("Map image is undefined")
+    const errMsg = "Map image is undefined after rendering";
+    logger.error(errMsg);
+    throw new Error(errMsg);
   }
 
-  return map.image.buffer(`image/${options.format}`, { quality: 100 })
+  const imageBuffer = await map.image.buffer(`image/${options.format}`, { quality: 100 });
+  logger.debug("Map image generated successfully", { size: imageBuffer.length, format: options.format });
+
+  return imageBuffer;
 }
 
 /**
