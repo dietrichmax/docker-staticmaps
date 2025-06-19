@@ -188,6 +188,14 @@ export function createGeodesicLine(
   return geodesic
 }
 
+/**
+ * Smooths a series of coordinates using the Chaikin's algorithm.
+ *
+ * @param {Array<[number, number]>} coords The input coordinates to smooth.
+ * @param {number} [iterations=2] The number of iterations for smoothing.
+ *
+ * @returns {Array<[number, number]>} The smoothed set of coordinates.
+ */
 export function chaikinSmooth(
   coords: [number, number][],
   iterations = 2
@@ -206,6 +214,14 @@ export function chaikinSmooth(
   return coords
 }
 
+/**
+ * Simplifies a series of coordinates using the Douglas-Peucker algorithm.
+ *
+ * @param {Array<[number, number]>} coords The input coordinates to simplify.
+ * @param {number} epsilon The maximum distance allowed between original and simplified points.
+ *
+ * @returns {Array<[number, number]>} The simplified set of coordinates.
+ */
 export function douglasPeucker(
   coords: [number, number][],
   epsilon: number

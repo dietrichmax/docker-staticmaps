@@ -132,13 +132,37 @@ function parseMultipleShapes(
   defaults: Record<string, any>,
   params: Record<string, any>
 ): Array<Record<string, any>> {
-  const raw = params[key]
-  if (!raw) return []
+  const raw = params[key];
+  if (!raw) return [];
 
-  const shapeValues: string[] = Array.isArray(raw) ? raw : [raw]
+  const applyDefaultsAndFixCoords = (shape: Record<string, any>) => {
+    const adjusted = { ...defaults, ...shape };
+    const coords = adjusted.coords;
+
+    if (
+      Array.isArray(coords) &&
+      typeof coords[0] === "number" &&
+      typeof coords[1] === "number"
+    ) {
+      adjusted.coords = [coords];
+    }
+
+    return adjusted;
+  };
+
+  if (typeof raw === "object" && !Array.isArray(raw)) {
+    return [applyDefaultsAndFixCoords(raw)];
+  }
+
+  if (Array.isArray(raw) && typeof raw[0] === "object") {
+    return raw.map(applyDefaultsAndFixCoords);
+  }
+
+  // Otherwise fallback to string parsing (e.g. polyline=48.1,10.1|48.2,10.2|color=red)
+  const shapeValues: string[] = Array.isArray(raw) ? raw : [raw];
 
   return shapeValues.map((valueString) => {
-    const items = valueString.split("|")
+    const items = valueString.split("|");
     const { extracted, coordinates } = extractParams(items, [
       "color",
       "weight",
@@ -153,9 +177,16 @@ function parseMultipleShapes(
       "anchor",
       "offsetX",
       "offsetY",
-    ])
-    return { ...defaults, ...extracted, coords: parseCoordinates(coordinates) }
-  })
+    ]);
+
+    logger.debug("Extracted params", extracted);
+
+    return {
+      ...defaults,
+      ...extracted,
+      coords: parseCoordinates(coordinates),
+    };
+  });
 }
 
 /**

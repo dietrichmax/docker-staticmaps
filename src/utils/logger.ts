@@ -3,8 +3,15 @@
  */
 type LogLevel = "DEBUG" | "INFO" | "WARN" | "ERROR"
 
+const isValidLogLevel = (level: any): level is LogLevel => {
+  return ["DEBUG", "INFO", "WARN", "ERROR"].includes(level)
+}
+
+const envLogLevel = process.env.LOG_LEVEL
 // Set the current log level from the environment (defaults to "INFO")
-const currentLogLevel: LogLevel = (process.env.LOG_LEVEL as LogLevel) || "INFO"
+const currentLogLevel: LogLevel = isValidLogLevel(envLogLevel)
+  ? envLogLevel
+  : "INFO"
 
 // Define priorities for each log level
 const levelPriority: Record<LogLevel, number> = {
@@ -32,24 +39,14 @@ const log = (
   }
 
   const timestamp = new Date().toISOString()
-  let colorCode = ""
-
-  switch (level) {
-    case "DEBUG":
-      colorCode = "\x1b[34m" // Blue
-      break
-    case "INFO":
-      colorCode = "\x1b[32m" // Green
-      break
-    case "WARN":
-      colorCode = "\x1b[33m" // Yellow
-      break
-    case "ERROR":
-      colorCode = "\x1b[31m" // Red
-      break
+  const colorMap: Record<LogLevel, string> = {
+    DEBUG: "\x1b[34m", // Blue
+    INFO: "\x1b[32m",  // Green
+    WARN: "\x1b[33m",  // Yellow
+    ERROR: "\x1b[31m", // Red
   }
 
-  let logMessage = `${colorCode}[${timestamp}] | [${level}]\x1b[0m | ${message}`
+  let logMessage = `${colorMap[level]}[${timestamp}] | [${level}]\x1b[0m | ${message}`
   if (meta && Object.keys(meta).length > 0) {
     logMessage += ` ${JSON.stringify(meta)}`
   }
@@ -72,7 +69,7 @@ const logger = {
       log("ERROR", error, meta)
     } else {
       log("ERROR", error.message, meta)
-      console.error(error.stack) // Log the stack trace for better debugging
+      console.error(error.stack)
     }
   },
 }

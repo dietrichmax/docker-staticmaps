@@ -231,10 +231,11 @@ class StaticMaps {
       !this.lines &&
       !this.markers &&
       !this.multipolygons &&
+      !this.circles &&
       !(center && zoom)
     ) {
       throw new Error(
-        "Cannot render empty map: Add center || lines || markers || polygons."
+        "Cannot render empty map: Add center || lines || markers || circles."
       )
     }
 
