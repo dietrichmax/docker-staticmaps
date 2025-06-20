@@ -41,8 +41,8 @@ const log = (
   const timestamp = new Date().toISOString()
   const colorMap: Record<LogLevel, string> = {
     DEBUG: "\x1b[34m", // Blue
-    INFO: "\x1b[32m",  // Green
-    WARN: "\x1b[33m",  // Yellow
+    INFO: "\x1b[32m", // Green
+    WARN: "\x1b[33m", // Yellow
     ERROR: "\x1b[31m", // Red
   }
 

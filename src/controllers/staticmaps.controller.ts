@@ -13,8 +13,8 @@ import polyline from "@mapbox/polyline"
  * Query params can be strings, arrays of strings, or undefined.
  */
 export interface MapRequest extends Request {
-  query: { [key: string]: string | string[] | undefined };
-  body: Record<string, any>; // if you use body for POST requests, define as needed
+  query: { [key: string]: string | string[] | undefined }
+  body: Record<string, any> // if you use body for POST requests, define as needed
 }
 
 /**
@@ -29,35 +29,35 @@ export async function handleMapRequest(
 ): Promise<void> {
   // Use query params for GET, body params for POST/others
   const params: Record<string, any> =
-    req.method === "GET" ? req.query : req.body;
+    req.method === "GET" ? req.query : req.body
 
   // getMapParams expects a Record<string, any>, so cast accordingly
-  const { missingParams, options } = getMapParams(params);
+  const { missingParams, options } = getMapParams(params)
 
   if (missingParams.length > 0) {
-    logger.warn("Missing parameters", { missingParams });
-    res.status(422).json({ error: "Missing parameters", missingParams });
-    return;
+    logger.warn("Missing parameters", { missingParams })
+    res.status(422).json({ error: "Missing parameters", missingParams })
+    return
   }
 
-  logger.debug("Request params:", { params });
+  logger.debug("Request params:", { params })
 
   try {
-    const img = await generateMap(options);
+    const img = await generateMap(options)
     logger.info("Image successfully rendered", {
       format: options.format,
       size: img.length,
-    });
+    })
 
     res
       .set({
         "Content-Type": `image/${options.format}`,
         "Content-Length": img.length.toString(),
       })
-      .end(img);
+      .end(img)
   } catch (error) {
-    logger.error("Error rendering image", { error });
-    res.status(500).json({ error: "Internal Server Error" });
+    logger.error("Error rendering image", { error })
+    res.status(500).json({ error: "Internal Server Error" })
   }
 }
 
@@ -72,14 +72,14 @@ export async function handleMapRequest(
  */
 
 interface ExtractedParams {
-  color?: string;
-  weight?: number;
-  fill?: string;
-  radius?: number;
-  width?: number;
-  img?: string;
-  height?: number;
-  [key: string]: any; // Allow other properties dynamically if needed
+  color?: string
+  weight?: number
+  fill?: string
+  radius?: number
+  width?: number
+  img?: string
+  height?: number
+  [key: string]: any // Allow other properties dynamically if needed
 }
 
 function extractParams(
@@ -95,53 +95,57 @@ function extractParams(
     "purple",
     "black",
     "white",
-  ]);
+  ])
 
   const result = items.reduce(
     (acc, item) => {
-      let matched = false;
+      let matched = false
 
       for (const param of paramsList) {
-        const prefix = `${param}:`;
+        const prefix = `${param}:`
         if (item.startsWith(prefix)) {
-          const rawValue = item.slice(prefix.length);
-          const value = decodeURIComponent(rawValue);
+          const rawValue = item.slice(prefix.length)
+          const value = decodeURIComponent(rawValue)
 
-          logger.debug(`Parsing param: ${param} with raw value: ${rawValue} decoded as: ${value}`);
+          logger.debug(
+            `Parsing param: ${param} with raw value: ${rawValue} decoded as: ${value}`
+          )
 
           if (param === "color" || param === "fill") {
             acc.extracted[param] = allowedColors.has(value.toLowerCase())
               ? value.toLowerCase()
-              : `#${value}`;
+              : `#${value}`
           } else if (["weight", "radius", "width"].includes(param)) {
-            const parsedInt = parseInt(value, 10);
+            const parsedInt = parseInt(value, 10)
             if (!isNaN(parsedInt)) {
-              acc.extracted[param] = parsedInt;
+              acc.extracted[param] = parsedInt
             } else {
-              logger.warn(`Failed to parse integer for param '${param}': ${value}`);
+              logger.warn(
+                `Failed to parse integer for param '${param}': ${value}`
+              )
             }
           } else {
-            acc.extracted[param] = value;
+            acc.extracted[param] = value
           }
 
-          matched = true;
-          break;
+          matched = true
+          break
         }
       }
 
       if (!matched) {
-        logger.debug(`Item treated as coordinate: ${item}`);
-        acc.coordinates.push(item);
+        logger.debug(`Item treated as coordinate: ${item}`)
+        acc.coordinates.push(item)
       }
 
-      return acc;
+      return acc
     },
     { extracted: {} as ExtractedParams, coordinates: [] as string[] }
-  );
+  )
 
-  logger.debug("Extraction result", result);
+  logger.debug("Extraction result", result)
 
-  return result;
+  return result
 }
 
 /**
@@ -157,16 +161,16 @@ function parseMultipleShapes(
   defaults: Record<string, any>,
   params: Record<string, any>
 ): Array<Record<string, any>> {
-  const raw = params[key];
-  if (!raw) return [];
+  const raw = params[key]
+  if (!raw) return []
 
   const applyDefaultsAndFixCoords = (shape: Record<string, any>) => {
-    const adjusted = { ...defaults, ...shape };
-    const coords = adjusted.coords;
+    const adjusted = { ...defaults, ...shape }
+    const coords = adjusted.coords
 
     if (!coords) {
-      adjusted.coords = [];
-      return adjusted;
+      adjusted.coords = []
+      return adjusted
     }
 
     // Case 1: coords is [number, number] — wrap in array
@@ -176,16 +180,16 @@ function parseMultipleShapes(
       typeof coords[0] === "number" &&
       typeof coords[1] === "number"
     ) {
-      adjusted.coords = [coords];
+      adjusted.coords = [coords]
     }
     // Case 2: coords is an array of strings (e.g., encoded polylines or coordinate strings)
     else if (Array.isArray(coords) && typeof coords[0] === "string") {
       // Keep as is; parseCoordinates will handle parsing
-      adjusted.coords = parseCoordinates(coords);
+      adjusted.coords = parseCoordinates(coords)
     }
     // Case 3: coords is an array of arrays (e.g., [[lon, lat], [lon, lat]])
     else if (Array.isArray(coords) && Array.isArray(coords[0])) {
-      adjusted.coords = coords;
+      adjusted.coords = coords
     }
     // Case 4: coords is an object with lat/lon properties (single coordinate)
     else if (
@@ -194,30 +198,29 @@ function parseMultipleShapes(
       coords.lat !== undefined &&
       coords.lon !== undefined
     ) {
-      adjusted.coords = [[coords.lon, coords.lat]];
+      adjusted.coords = [[coords.lon, coords.lat]]
     }
     // Fallback: unrecognized format
     else {
-      adjusted.coords = [];
+      adjusted.coords = []
     }
 
-    return adjusted;
-  };
-
+    return adjusted
+  }
 
   if (typeof raw === "object" && !Array.isArray(raw)) {
-    return [applyDefaultsAndFixCoords(raw)];
+    return [applyDefaultsAndFixCoords(raw)]
   }
 
   if (Array.isArray(raw) && typeof raw[0] === "object") {
-    return raw.map(applyDefaultsAndFixCoords);
+    return raw.map(applyDefaultsAndFixCoords)
   }
 
   // Otherwise fallback to string parsing (e.g. polyline=48.1,10.1|48.2,10.2|color=red)
-  const shapeValues: string[] = Array.isArray(raw) ? raw : [raw];
+  const shapeValues: string[] = Array.isArray(raw) ? raw : [raw]
 
   return shapeValues.map((valueString) => {
-    const items = valueString.split("|");
+    const items = valueString.split("|")
     const { extracted, coordinates } = extractParams(items, [
       "color",
       "weight",
@@ -232,16 +235,16 @@ function parseMultipleShapes(
       "anchor",
       "offsetX",
       "offsetY",
-    ]);
+    ])
 
-    logger.debug("Extracted params", extracted);
+    logger.debug("Extracted params", extracted)
 
     return {
       ...defaults,
       ...extracted,
       coords: parseCoordinates(coordinates),
-    };
-  });
+    }
+  })
 }
 
 /**
@@ -263,7 +266,7 @@ function safeParse(value: any, parser: Function = (v: any) => v): any {
  * @returns True if the strings likely represent an encoded polyline.
  */
 export function isEncodedPolyline(coords: string[]): boolean {
-  return coords.some((s) => /[^0-9.,|\- ]/.test(s));
+  return coords.some((s) => /[^0-9.,|\- ]/.test(s))
 }
 
 /**
@@ -274,45 +277,55 @@ export function isEncodedPolyline(coords: string[]): boolean {
  */
 
 export function parseCoordinates(coords: any): Array<[number, number]> {
-  if (!Array.isArray(coords) || coords.length === 0) return [];
+  if (!Array.isArray(coords) || coords.length === 0) return []
 
   // Fallback to existing behavior if input is structured
-  if (Array.isArray(coords[0]) || (typeof coords[0] === "object" && coords[0] !== null)) {
+  if (
+    Array.isArray(coords[0]) ||
+    (typeof coords[0] === "object" && coords[0] !== null)
+  ) {
     return coords
       .map((coord) => {
-        if (Array.isArray(coord) && coord.length === 2) return [coord[0], coord[1]];
-        if (coord && typeof coord === "object" && coord.lat !== undefined && coord.lon !== undefined) {
-          return [coord.lon, coord.lat];
+        if (Array.isArray(coord) && coord.length === 2)
+          return [coord[0], coord[1]]
+        if (
+          coord &&
+          typeof coord === "object" &&
+          coord.lat !== undefined &&
+          coord.lon !== undefined
+        ) {
+          return [coord.lon, coord.lat]
         }
-        return null;
+        return null
       })
-      .filter((coord): coord is [number, number] => coord !== null);
+      .filter((coord): coord is [number, number] => coord !== null)
   }
 
   if (isEncodedPolyline(coords)) {
-    const joined = coords.join("|");
-    const encoded = joined.startsWith("{") && joined.endsWith("}")
-      ? joined.slice(1, -1)
-      : joined;
+    const joined = coords.join("|")
+    const encoded =
+      joined.startsWith("{") && joined.endsWith("}")
+        ? joined.slice(1, -1)
+        : joined
 
     try {
-      return polyline.decode(encoded).map(([lat, lng]) => [lng, lat]);
+      return polyline.decode(encoded).map(([lat, lng]) => [lng, lat])
     } catch (err: any) {
-      logger.error("Polyline decode error", err.toString());
-      return [];
+      logger.error("Polyline decode error", err.toString())
+      return []
     }
   }
 
   // Fallback to "lat,lon" string format
   return coords
     .map((coord: string) => {
-      const [latStr, lonStr] = coord.split(",");
-      const lat = Number(latStr);
-      const lon = Number(lonStr);
-      if (isNaN(lat) || isNaN(lon)) return null;
-      return [lon, lat];
+      const [latStr, lonStr] = coord.split(",")
+      const lat = Number(latStr)
+      const lon = Number(lonStr)
+      if (isNaN(lat) || isNaN(lon)) return null
+      return [lon, lat]
     })
-    .filter((c): c is [number, number] => c !== null);
+    .filter((c): c is [number, number] => c !== null)
 }
 
 /**
@@ -325,7 +338,7 @@ export function getMapParams(params: Record<string, any>): {
   missingParams: string[]
   options: Record<string, any>
 } {
-  logger.debug("Parsing map parameters", params);
+  logger.debug("Parsing map parameters", params)
 
   const defaultParams = {
     width: 800,
@@ -342,7 +355,7 @@ export function getMapParams(params: Record<string, any>): {
     zoom: 10,
     reverseY: false,
     format: "png",
-  };
+  }
 
   // Define defaults for each feature
   const shapeDefaults = {
@@ -358,31 +371,47 @@ export function getMapParams(params: Record<string, any>): {
       font: "Arial",
       anchor: "start",
     },
-  };
+  }
 
   // Parse each feature from the request parameters.
-  const features: Record<string, any> = {};
+  const features: Record<string, any> = {}
 
-  features["polyline"] = parseMultipleShapes("polyline", shapeDefaults.polyline, params);
-  logger.debug("Parsed polylines:", features["polyline"]);
+  features["polyline"] = parseMultipleShapes(
+    "polyline",
+    shapeDefaults.polyline,
+    params
+  )
+  logger.debug("Parsed polylines:", features["polyline"])
 
-  features["polygon"] = parseMultipleShapes("polygon", shapeDefaults.polygon, params);
-  logger.debug("Parsed polygons:", features["polygon"]);
+  features["polygon"] = parseMultipleShapes(
+    "polygon",
+    shapeDefaults.polygon,
+    params
+  )
+  logger.debug("Parsed polygons:", features["polygon"])
 
-  features["circle"] = parseMultipleShapes("circle", shapeDefaults.circle, params);
-  logger.debug("Parsed circles:", features["circle"]);
+  features["circle"] = parseMultipleShapes(
+    "circle",
+    shapeDefaults.circle,
+    params
+  )
+  logger.debug("Parsed circles:", features["circle"])
 
-  features["text"] = parseMultipleShapes("text", shapeDefaults.text, params);
-  logger.debug("Parsed texts:", features["text"]);
+  features["text"] = parseMultipleShapes("text", shapeDefaults.text, params)
+  logger.debug("Parsed texts:", features["text"])
 
-  features["markers"] = parseMultipleShapes("markers", shapeDefaults.markers, params);
-  logger.debug("Parsed markers:", features["markers"]);
+  features["markers"] = parseMultipleShapes(
+    "markers",
+    shapeDefaults.markers,
+    params
+  )
+  logger.debug("Parsed markers:", features["markers"])
 
   // Check that at least one coordinate source is provided.
   const center = safeParse(params.center, (val: any) => {
     if (typeof val === "string") {
-      const [lat, lon] = val.split(",").map(Number);
-      return [lat, lon];
+      const [lat, lon] = val.split(",").map(Number)
+      return [lat, lon]
     } else if (
       Array.isArray(val) &&
       val.length === 2 &&
@@ -390,7 +419,7 @@ export function getMapParams(params: Record<string, any>): {
       typeof val[1] === "number"
     ) {
       // val is an array of numbers, so this branch is valid
-      return [val[1], val[0]];
+      return [val[1], val[0]]
     } else if (
       val &&
       typeof val === "object" &&
@@ -398,21 +427,23 @@ export function getMapParams(params: Record<string, any>): {
       val.lat !== undefined &&
       val.lon !== undefined
     ) {
-      return [val.lon, val.lat];
+      return [val.lon, val.lat]
     }
-    return null;
-  });
+    return null
+  })
 
-  const missingParams: string[] = [];
-  const hasCoordinates = Object.values(features).some((feature) =>
-    feature &&
-    ((Array.isArray(feature) && feature.some((f) => f.coords && f.coords.length)) ||
-     (!Array.isArray(feature) && feature.coords && feature.coords.length))
-  );
+  const missingParams: string[] = []
+  const hasCoordinates = Object.values(features).some(
+    (feature) =>
+      feature &&
+      ((Array.isArray(feature) &&
+        feature.some((f) => f.coords && f.coords.length)) ||
+        (!Array.isArray(feature) && feature.coords && feature.coords.length))
+  )
 
   if (!center && !hasCoordinates) {
-    missingParams.push("{center} or {coordinates}");
-    logger.debug("Missing required parameters: center or coordinates");
+    missingParams.push("{center} or {coordinates}")
+    logger.debug("Missing required parameters: center or coordinates")
   }
 
   const options = {
@@ -434,14 +465,14 @@ export function getMapParams(params: Record<string, any>): {
     format: params.format || "png",
     center,
     ...features,
-  };
+  }
 
-  logger.debug("Final parsed options:", options);
+  logger.debug("Final parsed options:", options)
 
   return {
     missingParams,
     options,
-  };
+  }
 }
 
 /**
@@ -451,17 +482,18 @@ export function getMapParams(params: Record<string, any>): {
  * @returns {Promise<Buffer>} A promise that resolves to a Buffer containing the generated map image.
  */
 export async function generateMap(options: any): Promise<Buffer> {
-  logger.debug("Starting map generation with options:", options);
+  logger.debug("Starting map generation with options:", options)
 
-  const map = new StaticMaps(options);
+  const map = new StaticMaps(options)
 
   // Helper: ensure item is always an array
-  const toArray = (item: any) => (Array.isArray(item) ? item : item ? [item] : []);
+  const toArray = (item: any) =>
+    Array.isArray(item) ? item : item ? [item] : []
 
   // MARKERS
   toArray(options.markers).forEach((markerOpt: any, i: number) => {
-    (markerOpt.coords || []).forEach((coord: any, j: number) => {
-      logger.debug(`Adding marker [${i}][${j}]`, { coord, img: markerOpt.img });
+    ;(markerOpt.coords || []).forEach((coord: any, j: number) => {
+      logger.debug(`Adding marker [${i}][${j}]`, { coord, img: markerOpt.img })
       const marker = new IconMarker({
         coord,
         img: markerOpt.img,
@@ -469,63 +501,85 @@ export async function generateMap(options: any): Promise<Buffer> {
         height: markerOpt.height,
         offsetX: 13.6,
         offsetY: 27.6,
-      });
-      map.addMarker(marker);
-    });
-  });
+      })
+      map.addMarker(marker)
+    })
+  })
 
   // POLYLINES
   toArray(options.polyline).forEach((line: any, i: number) => {
     if (line.coords?.length > 1) {
-      logger.debug(`Adding polyline [${i}]`, { coordsCount: line.coords.length, color: line.color, width: line.weight });
+      logger.debug(`Adding polyline [${i}]`, {
+        coordsCount: line.coords.length,
+        color: line.color,
+        width: line.weight,
+      })
       const polyline = new Polyline({
         coords: line.coords,
         color: line.color,
         width: line.weight,
-      });
-      map.addLine(polyline);
+      })
+      map.addLine(polyline)
     } else {
-      logger.debug(`Skipping polyline [${i}] due to insufficient coordinates`, { coords: line.coords });
+      logger.debug(`Skipping polyline [${i}] due to insufficient coordinates`, {
+        coords: line.coords,
+      })
     }
-  });
+  })
 
   // POLYGONS
   toArray(options.polygon).forEach((poly: any, i: number) => {
     if (poly.coords?.length > 1) {
-      logger.debug(`Adding polygon [${i}]`, { coordsCount: poly.coords.length, color: poly.color, width: poly.weight, fill: poly.fill });
+      logger.debug(`Adding polygon [${i}]`, {
+        coordsCount: poly.coords.length,
+        color: poly.color,
+        width: poly.weight,
+        fill: poly.fill,
+      })
       const polygon = new Polyline({
         coords: poly.coords,
         color: poly.color,
         width: poly.weight,
         fill: poly.fill,
-      });
-      map.addPolygon(polygon);
+      })
+      map.addPolygon(polygon)
     } else {
-      logger.debug(`Skipping polygon [${i}] due to insufficient coordinates`, { coords: poly.coords });
+      logger.debug(`Skipping polygon [${i}] due to insufficient coordinates`, {
+        coords: poly.coords,
+      })
     }
-  });
+  })
 
   // CIRCLES
   toArray(options.circle).forEach((circ: any, i: number) => {
     if (circ.coords?.length) {
-      logger.debug(`Adding circle [${i}]`, { coord: circ.coords[0], radius: circ.radius, color: circ.color });
+      logger.debug(`Adding circle [${i}]`, {
+        coord: circ.coords[0],
+        radius: circ.radius,
+        color: circ.color,
+      })
       const circle = new Circle({
         coord: circ.coords[0],
         radius: circ.radius,
         color: circ.color,
         width: circ.width,
         fill: circ.fill,
-      });
-      map.addCircle(circle);
+      })
+      map.addCircle(circle)
     } else {
-      logger.debug(`Skipping circle [${i}] due to missing coordinates`);
+      logger.debug(`Skipping circle [${i}] due to missing coordinates`)
     }
-  });
+  })
 
   // TEXTS
   toArray(options.text).forEach((txt: any, i: number) => {
     if (txt.coords?.length) {
-      logger.debug(`Adding text [${i}]`, { coord: txt.coords[0], text: txt.text, font: txt.font, size: txt.size });
+      logger.debug(`Adding text [${i}]`, {
+        coord: txt.coords[0],
+        text: txt.text,
+        font: txt.font,
+        size: txt.size,
+      })
       const text = new Text({
         coord: txt.coords[0],
         text: txt.text,
@@ -537,26 +591,34 @@ export async function generateMap(options: any): Promise<Buffer> {
         anchor: txt.anchor,
         offsetX: parseInt(txt.offsetX, 10) || 0,
         offsetY: parseInt(txt.offsetY, 10) || 0,
-      });
-      map.addText(text);
+      })
+      map.addText(text)
     } else {
-      logger.debug(`Skipping text [${i}] due to missing coordinates`);
+      logger.debug(`Skipping text [${i}] due to missing coordinates`)
     }
-  });
+  })
 
-  logger.debug("Rendering map with center and zoom", { center: options.center, zoom: options.zoom });
-  await map.render(options.center, options.zoom);
+  logger.debug("Rendering map with center and zoom", {
+    center: options.center,
+    zoom: options.zoom,
+  })
+  await map.render(options.center, options.zoom)
 
   if (!map.image) {
-    const errMsg = "Map image is undefined after rendering";
-    logger.error(errMsg);
-    throw new Error(errMsg);
+    const errMsg = "Map image is undefined after rendering"
+    logger.error(errMsg)
+    throw new Error(errMsg)
   }
 
-  const imageBuffer = await map.image.buffer(`image/${options.format}`, { quality: 100 });
-  logger.debug("Map image generated successfully", { size: imageBuffer.length, format: options.format });
+  const imageBuffer = await map.image.buffer(`image/${options.format}`, {
+    quality: 100,
+  })
+  logger.debug("Map image generated successfully", {
+    size: imageBuffer.length,
+    format: options.format,
+  })
 
-  return imageBuffer;
+  return imageBuffer
 }
 
 /**

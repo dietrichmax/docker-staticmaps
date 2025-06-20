@@ -140,7 +140,7 @@ To add one or more polylines, use the `polyline` parameter one or multiple times
 polyline=polylineStyle|polylineCoord1|polylineCoord2|...
 ```
 
-- **polylineCoord**: 
+- **polylineCoord**:
   - **Lat, Lon Coordinates**: Coordinates in `lat, lon` format, separated by `|`. You need at least two coordinates.
   - **Encoded Polylines**: You can also use [Google Encoded Polyline](https://developers.google.com/maps/documentation/utilities/polylinealgorithm "Google Encoded Polyline") format.
 
@@ -167,7 +167,7 @@ Note: Polylines with only two coordinates are rendered as geodesic line.
   <p>http://localhost:3000/api/staticmaps?width=600&height=600&format=png&basemap=satellite&polyline=weight:6|color:0000ff|yheiHkljMxqup@zu`qM&polyline=weight:6|color:0000ff|_vnwFnhubMltpfMyvcsP</p>
 </details>
 
-![Multiple Encoded Polylines Example](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/multipleEncodedPolylines.png.png)
+![Multiple Encoded Polylines Example](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/multipleEncodedPolylines.png)
 
 ---
 
