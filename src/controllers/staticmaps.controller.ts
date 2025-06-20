@@ -297,8 +297,8 @@ export function parseCoordinates(coords: any): Array<[number, number]> {
 
     try {
       return polyline.decode(encoded).map(([lat, lng]) => [lng, lat]);
-    } catch (err) {
-      console.error("Polyline decode error", err);
+    } catch (err: any) {
+      logger.error("Polyline decode error", err.toString());
       return [];
     }
   }
