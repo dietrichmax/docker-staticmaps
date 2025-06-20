@@ -134,13 +134,18 @@ Supported basemaps include:
 
 ### 🖊️ Polylines
 
-To add a polyline, use the `polyline` parameter in this format:
+To add one or more polylines, use the `polyline` parameter one or multiple times in the URL query in the following format:
 
 ```
 polyline=polylineStyle|polylineCoord1|polylineCoord2|...
 ```
 
-- **polylineCoord**: Coordinates in `lat, lon` format, separated by `|`. You need at least two coordinates.
+- **polylineCoord**: 
+  - **Lat, Lon Coordinates**: Coordinates in `lat, lon` format, separated by `|`. You need at least two coordinates.
+  - **Encoded Polylines**: You can also use [Google Encoded Polyline](https://developers.google.com/maps/documentation/utilities/polylinealgorithm "Google Encoded Polyline") format.
+
+The polyline will be decoded and rendered automatically.
+
 - **polylineStyle**: Customize the polyline with:
 
   | Parameter | Default   | Description                               |
@@ -150,13 +155,19 @@ polyline=polylineStyle|polylineCoord1|polylineCoord2|...
 
 Note: Polylines with only two coordinates are rendered as geodesic line.
 
-**Example**: Polyline with no `zoom`, `weight:6` and `color:0000ff`.
+<details>
+  <summary>Regular Coordinates example with <code>no zoom</code>, <code>weight:6</code> and <code>color:0000ff</code></summary>
+  <p>http://localhost:3000/api/staticmaps?width=600&height=600&polyline=weight:6|color:0000ff|48.726304979176675,-3.9829935637739382|48.72623035828412,-3.9829726446543385|48.726126671101639,-3.9829546542797467|48.725965124843256,-3.9829070729298808|48.725871429380568,-3.9828726793245273|48.725764250990267,-3.9828064532306628|48.725679557682362,-3.9827385375789146|48.72567025076134,-3.9827310750289113|48.725529844164292,-3.9826617613709225|48.725412537198615,-3.9826296635284164|48.725351694726704,-3.9826201452878531|48.725258599474508,-3.9826063049230411|48.725157520450125,-3.9825900299314232|48.725077863838543,-3.9825779905509102|48.724930435729831,-3.9825514102373938|48.724815578113535,-3.9825237355887291|48.724760905376989,-3.9825013965800564|48.724677938456551,-3.9824534296566916|48.724379435330384,-3.9822469276001118|48.724304509274596,-3.9821850264836076|48.7242453124599,-3.9821320570321772|48.724206187829317,-3.9821063430223207|48.724117073204575,-3.9820862134785551</p>
+</details>
 
-```
-http://localhost:3000/api/staticmaps?width=600&height=600&polyline=weight:6|color:0000ff|48.726304979176675,-3.9829935637739382|48.72623035828412,-3.9829726446543385|48.726126671101639,-3.9829546542797467|48.725965124843256,-3.9829070729298808|48.725871429380568,-3.9828726793245273|48.725764250990267,-3.9828064532306628|48.725679557682362,-3.9827385375789146|48.72567025076134,-3.9827310750289113|48.725529844164292,-3.9826617613709225|48.725412537198615,-3.9826296635284164|48.725351694726704,-3.9826201452878531|48.725258599474508,-3.9826063049230411|48.725157520450125,-3.9825900299314232|48.725077863838543,-3.9825779905509102|48.724930435729831,-3.9825514102373938|48.724815578113535,-3.9825237355887291|48.724760905376989,-3.9825013965800564|48.724677938456551,-3.9824534296566916|48.724379435330384,-3.9822469276001118|48.724304509274596,-3.9821850264836076|48.7242453124599,-3.9821320570321772|48.724206187829317,-3.9821063430223207|48.724117073204575,-3.9820862134785551
-```
+![Regular Coordinates Example](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/polylinepath.png)
 
-![Polyline Example](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/polylinepath.png)
+<details>
+  <summary>Multiple Encoded Polylines <code>no zoom</code>, <code>weight:6</code> and <code>color:0000ff</code></summary>
+  <p>http://localhost:3000/api/staticmaps?width=600&height=600&format=png&basemap=satellite&polyline=weight:6|color:0000ff|yheiHkljMxqup@zu`qM&polyline=weight:6|color:0000ff|_vnwFnhubMltpfMyvcsP</p>
+</details>
+
+![Multiple Encoded Polylines Example](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/multipleEncodedPolylines.png.png)
 
 ---
 
@@ -286,8 +297,8 @@ http://localhost:3000/api/staticmaps?width=600&height=600&zoom=2&center=2.3522,4
 ![Example Request 2](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/example2.webp)
 
 <details>
-  <summary>Multiple Markers and multiple Polylines Example</summary>
-  <p><code>http://localhost:3000/api/staticmaps?width=600&height=400&markers=48.8566,2.3522|40.7128,-74.006&markers=img:https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Airport_symbol.svg/131px-Airport_symbol.svg.png|-33.924869,18.424055&polyline=weight:3|48.8566,2.3522|40.7128,-74.006&polyline=weight:3|color:ff8800|40.7128,-74.006|-33.924869,18.424055</code></p>
+  <summary>Multiple Markers and multiple Polylines with encodedPolyline aswell as lon,lat coordinatesExample</summary>
+  <p><code>http://localhost:3000/api/staticmaps?width=600&height=400&markers=48.8566,2.3522|40.7128,-74.006&markers=img:https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Airport_symbol.svg/131px-Airport_symbol.svg.png|-33.924869,18.424055&polyline=weight:3|yheiHkljMxqup@zu`qM&polyline=weight:3|color:ff8800|40.7128,-74.006|-33.924869,18.424055</code></p>
 </details>
 
 ![Polyline & Markers](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/markersandpolyline.png)
@@ -298,163 +309,38 @@ Also, `POST` requests are supported:
 
 <details>
   <summary>Example with markers, polyline, polygon and circle</summary>
-  <p><code>curl -X POST http://192.168.50.26:3000/api/staticmaps \
--H "Content-Type: application/json" \
--H "x-api-key: yourSecretApiKeyHere" \
--d '{
-   "width":600,
-   "height":600,
-   "polyline":{
-      "weight":6,
-      "color":"#0000ff",
-      "coords":[
-         [
-            48.726304979176675,
-            -3.9829935637739382
-         ],
-         [
-            48.72623035828412,
-            -3.9829726446543385
-         ],
-         [
-            48.726126671101639,
-            -3.9829546542797467
-         ],
-         [
-            48.725965124843256,
-            -3.9829070729298808
-         ],
-         [
-            48.725871429380568,
-            -3.9828726793245273
-         ],
-         [
-            48.725764250990267,
-            -3.9828064532306628
-         ],
-         [
-            48.725679557682362,
-            -3.9827385375789146
-         ],
-         [
-            48.72567025076134,
-            -3.9827310750289113
-         ],
-         [
-            48.725529844164292,
-            -3.9826617613709225
-         ],
-         [
-            48.725412537198615,
-            -3.9826296635284164
-         ],
-         [
-            48.725351694726704,
-            -3.9826201452878531
-         ],
-         [
-            48.725258599474508,
-            -3.9826063049230411
-         ],
-         [
-            48.725157520450125,
-            -3.9825900299314232
-         ],
-         [
-            48.725077863838543,
-            -3.9825779905509102
-         ],
-         [
-            48.724930435729831,
-            -3.9825514102373938
-         ],
-         [
-            48.724815578113535,
-            -3.9825237355887291
-         ],
-         [
-            48.724760905376989,
-            -3.9825013965800564
-         ],
-         [
-            48.724677938456551,
-            -3.9824534296566916
-         ],
-         [
-            48.724379435330384,
-            -3.9822469276001118
-         ],
-         [
-            48.724304509274596,
-            -3.9821850264836076
-         ],
-         [
-            48.7242453124599,
-            -3.9821320570321772
-         ],
-         [
-            48.724206187829317,
-            -3.9821063430223207
-         ],
-         [
-            48.724117073204575,
-            -3.9820862134785551
-         ]
+  <p><code>curl -X POST http://localhost:3000/api/staticmaps \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: yourSecretApiKeyHere" \
+  -d '{
+    "width": 600,
+    "height": 600,
+    "polyline": [
+      {
+        "weight": 6,
+        "color": "#0000ff",
+        "coords": [
+          [-74.006, 40.7128],
+          [18.424055, -33.924869]
+        ]
+      },
+      {
+        "weight": 6,
+        "color": "red",
+        "coords": [
+          [2.352222, 48.856614],
+          [18.424055, -33.924869]
+        ]
+      }
+    ],
+    "markers": {
+      "coords": [
+        [2.352222, 48.856614],
+        [-74.006, 40.7128],
+        [18.424055, -33.924869]
       ]
-   },
-   "markers":{
-      "coords":[
-         [
-            48.726304979176675,
-            -3.9829935637739382
-         ],
-         [
-            48.724117073204575,
-            -3.9820862134785551
-         ]
-      ]
-   },
-   "polygon":{
-      "color":"#4874db",
-      "width":3,
-      "fill":"#0000bb",
-      "radius":10,
-      "coords":[
-         [
-            48.724379435330384,
-            -3.9822469276001118
-         ],
-         [
-            48.725758,
-            -3.983354
-         ],
-         [
-            48.725680,
-            -3.984035
-         ],
-         [
-            48.725914,
-            -3.984110
-         ],
-         [
-            48.724379435330384,
-            -3.9822469276001118
-         ]
-      ]
-   },
-   "circle":{
-      "color":"#4874db",
-      "width":3,
-      "fill":"#0000bb",
-      "radius":10,
-      "coords":[
-         [
-            48.724379435330384,
-            -3.9822469276001118ac
-         ]
-      ]
-   }
-}' --output custom_map.png</code></p>
+    }
+  }' --output custom_map.png</code></p>
 </details>
 
 ![POST request example](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/postrequest.png "screenshot of POST request example")

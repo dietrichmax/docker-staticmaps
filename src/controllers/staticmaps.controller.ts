@@ -6,6 +6,7 @@ import IconMarker from "../staticmaps/marker"
 import Polyline from "../staticmaps/polyline"
 import Circle from "../staticmaps/circle"
 import Text from "../staticmaps/text"
+import polyline from "@mapbox/polyline"
 
 /**
  * Custom Request type for map requests.
@@ -163,16 +164,46 @@ function parseMultipleShapes(
     const adjusted = { ...defaults, ...shape };
     const coords = adjusted.coords;
 
+    if (!coords) {
+      adjusted.coords = [];
+      return adjusted;
+    }
+
+    // Case 1: coords is [number, number] — wrap in array
     if (
       Array.isArray(coords) &&
+      coords.length === 2 &&
       typeof coords[0] === "number" &&
       typeof coords[1] === "number"
     ) {
       adjusted.coords = [coords];
     }
+    // Case 2: coords is an array of strings (e.g., encoded polylines or coordinate strings)
+    else if (Array.isArray(coords) && typeof coords[0] === "string") {
+      // Keep as is; parseCoordinates will handle parsing
+      adjusted.coords = parseCoordinates(coords);
+    }
+    // Case 3: coords is an array of arrays (e.g., [[lon, lat], [lon, lat]])
+    else if (Array.isArray(coords) && Array.isArray(coords[0])) {
+      adjusted.coords = coords;
+    }
+    // Case 4: coords is an object with lat/lon properties (single coordinate)
+    else if (
+      coords &&
+      typeof coords === "object" &&
+      coords.lat !== undefined &&
+      coords.lon !== undefined
+    ) {
+      adjusted.coords = [[coords.lon, coords.lat]];
+    }
+    // Fallback: unrecognized format
+    else {
+      adjusted.coords = [];
+    }
 
     return adjusted;
   };
+
 
   if (typeof raw === "object" && !Array.isArray(raw)) {
     return [applyDefaultsAndFixCoords(raw)];
@@ -225,33 +256,63 @@ function safeParse(value: any, parser: Function = (v: any) => v): any {
 }
 
 /**
+ * Determines whether a given array of strings likely represents an encoded polyline.
+ * Encoded polylines contain characters outside digits, commas, pipes, hyphens, and spaces.
+ *
+ * @param coords - Array of coordinate strings.
+ * @returns True if the strings likely represent an encoded polyline.
+ */
+export function isEncodedPolyline(coords: string[]): boolean {
+  return coords.some((s) => /[^0-9.,|\- ]/.test(s));
+}
+
+/**
  * Parse coordinates from various formats.
  *
  * @param {Array<Array<number>> | string[] | Object[]} coords - An array of coordinates in different formats.
  * @returns {Array<Array<number>>} - An array of parsed coordinates in [longitude, latitude] format.
  */
-export function parseCoordinates(coords: any): Array<Array<number>> {
-  if (!Array.isArray(coords)) return []
 
+export function parseCoordinates(coords: any): Array<[number, number]> {
+  if (!Array.isArray(coords) || coords.length === 0) return [];
+
+  // Fallback to existing behavior if input is structured
+  if (Array.isArray(coords[0]) || (typeof coords[0] === "object" && coords[0] !== null)) {
+    return coords
+      .map((coord) => {
+        if (Array.isArray(coord) && coord.length === 2) return [coord[0], coord[1]];
+        if (coord && typeof coord === "object" && coord.lat !== undefined && coord.lon !== undefined) {
+          return [coord.lon, coord.lat];
+        }
+        return null;
+      })
+      .filter((coord): coord is [number, number] => coord !== null);
+  }
+
+  if (isEncodedPolyline(coords)) {
+    const joined = coords.join("|");
+    const encoded = joined.startsWith("{") && joined.endsWith("}")
+      ? joined.slice(1, -1)
+      : joined;
+
+    try {
+      return polyline.decode(encoded).map(([lat, lng]) => [lng, lat]);
+    } catch (err) {
+      console.error("Polyline decode error", err);
+      return [];
+    }
+  }
+
+  // Fallback to "lat,lon" string format
   return coords
-    .map((coord) => {
-      if (Array.isArray(coord) && coord.length === 2)
-        return [coord[0], coord[1]] // Swap to [longitude, latitude]
-      if (typeof coord === "string") {
-        const [lat, lon] = coord.split(",").map(Number)
-        return [lon, lat] // Return [longitude, latitude]
-      }
-      if (
-        coord &&
-        typeof coord === "object" &&
-        coord.lat !== undefined &&
-        coord.lon !== undefined
-      ) {
-        return [coord.lon, coord.lat] // Return [longitude, latitude]
-      }
-      return null // If the coordinate is not valid, return null
+    .map((coord: string) => {
+      const [latStr, lonStr] = coord.split(",");
+      const lat = Number(latStr);
+      const lon = Number(lonStr);
+      if (isNaN(lat) || isNaN(lon)) return null;
+      return [lon, lat];
     })
-    .filter((coord): coord is [number, number] => coord !== null) // Filter out null values
+    .filter((c): c is [number, number] => c !== null);
 }
 
 /**
