@@ -297,8 +297,8 @@ http://localhost:3000/api/staticmaps?width=600&height=600&zoom=2&center=2.3522,4
 ![Example Request 2](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/example2.webp)
 
 <details>
-  <summary>Multiple Markers and multiple Polylines Example</summary>
-  <p><code>http://localhost:3000/api/staticmaps?width=600&height=400&markers=48.8566,2.3522|40.7128,-74.006&markers=img:https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Airport_symbol.svg/131px-Airport_symbol.svg.png|-33.924869,18.424055&polyline=weight:3|48.8566,2.3522|40.7128,-74.006&polyline=weight:3|color:ff8800|40.7128,-74.006|-33.924869,18.424055</code></p>
+  <summary>Multiple Markers and multiple Polylines with encodedPolyline aswell as lon,lat coordinatesExample</summary>
+  <p><code>http://localhost:3000/api/staticmaps?width=600&height=400&markers=48.8566,2.3522|40.7128,-74.006&markers=img:https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Airport_symbol.svg/131px-Airport_symbol.svg.png|-33.924869,18.424055&polyline=weight:3|yheiHkljMxqup@zu`qM&polyline=weight:3|color:ff8800|40.7128,-74.006|-33.924869,18.424055</code></p>
 </details>
 
 ![Polyline & Markers](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/markersandpolyline.png)
