@@ -365,7 +365,6 @@ export function getMapParams(params: Record<string, any>): {
 
   features["polyline"] = parseMultipleShapes("polyline", shapeDefaults.polyline, params);
   logger.debug("Parsed polylines:", features["polyline"]);
-  console.log("Parsed polylines:", features["polyline"])
 
   features["polygon"] = parseMultipleShapes("polygon", shapeDefaults.polygon, params);
   logger.debug("Parsed polygons:", features["polygon"]);
