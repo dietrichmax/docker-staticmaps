@@ -85,9 +85,8 @@
       // Update static map URL dynamically
       function updateStaticMapUrl(centerLonLat, zoom, currentBasemap) {
         const mapWidth = document.getElementById("map").offsetWidth
-        const staticMapUrl = `/staticmaps?width=${mapWidth}&height=${height}&center=${encodeURIComponent(
-          centerLonLat.toString()
-        )}&zoom=${zoom}&basemap=${currentBasemap}`
+        const staticMapUrl = `/staticmaps?width=${mapWidth}&height=${height}&center=${encodeURIComponent(centerLonLat.toString())}&zoom=${Math.round(zoom)}&basemap=${currentBasemap}`
+
         document.getElementById("staticMapUrlDisplay").textContent =
           staticMapUrl
       }
@@ -127,7 +126,7 @@
         const mapWidth = document.getElementById("map").offsetWidth
         const view = map.getView()
         const centerLonLat = ol.proj.toLonLat(view.getCenter())
-        const currentZoom = view.getZoom()
+        const currentZoom = Math.round(view.getZoom())
         const staticMapUrl = `/staticmaps?width=${mapWidth}&height=${height}&center=${encodeURIComponent(
           centerLonLat.toString()
         )}&zoom=${currentZoom}&basemap=${currentBasemap}`

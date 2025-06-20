@@ -33,6 +33,8 @@ curl "http://localhost:3000/api/staticmaps?center=-119.49280,37.81084&zoom=9"
 
 ![Minimal Example](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/minimalexample.png)
 
+A small demo UI is available at [http://localhost:3000](http://localhost:3000 "Demo UI")
+
 ## 📚 Table of Contents
 
 - [Installation & Configuration](#️-installation--configuration)
