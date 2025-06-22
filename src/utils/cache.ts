@@ -13,7 +13,9 @@ const tileCache = new NodeCache({ stdTTL: tileCacheTTL, checkperiod: 120 });
  * Retrieve cached tile by key, unless in development mode.
  */
 export function getCachedTile(key: string): Buffer | undefined {
-  if (isDev) return undefined;
+  if (isDev) {
+    return undefined
+  }
 
   const data = tileCache.get<Buffer>(key);
   logger.debug(data ? `Cache hit for ${key}` : `Cache miss for ${key}`);
@@ -24,7 +26,9 @@ export function getCachedTile(key: string): Buffer | undefined {
  * Store tile data in cache under given key, unless in development mode.
  */
 export function setCachedTile(key: string, data: Buffer): void {
-  if (isDev) return;
+  if (isDev) {
+    return
+  }
 
   tileCache.set(key, data);
   logger.debug(`Cached tile for ${key}`);

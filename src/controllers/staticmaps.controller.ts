@@ -307,12 +307,15 @@ const SHAPE_DEFAULTS: Record<ShapeType, Feature> = {
   circle: { color: "#4874db", width: 3, fill: "#0000bb", radius: 10 },
   markers: { img: "./public/images/marker-28.png", width: 28, height: 28 },
   text: {
+    text: "Hello world!",
     color: "#000000BB",
     width: 1,
     fill: "#000000",
     size: 12,
     font: "Arial",
     anchor: "start",
+    offsetX: -12,
+    offsetY: 22
   },
 }
 
