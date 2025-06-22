@@ -2,30 +2,32 @@
 
 # Docker Static Maps API 🗺️
 
-**API for generating static map images**
+**Generate static map images via a lightweight REST API**
 
 [![Shield: Buy me a coffee](https://img.shields.io/badge/Buy%20me%20a%20coffee-Support-yellow?logo=buymeacoffee)](https://buymeacoffee.com/mxdcodes) ![Version](https://img.shields.io/github/v/release/dietrichmax/docker-staticmaps) [![Shield: Docker Pulls](https://img.shields.io/docker/pulls/mxdcodes/docker-staticmaps?label=Docker%20Pull)](https://hub.docker.com/r/mxdcodes/docker-staticmaps) [![Build](https://github.com/dietrichmax/docker-staticmaps/actions/workflows/docker-build.yml/badge.svg)](https://github.com/dietrichmax/docker-staticmaps/actions/workflows/docker-build.yml) [![Shield: License: AGPL v3](https://img.shields.io/github/license/dietrichmax/docker-staticmaps)](https://www.gnu.org/licenses/agpl-3.0)
 
 </div>
 
-**docker-staticmaps** is an open-source API for generating static map images. Easily create maps with markers, polygons, circles, polylines or text, making it perfect for embedding map images on websites. It includes rate limiting to avoid abuse and caching to reduce load on the server. Ideal for personal use scenarios.
+**docker-staticmaps** is an open-source API for rendering static map images. Easily create maps with markers, polygons, circles, polylines or text, making it perfect for embedding map images on websites or apps. Comes with built-in rate limiting and image caching to optimize performance and protect against abuse.
 
 ## 🚀 Features
 
 - ✅ **Generate static maps** with markers, polygons, circles, polylines and text.
-- 🌍 **Supports multiple basemaps** (OpenStreetMap, Esri, Stamen, Carto).
-- ⚡ **Flexible REST API** for easy integration.
-- 🐳 **Lightweight containerized solution** for fast deployment.
+- 🌍 **Supports multiple basemaps** (OpenStreetMap, Esri, Stamen, Carto, custom tile server).
+- ⚡ **Easy-to-use REST API** - simple integration with any frontend or backend.
+- 🐳 **Docker-ready** for fast, lightweight deployment.
+- 🧊 **Tile and image caching** for performance.
+- 🚦 **Built-in rate limiting** per IP to protect against abuse.
 
-## Quickstart
+## 🏁 Quickstart
 
-With Docker:
+Run the service with Docker:
 
 ```bash
 docker run -p '3000:3000/tcp' mxdcodes/docker-staticmaps:latest
 ```
 
-Example API Request:
+Example request:
 
 ```bash
 curl "http://localhost:3000/api/staticmaps?center=-119.49280,37.81084&zoom=9"
@@ -56,30 +58,30 @@ A small demo UI is available at [http://localhost:3000](http://localhost:3000 "D
 
 | Name | Type | Default Value | Description |
 | --- | --- | --- | --- |
-| `PORT` | `number` | `3000` | Port number for the API 🖥️ |
-| `API_KEY` | `string` |  | Optional API key for authentication 🔑 |
-| `LOG_LEVEL` | `string` | `INFO` | Level of logging detail, e.g. `DEBUG`, `INFO`, `WARN` or `ERROR` 🔥 |
-| `TILE_CACHE_TTL` | `number` | `3600` | Time-to-live (in seconds) for cached tiles 🧊 (e.g., `1800` = 30 minutes) |
-| `RATE_LIMIT_MS` | `number` | `60000` | Time window in milliseconds for rate limit (e.g., `60000` = 1 minute) 🕒 |
-| `RATE_LIMIT_MAX` | `number` | `60` | Maximum number of requests allowed per IP within the time window ⛔ |
+| `PORT` | `number` | `3000` | Port number for the API |
+| `API_KEY` | `string` | (none) | Optional key to restrict access |
+| `LOG_LEVEL` | `string` | `INFO` | Logging level (`DEBUG`, `INFO`, `WARN` or `ERROR`) |
+| `TILE_CACHE_TTL` | `number` | `3600` | Tile cache TTL in seconds. |
+| `RATE_LIMIT_MS` | `number` | `60000` | Rate limit window in milliseconds |
+| `RATE_LIMIT_MAX` | `number` | `60` | Max requests per IP per window |
 
-### 🐳 Deployment using Docker
+### 🐳 Docker Deployment
 
 To run the container in detached mode:
 
 ```bash
 docker run -d \
   --name='docker-staticmaps' \
-  -p '3000:3000/tcp' \
+  -p '3000:3000' \
   -e API_KEY="your_api_key" \
   -e LOG_LEVEL="INFO" \
   -e TILE_CACHE_TTL=3600 \
   -e RATE_LIMIT_MS=60000 \
   -e RATE_LIMIT_MAX=60 \
-  'mxdcodes/docker-staticmaps:latest'
+  mxdcodes/docker-staticmaps:latest
 ```
 
-Alternatively, use `docker-compose.yml` to set up your environment easily:
+Or use `docker-compose.yml`:
 
 ```yaml
 services:
@@ -91,7 +93,7 @@ services:
       - "3000:3000"
     environment:
       - API_KEY=your_api_key
-      - LOG_LEVEL="INFO"
+      - LOG_LEVEL=INFO
       - TILE_CACHE_TTL=3600
       - RATE_LIMIT_MS=60000
       - RATE_LIMIT_MAX=60
@@ -105,41 +107,43 @@ Request static maps from the `/staticmaps` endpoint using the following paramete
 
 | Parameter | Default | Description |
 | --- | --- | --- |
-| `center` | (required) | Coordinates in the format `lon,lat` (e.g., `-119.49280,37.81084`). |
-| `zoom` | (required) | Zoom level (1 to 18). |
+| `center` | (required) | Center of map (`lon,lat`, `-119.49280,37.81084`) |
+| `zoom` | (required) | Zoom level (`1` to `18`). |
 
 ### Optional Parameters
 
 | Parameter | Default | Description                                    |
 | --------- | ------- | ---------------------------------------------- |
-| `width`   | `300`   | Image width in pixels.                         |
-| `height`  | `300`   | Image height in pixels.                        |
-| `format`  | `png`   | Output format (`png`, `jpg`, or `webp`).       |
-| `basemap` | `osm`   | Choose a map base layer (see basemap options). |
+| `width`   | `300`   | Image width (px)                               |
+| `height`  | `300`   | Image height (px)                              |
+| `format`  | `png`   | Output format: `png`, `jpg`, or `webp`         |
+| `basemap` | `osm`   | Tile layer (see below for supported types)     |
 
 ---
 
 ### 🌍 Basemap
 
-Use predefined basemaps with the `basemap` parameter or specify a `custom` tile server with the `tileUrl` parameter.
+Use the `basemap` parameter to select a predefined basemap or specify a `custom` tile server with the `tileUrl` parameter.
 
-Supported basemaps include:
+| Key                   | Provider / Type                  |
+| --------------------- | -------------------------------- |
+| `osm`                 | OpenStreetMap                    |
+| `otm`                 | OpenTopoMap                      |
+| `streets`             | Esri Streets                     |
+| `satellite`           | Esri Satellite                   |
+| `hybrid`              | Esri Hybrid (satellite + labels) |
+| `topo`                | Esri Topographic                 |
+| `gray`                | Esri Gray w/ labels              |
+| `gray-background`     | Esri Gray background only        |
+| `oceans`              | Esri Oceans                      |
+| `national-geographic` | National Geographic              |
+| `stamen-toner`        | Stamen Toner (B/W)               |
+| `stamen-watercolor`   | Stamen Watercolor                |
+| `carto-light`         | Carto Light                      |
+| `carto-dark`          | Carto Dark                       |
+| `custom`              | Provide `tileurl` manually       |
 
-- `osm` - default - [Open Street Map](https://www.openstreetmap.org/)
-- `otm` - [OpenTopoMap](https://www.opentopomap.org/)
-- `streets` - Esri's [street basemap](https://www.arcgis.com/home/webmap/viewer.html?webmap=7990d7ea55204450b8110d57e20c99ab)
-- `satellite` - Esri's [satellite basemap](https://www.arcgis.com/home/webmap/viewer.html?webmap=d802f08316e84c6592ef681c50178f17&center=-71.055499,42.364247&level=15)
-- `hybrid` - Satellite basemap with labels
-- `topo` - Esri [topographic map](https://www.arcgis.com/home/webmap/viewer.html?webmap=a72b0766aea04b48bf7a0e8c27ccc007)
-- `gray` - Esri gray canvas with labels
-- `gray-background` - Esri [gray canvas](https://www.arcgis.com/home/webmap/viewer.html?webmap=8b3d38c0819547faa83f7b7aca80bd76) without labels
-- `oceans` - Esri [ocean basemap](https://www.arcgis.com/home/webmap/viewer.html?webmap=5ae9e138a17842688b0b79283a4353f6&center=-122.255816,36.573652&level=8)
-- `national-geographic` - [National Geographic basemap](https://www.arcgis.com/home/webmap/viewer.html?webmap=d94dcdbe78e141c2b2d3a91d5ca8b9c9)
-- `stamen-toner` - [Stamen Toner](http://maps.stamen.com/toner/) black and white map with labels
-- `stamen-watercolor` - [Stamen Watercolor](http://maps.stamen.com/watercolor/)
-- `carto-light` - [Carto](https://carto.com/location-data-services/basemaps/) Free usage for up to 75,000 mapviews per month, non-commercial services only.
-- `carto-dark` - [Carto](https://carto.com/location-data-services/basemaps/) Free usage for up to 75,000 mapviews per month, non-commercial services only.
-- `custom` - Use a custom tile URL with parameter `tileurl`
+Make sure to respect the usage policy of each provider!
 
 ---
 
