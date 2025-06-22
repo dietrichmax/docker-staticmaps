@@ -1,5 +1,6 @@
 import { Router, Request, Response, NextFunction } from "express"
 import { handleMapRequest } from "../controllers/staticmaps.controller"
+import { rateLimiter } from "../utils/rateLimit"
 
 /**
  * Define the custom MapRequest type that extends the Express Request type.
@@ -8,6 +9,7 @@ import { handleMapRequest } from "../controllers/staticmaps.controller"
 export interface MapRequest extends Request {
   query: { [key: string]: string | string[] | undefined }
 }
+
 
 /**
  * Custom async handler to properly type requests and responses.
@@ -21,6 +23,8 @@ const asyncHandler =
   }
 
 const router = Router()
+
+router.use(rateLimiter)
 
 router.get("/", asyncHandler(handleMapRequest))
 router.post("/", asyncHandler(handleMapRequest))

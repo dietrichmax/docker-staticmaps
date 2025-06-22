@@ -8,7 +8,7 @@
 
 </div>
 
-**docker-staticmaps** is an open-source API for generating static map images. Easily create maps with markers, polygons, circles, polylines or text, making it perfect for embedding map images on websites. Ideal for continuous operation in personal use scenarios.
+**docker-staticmaps** is an open-source API for generating static map images. Easily create maps with markers, polygons, circles, polylines or text, making it perfect for embedding map images on websites. It includes rate limiting to avoid abuse and caching to reduce load on the server. Ideal for personal use scenarios.
 
 ## 🚀 Features
 
@@ -59,6 +59,9 @@ A small demo UI is available at [http://localhost:3000](http://localhost:3000 "D
 | `PORT` | `number` | `3000` | Port number for the API 🖥️ |
 | `API_KEY` | `string` |  | Optional API key for authentication 🔑 |
 | `LOG_LEVEL` | `string` | `INFO` | Level of logging detail, e.g. `DEBUG`, `INFO`, `WARN` or `ERROR` 🔥 |
+| `TILE_CACHE_TTL` | `number` | `3600` | Time-to-live (in seconds) for cached tiles 🧊 (e.g., `1800` = 30 minutes) |
+| `RATE_LIMIT_MS` | `number` | `60000` | Time window in milliseconds for rate limit (e.g., `60000` = 1 minute) 🕒 |
+| `RATE_LIMIT_MAX` | `number` | `60` | Maximum number of requests allowed per IP within the time window ⛔ |
 
 ### 🐳 Deployment using Docker
 

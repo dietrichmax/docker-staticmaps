@@ -96,8 +96,8 @@ app.listen(PORT, () => {
   logger.info(
     `🗺️${" "} docker-staticmaps running at http://localhost:${PORT}/api/staticmaps \nDemo running at http://localhost:${PORT}/`,
     {
-      port: PORT,
-      environment: process.env.NODE_ENV || "development",
+      PORT: PORT,
+      ENVIRONMENT: process.env.NODE_ENV || "development"
     }
   )
 })
