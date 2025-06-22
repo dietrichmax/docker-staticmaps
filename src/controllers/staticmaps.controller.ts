@@ -529,10 +529,6 @@ export async function generateMap(options: any): Promise<Buffer> {
     }
   })
 
-  logger.debug("Rendering map with center and zoom", {
-    center: options.center,
-    zoom: options.zoom,
-  })
   await map.render(options.center, options.zoom)
 
   if (!map.image) {

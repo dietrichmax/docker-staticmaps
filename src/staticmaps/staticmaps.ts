@@ -1,11 +1,5 @@
 import sharp from "sharp"
-import Image from "./image"
-import IconMarker from "./marker"
-import Polyline from "./polyline"
-import MultiPolygon from "./multipolygon"
-import Circle from "./circle"
-import Text from "./text"
-import Bound from "./bound"
+import { Image, IconMarker, Polyline, MultiPolygon, Circle, Text, Bound } from "./shapes"
 import TileServerConfig from "./tileserverconfig"
 import {
   workOnQueue,
@@ -233,6 +227,12 @@ class StaticMaps {
     }
 
     await this.loadMarker()
+
+    logger.debug("Rendering map with center and zoom", {
+      center: [this.centerX, this.centerY],
+      zoom: this.zoom
+    })
+
     return this.drawFeatures()
   }
 
@@ -722,11 +722,6 @@ class StaticMaps {
     return svgContent
   }
 
-  /**
-   * Preloads marker images from local or remote sources.
-   *
-   * @returns {Promise<void>}
-   */
   /**
    * Preloads marker images from local or remote sources.
    *

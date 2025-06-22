@@ -1,6 +1,11 @@
 // __tests__/handleMapRequest.test.ts
 
-import { handleMapRequest, getMapParams, parseCoordinates, isEncodedPolyline } from "../../src/controllers/staticmaps.controller"
+import {
+  handleMapRequest,
+  getMapParams,
+  parseCoordinates,
+  isEncodedPolyline,
+} from "../../src/controllers/staticmaps.controller"
 import { Request, Response } from "express"
 import StaticMaps from "../../src/staticmaps/staticmaps"
 import * as cache from "../../src/utils/cache"
@@ -53,54 +58,56 @@ describe("handleMapRequest", () => {
     })
   })
 
-it("responds with an image if all is valid", async () => {
-  jest.spyOn(cache, "getCachedTile").mockReturnValue(undefined);
-  jest.spyOn(cache, "createCacheKeyFromRequest").mockReturnValue("key");
-  jest.spyOn(cache, "setCachedTile").mockImplementation(() => {});
+  it("responds with an image if all is valid", async () => {
+    jest.spyOn(cache, "getCachedTile").mockReturnValue(undefined)
+    jest.spyOn(cache, "createCacheKeyFromRequest").mockReturnValue("key")
+    jest.spyOn(cache, "setCachedTile").mockImplementation(() => {})
 
-  const imageBuffer = Buffer.from("image");
+    const imageBuffer = Buffer.from("image")
 
-  // Mock StaticMaps methods properly
-  const renderMock = jest.fn().mockResolvedValue(undefined);
-  const bufferMock = jest.fn().mockResolvedValue(imageBuffer);
+    // Mock StaticMaps methods properly
+    const renderMock = jest.fn().mockResolvedValue(undefined)
+    const bufferMock = jest.fn().mockResolvedValue(imageBuffer)
 
-  jest.spyOn(StaticMaps.prototype, "render").mockImplementation(renderMock);
-  Object.defineProperty(StaticMaps.prototype, "image", {
-    get: () => ({
-      buffer: bufferMock,
-    }),
-  });
+    jest.spyOn(StaticMaps.prototype, "render").mockImplementation(renderMock)
+    Object.defineProperty(StaticMaps.prototype, "image", {
+      get: () => ({
+        buffer: bufferMock,
+      }),
+    })
 
-  const req = {
-    method: "GET",
-    query: {
-      center: "48.8566,2.3522",
-      width: "256",
-      height: "256",
-      zoom: "12",
-    },
-  };
+    const req = {
+      method: "GET",
+      query: {
+        center: "48.8566,2.3522",
+        width: "256",
+        height: "256",
+        zoom: "12",
+      },
+    }
 
-  const res = {
-    set: jest.fn().mockReturnThis(),
-    end: jest.fn(),
-    status: jest.fn().mockReturnThis(),
-    json: jest.fn(),
-  };
+    const res = {
+      set: jest.fn().mockReturnThis(),
+      end: jest.fn(),
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    }
 
-  await handleMapRequest(req as any, res as any);
+    await handleMapRequest(req as any, res as any)
 
-  expect(res.set).toHaveBeenCalledWith({
-    "Content-Type": "image/png",
-    "Content-Length": imageBuffer.length.toString(),
-  });
-  expect(res.end).toHaveBeenCalledWith(imageBuffer);
-});
+    expect(res.set).toHaveBeenCalledWith({
+      "Content-Type": "image/png",
+      "Content-Length": imageBuffer.length.toString(),
+    })
+    expect(res.end).toHaveBeenCalledWith(imageBuffer)
+  })
 
   it("handles errors in rendering gracefully", async () => {
     jest.spyOn(cache, "getCachedTile").mockReturnValue(undefined)
     jest.spyOn(cache, "createCacheKeyFromRequest").mockReturnValue("key")
-    ;(StaticMaps.prototype.render as jest.Mock).mockRejectedValue(new Error("render fail"))
+    ;(StaticMaps.prototype.render as jest.Mock).mockRejectedValue(
+      new Error("render fail")
+    )
 
     req.query = {
       center: "48.1,11.6",
@@ -117,8 +124,7 @@ it("responds with an image if all is valid", async () => {
 
 describe("isEncodedPolyline", () => {
   it("detects encoded polylines", () => {
-    expect(isEncodedPolyline(["_p~iF~ps|U_ulLnnqC_mqNvxq`@"]))
-      .toBe(true)
+    expect(isEncodedPolyline(["_p~iF~ps|U_ulLnnqC_mqNvxq`@"])).toBe(true)
   })
 
   it("returns false for lat/lon strings", () => {
