@@ -19,6 +19,7 @@ describe("tileCache module", () => {
 
   beforeEach(() => {
     cache._tileCache.flushAll()
+    jest.resetModules(); // reset module cache to re-evaluate isDev
     process.env.NODE_ENV = "production" // default to prod for tests
   })
 

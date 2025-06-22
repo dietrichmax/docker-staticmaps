@@ -9,3 +9,7 @@ export function normalizeIp(ip: string): string {
   }
   return ip
 }
+
+export function isDev() {
+  return process.env.NODE_ENV === "development";
+}

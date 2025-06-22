@@ -1,17 +1,4 @@
-/**
- * Interface for Basemap options.
- */
-interface Basemaps {
-  /**
-   * The name of the basemap.
-   */
-  basemap: string
-
-  /**
-   * The URL template for the basemap tiles.
-   */
-  url: string
-}
+import { Basemaps } from "src/types/types"
 
 /**
  * A collection of predefined basemaps with their corresponding URLs.

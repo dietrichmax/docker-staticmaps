@@ -1,23 +1,4 @@
-/**
- * Interface for Tile Server options.
- */
-interface TileServerOptions {
-  /**
-   * Optional URL template for the tile server.
-   * @default "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-   */
-  tileUrl?: string
-
-  /**
-   * Optional array of subdomains to use in the tile server URL.
-   */
-  tileSubdomains?: string[]
-
-  /**
-   * Optional array of subdomains (for backward compatibility).
-   */
-  subdomains?: string[]
-}
+import { TileServerOptions } from "src/types/types"
 
 /**
  * Class to configure Tile Server settings.

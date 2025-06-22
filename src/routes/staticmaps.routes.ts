@@ -1,15 +1,7 @@
 import { Router, Request, Response, NextFunction } from "express"
 import { handleMapRequest } from "../controllers/staticmaps.controller"
 import { rateLimiter } from "../utils/rateLimit"
-
-/**
- * Define the custom MapRequest type that extends the Express Request type.
- * Use ParsedQs for the query property to match the default Express behavior.
- */
-export interface MapRequest extends Request {
-  query: { [key: string]: string | string[] | undefined }
-}
-
+import { MapRequest } from "src/types/types"
 
 /**
  * Custom async handler to properly type requests and responses.
