@@ -307,7 +307,7 @@ const DEFAULTS = {
   tileRequestTimeout: 5000,
   tileRequestHeader: {},
   tileRequestLimit: 4,
-  zoomRange: [1, 18],
+  zoomRange: [1, 17],
   zoom: 10,
   reverseY: false,
   format: "png",
