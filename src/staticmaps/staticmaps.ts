@@ -200,7 +200,6 @@ class StaticMaps {
       )
     }
 
-    this.options.quality = this.quality
     this.center = center
     this.zoom = zoom || this.calculateZoom()
 
