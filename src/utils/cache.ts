@@ -34,7 +34,11 @@ export function setCachedTile(key: string, data: Buffer): void {
  * Create a unique cache key from the request method, path, and query string.
  */
 export function createCacheKeyFromRequest(req: MapRequest): string {
-  if (isDev) return `DEV:${req.method}:${req.path}`;
+  if (isDev) {
+    const devKey = `DEV:${req.method}:${req.path}`;
+    logger.debug(`Cache disabled in dev mode. Returning key: ${devKey}`);
+    return devKey;
+  }
 
   const queryParams = Object.entries(req.query)
     .filter(([, v]) => typeof v === "string")
@@ -44,7 +48,10 @@ export function createCacheKeyFromRequest(req: MapRequest): string {
     }, {});
 
   const queryString = new URLSearchParams(queryParams).toString();
-  return `${req.method}:${req.path}?${queryString}`;
+  const cacheKey = `${req.method}:${req.path}?${queryString}`;
+
+  logger.debug(`Generated cache key: ${cacheKey}`);
+  return cacheKey;
 }
 
 /** @internal Only exported for testing purposes */
