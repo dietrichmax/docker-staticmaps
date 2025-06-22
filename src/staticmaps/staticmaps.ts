@@ -222,8 +222,6 @@ class StaticMaps {
       this.centerY = latToY(centerLat, this.zoom)
     }
 
-    
-    console.log(this.options)
     this.image = new Image(this.options)
 
     // Await drawLayer for each tile layer
