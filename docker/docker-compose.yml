@@ -2,14 +2,14 @@ version: "3.8"
 
 services:
   docker-staticmaps:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile.nginx # Specify the Dockerfile in the subdirectory
     image: mxdcodes/docker-staticmaps:latest
     container_name: docker-staticmaps
     restart: always
     ports:
-      - "80:80"
       - "3000:3000"
     environment:
-      - API_KEY=${API_KEY}
+      - API_KEY=your_api_key
+      - LOG_LEVEL="INFO"
+      - TILE_CACHE_TTL=3600
+      - RATE_LIMIT_MS=60000
+      - RATE_LIMIT_MAX=60

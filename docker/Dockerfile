@@ -37,6 +37,9 @@ FROM node:20-alpine AS final
 # Set working directory
 WORKDIR /opt/app
 
+# Set environment variable for production
+ENV NODE_ENV=production
+
 # Copy only necessary files from the build stage
 COPY --from=build /opt/app/dist ./dist
 COPY --from=build /opt/app/public ./public

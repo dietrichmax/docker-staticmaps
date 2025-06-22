@@ -73,6 +73,9 @@ docker run -d \
   -p '3000:3000/tcp' \
   -e API_KEY="your_api_key" \
   -e LOG_LEVEL="INFO" \
+  -e TILE_CACHE_TTL=3600 \
+  -e RATE_LIMIT_MS=60000 \
+  -e RATE_LIMIT_MAX=60 \
   'mxdcodes/docker-staticmaps:latest'
 ```
 
@@ -89,6 +92,9 @@ services:
     environment:
       - API_KEY=your_api_key
       - LOG_LEVEL="INFO"
+      - TILE_CACHE_TTL=3600
+      - RATE_LIMIT_MS=60000
+      - RATE_LIMIT_MAX=60
 ```
 
 ## 🧑‍💻 API Reference
