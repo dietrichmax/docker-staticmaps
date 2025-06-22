@@ -112,12 +112,24 @@ Request static maps from the `/staticmaps` endpoint using the following paramete
 
 ### Optional Parameters
 
-| Parameter | Default | Description                                    |
-| --------- | ------- | ---------------------------------------------- |
-| `width`   | `300`   | Image width (px)                               |
-| `height`  | `300`   | Image height (px)                              |
-| `format`  | `png`   | Output format: `png`, `jpg`, or `webp`         |
-| `basemap` | `osm`   | Tile layer (see below for supported types)     |
+| Parameter            | Default               | Description                                                                 |
+|----------------------|-----------------------|-----------------------------------------------------------------------------|
+| `width`              | **Required**          | Image width in pixels                                                       |
+| `height`             | **Required**          | Image height in pixels                                                      |
+| `paddingX`           | `0`                   | Horizontal padding in pixels                                                |
+| `paddingY`           | `0`                   | Vertical padding in pixels                                                  |
+| `format`             | `png`                 | Output format: `png`, `jpg`, or `webp`                                      |
+| `quality`            | `100`                 | Image quality (0–100) for `jpg`/`webp`                                      |
+| `basemap`            | `osm`                 | Preset tile layer name (e.g., `osm`, `stamen-toner`)                        |
+| `tileUrl`            |                       | Tile URL with `{x}`, `{y}`, `{z}` or `{quadkey}` placeholders               |
+| `tileSubdomains`     | `[]`                  | Tile subdomains like `['a', 'b', 'c']`                                      |
+| `tileLayers`         | `[]`                  | Multiple tile layers with `tileUrl` and `tileSubdomains`                    |
+| `tileSize`           | `256`                 | Size of tiles in pixels                                                     |
+| `tileRequestTimeout` |                       | Tile request timeout (ms)                                                   |
+| `tileRequestHeader`  | `{}`                  | Extra headers for tile requests                                             |
+| `tileRequestLimit`   | `2`                   | Max parallel tile requests                                                  |
+| `zoomRange`          | `{ min: 1, max: 17 }` | Min and max zoom to try                                                     |
+| `reverseY`           | `false`               | Use TMS-style Y axis if `true`                                              |
 
 ---
 
