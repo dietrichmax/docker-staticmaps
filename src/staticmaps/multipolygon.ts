@@ -1,13 +1,4 @@
-/**
- * Interface for MultiPolygon options.
- */
-
-export interface MultiPolygonOptions {
-  coords: number[][][]
-  color?: string
-  fill?: boolean
-  width?: number
-}
+import { MultiPolygonOptions } from "src/types/types"
 
 /**
  * Class to handle MultiPolygon operations.

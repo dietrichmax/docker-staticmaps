@@ -20,48 +20,9 @@ import {
   chaikinSmooth,
 } from "./utils"
 import logger from "../utils/logger"
+import { MapOptions, TileServerConfigOptions } from "src/types/types"
 
 const RENDER_CHUNK_SIZE = 1000
-
-interface MapOptions {
-  width: number
-  height: number
-  zoom: number
-  center: { lat: number; lon: number }
-  markers?: Array<IconMarker>
-  lines?: Array<Array<Polyline>>
-  tileUrl?: string
-  tileSubdomains?: string[]
-  tileLayers?: Array<TileServerConfigOptions>
-  paddingX?: number
-  paddingY?: number
-  tileSize?: number
-  tileRequestTimeout?: number
-  tileRequestHeader?: any // Define more specific type if necessary
-  tileRequestLimit?: number
-  reverseY?: boolean
-  zoomRange?: { min?: number; max?: number }
-}
-
-interface TileData {
-  url: string
-  box: any // You can specify a more precise type for 'box' if needed
-}
-
-interface TileFetchResult {
-  success: boolean
-  tile?: {
-    url: string
-    box: any
-    body: Buffer
-  }
-  error?: string
-}
-
-interface TileServerConfigOptions {
-  tileUrl?: string
-  tileSubdomains?: string[]
-}
 
 class StaticMaps {
   options: MapOptions

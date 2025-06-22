@@ -1,17 +1,4 @@
-/**
- * Interface for icon options.
- */
-export interface IconOptions {
-  coord?: [number, number]
-  img?: string
-  height?: number
-  width?: number
-  drawWidth?: number
-  drawHeight?: number
-  resizeMode?: string
-  offsetX?: number
-  offsetY?: number
-}
+import { IconOptions } from "src/types/types"
 
 /**
  * Class to handle icon operations.

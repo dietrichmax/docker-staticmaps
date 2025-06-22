@@ -1,30 +1,5 @@
 import sharp from "sharp"
-
-/**
- * Interface for image options.
- */
-interface ImageOptions {
-  width?: number
-  height?: number
-  quality?: number
-}
-
-/**
- * Interface for tile data.
- */
-interface TileData {
-  body: Buffer
-  box: [number, number]
-}
-
-/**
- * Interface for tile part.
- */
-interface TilePart {
-  success: boolean
-  position?: { top: number; left: number }
-  data?: Buffer
-}
+import { ImageOptions, TileData, TilePart } from "../types/types"
 
 /**
  * Class to handle image operations such as drawing tiles and saving images.
