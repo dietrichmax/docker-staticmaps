@@ -159,8 +159,6 @@ polyline=polylineStyle|polylineCoord1|polylineCoord2|...
   - **Lat, Lon Coordinates**: Coordinates in `lat, lon` format, separated by `|`. You need at least two coordinates.
   - **Encoded Polylines**: You can also use [Google Encoded Polyline](https://developers.google.com/maps/documentation/utilities/polylinealgorithm "Google Encoded Polyline") format.
 
-The polyline will be decoded and rendered automatically.
-
 - **polylineStyle**: Customize the polyline with:
 
   | Parameter | Default   | Description                               |
