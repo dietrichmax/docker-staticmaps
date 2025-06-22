@@ -1,4 +1,4 @@
-import { IconOptions, Coordinate } from "src/types/types"
+import { IconOptions, Coordinate } from "../../types/types"
 
 /**
  * Class to handle icon operations.

@@ -1,4 +1,4 @@
-import { Coordinate } from "src/types/types"
+import { Coordinate } from "../../types/types"
 
 /**
  * Represents a circle with a center coordinate, radius, color, fill, and line width.

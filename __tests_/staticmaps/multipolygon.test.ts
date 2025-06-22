@@ -1,4 +1,4 @@
-import MultiPolygon from "../../src/staticmaps/multipolygon"
+import { MultiPolygon } from "../../src/staticmaps/features"
 
 describe("MultiPolygon class", () => {
   test("constructor sets coords and default color, fill and width", () => {

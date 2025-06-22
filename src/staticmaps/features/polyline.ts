@@ -1,5 +1,5 @@
-import { createGeodesicLine } from "./utils"
-import { PolylineOptions, Coordinate } from "../types/types"
+import { createGeodesicLine } from "../utils"
+import { PolylineOptions, Coordinate } from "../../types/types"
 
 /**
  * Class to handle Polyline operations.

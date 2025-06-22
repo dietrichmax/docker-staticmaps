@@ -2,10 +2,7 @@ import StaticMaps from "../staticmaps/staticmaps"
 import { basemaps } from "../utils/basemaps"
 import logger from "../utils/logger"
 import { Response } from "express"
-import IconMarker from "../staticmaps/marker"
-import Polyline from "../staticmaps/polyline"
-import Circle from "../staticmaps/circle"
-import Text from "../staticmaps/text"
+import {Polyline,  Circle, Text, IconMarker  } from "../staticmaps/features"
 import polyline from "@mapbox/polyline"
 import {
   getCachedTile,
@@ -372,6 +369,7 @@ export function getMapParams(params: MapParamsInput): MapParamsOutput {
   }
 
   const center = parseCenter(params.center)
+  const quality = parseInt(params.quality || 100)
 
   const hasCoords = Object.values(features).some((list) =>
     Array.isArray(list)
@@ -404,6 +402,7 @@ export function getMapParams(params: MapParamsInput): MapParamsOutput {
     reverseY: params.reverseY,
     format: params.format || "png",
     center,
+    quality: quality,
     ...features,
   }
 
@@ -537,9 +536,7 @@ export async function generateMap(options: any): Promise<Buffer> {
     throw new Error(errMsg)
   }
 
-  const imageBuffer = await map.image.buffer(`image/${options.format}`, {
-    quality: 100,
-  })
+  const imageBuffer = await map.image.buffer(`image/${options.format}`)
 
   return imageBuffer
 }
