@@ -310,7 +310,7 @@ const DEFAULTS = {
 };
 
 const SHAPE_DEFAULTS: Record<ShapeType, Feature> = {
-  polyline: { weight: 5, color: "blue" },
+  polyline: { weight: 5, color: "blue", fill: "#00FF003F" },
   polygon: { color: "#4874db", weight: 3, fill: "#00FF003F" },
   circle: { color: "#4874db", width: 3, fill: "#0000bb", radius: 10 },
   markers: { img: "./public/images/marker-28.png", width: 28, height: 28 },

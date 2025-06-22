@@ -611,12 +611,12 @@ class StaticMaps {
 
     this.markers.forEach((marker) => {
       queue.push(async () => {
-        if (!marker.position) {
-          throw Error("No marker position")
+        if (!marker.coord) {
+          throw Error("No marker coord")
         }
 
-        const top = Math.round(marker.position[1])
-        const left = Math.round(marker.position[0])
+        const top = Math.round(marker.coord[1])
+        const left = Math.round(marker.coord[0])
 
         // Check if the marker is within the bounds of the map
         if (top < 0 || left < 0 || top > this.height || left > this.width)
@@ -799,7 +799,7 @@ class StaticMaps {
           // Preloaded all icons
           this.markers.forEach((mark: any) => {
             const marker = mark
-            marker.position = [
+            marker.coord = [
               this.xToPx(lonToX(marker.coord[0], this.zoom)) - marker.offset[0],
               this.yToPx(latToY(marker.coord[1], this.zoom)) - marker.offset[1],
             ]

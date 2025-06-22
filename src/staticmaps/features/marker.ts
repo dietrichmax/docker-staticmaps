@@ -15,7 +15,6 @@ export default class Icon {
   offsetY: number
   offset: Coordinate
   imgData?: string
-  position?: Coordinate
 
   /**
    * Constructor for the Icon class.
