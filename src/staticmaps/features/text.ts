@@ -1,4 +1,4 @@
-import { TextOptions, Coordinate } from "src/types/types"
+import { TextOptions, Coordinate } from "../../types/types"
 
 /**
  * Class to handle Text operations.

@@ -1,4 +1,4 @@
-import Circle from "../../src/staticmaps/circle"
+import { Circle } from "../../src/staticmaps/features"
 
 describe("Circle class", () => {
   test("constructor assigns properties and defaults", () => {

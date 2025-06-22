@@ -1,5 +1,5 @@
 import sharp from "sharp"
-import { Image, IconMarker, Polyline, MultiPolygon, Circle, Text, Bound } from "./shapes"
+import { Image, IconMarker, Polyline, MultiPolygon, Circle, Text, Bound } from "./features"
 import TileServerConfig from "./tileserverconfig"
 import {
   workOnQueue,
@@ -44,6 +44,7 @@ class StaticMaps {
   centerX: number
   centerY: number
   zoom: number
+  quality: number
   paddingY: number
   paddingX: number
   image: any
@@ -86,6 +87,7 @@ class StaticMaps {
       min: zoomRange.min || 1,
       max: this.options.zoomRange?.max || 17, // maxZoom
     }
+    this.quality = this.options.quality || 100
 
     // Features
     this.markers = []
@@ -198,6 +200,7 @@ class StaticMaps {
       )
     }
 
+    this.options.quality = this.quality
     this.center = center
     this.zoom = zoom || this.calculateZoom()
 

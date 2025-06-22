@@ -1,4 +1,4 @@
-import IconMarker from "../../src/staticmaps/marker"
+import { IconMarker } from "../../src/staticmaps/features"
 
 describe("Icon class", () => {
   test("constructor sets default values correctly", () => {

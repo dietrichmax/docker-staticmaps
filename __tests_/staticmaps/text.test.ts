@@ -1,4 +1,4 @@
-import Text from "../../src/staticmaps/text"
+import { Text } from "../../src/staticmaps/features"
 import { TextOptions } from "../../src/types/types"
 
 describe("Text class", () => {

@@ -1,8 +1,8 @@
 // src/types.ts
 
 import { Request } from "express"
-import IconMarker from "../staticmaps/marker"
-import Polyline from "../staticmaps/polyline"
+import IconMarker from "../staticmaps/features/marker"
+import Polyline from "../staticmaps/features/polyline"
 
 /**
  * Coordinate as [longitude, latitude].
@@ -53,6 +53,7 @@ export interface MapOptions {
   tileRequestLimit?: number // Max number of tile requests
   reverseY?: boolean // Whether to reverse Y tile Coordinate
   zoomRange?: { min?: number; max?: number } // Allowed zoom range
+  quality?: number
 }
 
 /**
