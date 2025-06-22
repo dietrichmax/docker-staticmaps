@@ -41,7 +41,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   // Log only the most important fields for an incoming request.
   logger.info("Incoming request", {
     method: req.method,
-    url: truncate(req.url, 100), // Truncate the URL if it's too long.
+    url: truncate(req.url, 500), // Truncate the URL if it's too long.
     ip: req.ip,
   })
 
