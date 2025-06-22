@@ -43,6 +43,10 @@ export function setCachedTile(key: string, data: Buffer): void {
  * @returns string Cache key
  */
 export function createCacheKeyFromRequest(req: MapRequest): string {
+  if (isDev) {
+    logger.debug(`Cache disabled in development mode. Skipping createCacheKeyFromRequest`);
+    return `DEV:${req.method}:${req.path}`;
+  }
   // Serialize query parameters into URLSearchParams string
   const queryString = new URLSearchParams(
     // Cast because URLSearchParams expects Record<string, string>
@@ -53,3 +57,6 @@ export function createCacheKeyFromRequest(req: MapRequest): string {
 
   return `${req.method}:${req.path}?${queryString}`
 }
+
+/** @internal Only exported for testing purposes */
+export const _tileCache = tileCache;
