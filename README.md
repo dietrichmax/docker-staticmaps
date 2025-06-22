@@ -114,13 +114,13 @@ Request static maps from the `/staticmaps` endpoint using the following paramete
 
 | Parameter            | Default               | Description                                                                 |
 |----------------------|-----------------------|-----------------------------------------------------------------------------|
-| `width`              | **Required**          | Image width in pixels                                                       |
-| `height`             | **Required**          | Image height in pixels                                                      |
+| `width`              | `800`                 | Image width in pixels                                                       |
+| `height`             | `800`                 | Image height in pixels                                                      |
 | `paddingX`           | `0`                   | Horizontal padding in pixels                                                |
 | `paddingY`           | `0`                   | Vertical padding in pixels                                                  |
 | `format`             | `png`                 | Output format: `png`, `jpg`, or `webp`                                      |
 | `quality`            | `100`                 | Image quality (0–100) for `jpg`/`webp`                                      |
-| `basemap`            | `osm`                 | Preset tile layer name (e.g., `osm`, `stamen-toner`)                        |
+| `basemap`            | `osm`                 | Tile layer (see **Basemap** for supported types)                            |
 | `tileUrl`            |                       | Tile URL with `{x}`, `{y}`, `{z}` or `{quadkey}` placeholders               |
 | `tileSubdomains`     | `[]`                  | Tile subdomains like `['a', 'b', 'c']`                                      |
 | `tileLayers`         | `[]`                  | Multiple tile layers with `tileUrl` and `tileSubdomains`                    |
@@ -153,7 +153,6 @@ Use the `basemap` parameter to select a predefined basemap or specify a `custom`
 | `stamen-watercolor`   | [Stamen Watercolor](http://maps.stamen.com/watercolor/)                                                                                          |
 | `carto-light`         | [Carto Light](https://carto.com/location-data-services/basemaps/)                                                                                |
 | `carto-dark`          | [Carto Dark](https://carto.com/location-data-services/basemaps/)                                                                                 |
-| `custom`              | Provide `tileurl` manually                                                                                                                       |
 
 Make sure to respect the usage policy of each provider!
 

@@ -298,20 +298,16 @@ export function parseCoordinates(input: CoordInput): Coordinate[] {
 // ——— Defaults —————————————————————————————————————————————
 const DEFAULTS = {
   width: 800,
-  height: 600,
-  paddingX: 10,
-  paddingY: 10,
-  tileUrl: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-  tileLayers: [],
+  height: 800,
+  paddingX: 0,
+  paddingY: 0,
   tileSize: 256,
-  tileRequestTimeout: 5000,
-  tileRequestHeader: {},
-  tileRequestLimit: 4,
-  zoomRange: [1, 17],
-  zoom: 10,
+  tileRequestLimit: 2,
+  zoomRange: { min: 1, max: 17 },
   reverseY: false,
   format: "png",
-}
+  quality: 100,
+};
 
 const SHAPE_DEFAULTS: Record<ShapeType, Feature> = {
   polyline: { weight: 5, color: "blue" },
@@ -386,25 +382,26 @@ export function getMapParams(params: MapParamsInput): MapParamsOutput {
 
   const options = {
     ...DEFAULTS,
-    width: parseInt(params.width, 10) || 300,
-    height: parseInt(params.height, 10) || 300,
-    paddingX: parseInt(params.paddingX, 10),
-    paddingY: parseInt(params.paddingY, 10),
+    ...(params.width && { width: parseInt(params.width, 10) }),
+    ...(params.height && { height: parseInt(params.height, 10) }),
+    ...(params.paddingX && { paddingX: parseInt(params.paddingX, 10) }),
+    ...(params.paddingY && { paddingY: parseInt(params.paddingY, 10) }),
+    ...(params.tileSize && { tileSize: parseInt(params.tileSize, 10) }),
+    ...(params.zoom && { zoom: parseInt(params.zoom, 10) }),
+    ...(params.format && { format: params.format }),
+    ...(params.tileRequestTimeout && { tileRequestTimeout: params.tileRequestTimeout }),
+    ...(params.tileRequestHeader && { tileRequestHeader: params.tileRequestHeader }),
+    ...(params.tileRequestLimit && { tileRequestLimit: params.tileRequestLimit }),
+    ...(params.zoomRange && { zoomRange: params.zoomRange }),
+    ...(typeof params.reverseY !== "undefined" && { reverseY: params.reverseY }),
+    ...(typeof params.tileSubdomains !== "undefined" && { tileSubdomains: params.tileSubdomains }),
+    ...(typeof params.tileLayers !== "undefined" && { tileLayers: params.tileLayers }),
+
     tileUrl: getTileUrl(params.tileUrl, params.basemap),
-    tileSubdomains: params.tileSubdomains,
-    tileLayers: params.tileLayers,
-    tileSize: parseInt(params.tileSize, 10) || 256,
-    tileRequestTimeout: params.tileRequestTimeout,
-    tileRequestHeader: params.tileRequestHeader,
-    tileRequestLimit: params.tileRequestLimit,
-    zoomRange: params.zoomRange,
-    zoom: parseInt(params.zoom, 10),
-    reverseY: params.reverseY,
-    format: params.format || "png",
     center,
-    quality: quality,
+    quality,
     ...features,
-  }
+  };
 
   logger.debug("Final parsed options:", options)
 
