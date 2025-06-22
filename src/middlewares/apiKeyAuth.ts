@@ -10,7 +10,7 @@ const API_KEY = process.env.API_KEY
 const REQUIRE_AUTH = Boolean(API_KEY)
 
 if (REQUIRE_AUTH) {
-  logger.info("API key authentication enabled")
+  logger.info("🔑 API key authentication enabled")
 } else {
   logger.info("No API key set - running in keyless mode")
 }

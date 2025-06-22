@@ -69,8 +69,8 @@ describe("getTileUrl", () => {
   it("should return an empty string and log an error for an unsupported basemap", () => {
     const customUrl = null
     const basemap = "unsupported"
-    const expectedErrorMessage =
-      'Unsupported basemap: "unsupported"! Use "osm", "topo" or remove the "basemap" parameter.'
+    const expectedErrorMessage = 'Unsupported basemap: "unsupported"! Use a valid basemap name or remove the "basemap" parameter to use default ("osm").'
+
 
     const tileUrl = getTileUrl(customUrl, basemap)
     expect(tileUrl).toBe("")
