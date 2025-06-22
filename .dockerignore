@@ -1,9 +1,31 @@
+# Build/Test/Dev related
+__tests__/
+coverage/
+dist/
+node_modules/
+examples/
+docker/
 
-node_modules
+# Version control
 .git
-Dockerfile
+.github
+
+# Configs
+.prettierignore
+.prettierrc.json
+jest.config.ts
 .dockerignore
-*.log
+Dockerfile*
+
+# Docs, logs, CI/CD
 *.md
-examples
+*.log
 *release*
+
+# Environment files (optional)
+.env*
+
+# IDE/editor/misc
+.vscode/
+.DS_Store
+Thumbs.db
