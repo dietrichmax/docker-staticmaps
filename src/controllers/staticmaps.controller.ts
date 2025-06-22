@@ -7,15 +7,8 @@ import Polyline from "../staticmaps/polyline"
 import Circle from "../staticmaps/circle"
 import Text from "../staticmaps/text"
 import polyline from "@mapbox/polyline"
-
-/**
- * Custom Request type for map requests.
- * Query params can be strings, arrays of strings, or undefined.
- */
-export interface MapRequest extends Request {
-  query: { [key: string]: string | string[] | undefined }
-  body: Record<string, any> // if you use body for POST requests, define as needed
-}
+import { getCachedTile, setCachedTile, createCacheKeyFromRequest } from "../utils/cache"
+import { MapRequest } from "../types/types"
 
 /**
  * Handle a map request to generate a static map image.
@@ -27,6 +20,16 @@ export async function handleMapRequest(
   req: MapRequest,
   res: Response
 ): Promise<void> {
+  const cacheKey = createCacheKeyFromRequest(req) // you define this to create unique keys from request params
+    
+  // Try to serve cached tile
+  const cachedTile = getCachedTile(cacheKey)
+  if (cachedTile) {
+    logger.debug("Serving cached tile; cacheKey:", { cacheKey })
+    res.type("image/png").send(cachedTile)
+    return
+  }
+
   const params = req.method === "GET" ? req.query : req.body
   const { missingParams, options } = getMapParams(params)
 
@@ -44,6 +47,8 @@ export async function handleMapRequest(
       format: options.format,
       size: img.length,
     })
+    // Cache the generated tile
+    setCachedTile(cacheKey, img)
     res.set({
         "Content-Type": `image/${options.format}`,
         "Content-Length": img.length.toString(),
