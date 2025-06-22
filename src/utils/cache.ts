@@ -1,61 +1,50 @@
-import NodeCache from "node-cache"
-import { MapRequest } from "src/types/types"
-import logger from "./logger"
-
-// Cache with 1 hour TTL (3600 seconds)
-const tileCache = new NodeCache({ stdTTL: 3600, checkperiod: 120 })
+import NodeCache from "node-cache";
+import { MapRequest } from "src/types/types";
+import logger from "./logger";
 
 const isDev = process.env.NODE_ENV === "development";
 
+// Use TTL from env or default to 3600 seconds (1 hour)
+const tileCacheTTL = parseInt(process.env.TILE_CACHE_TTL ?? "", 10) || 3600;
+
+const tileCache = new NodeCache({ stdTTL: tileCacheTTL, checkperiod: 120 });
+
 /**
- * Retrieve cached tile by key.
- * @param key Cache key string
- * @returns Buffer or undefined if cache miss
+ * Retrieve cached tile by key, unless in development mode.
  */
 export function getCachedTile(key: string): Buffer | undefined {
-  if (isDev) {
-    logger.debug(`Cache disabled in development mode. Skipping getCachedTile for ${key}`);
-    return undefined; // Always cache miss in dev
-  }
-  logger.debug(`Retrieving cached tile for ${key}`);
-  return tileCache.get<Buffer>(key);
+  if (isDev) return undefined;
+
+  const data = tileCache.get<Buffer>(key);
+  logger.debug(data ? `Cache hit for ${key}` : `Cache miss for ${key}`);
+  return data;
 }
 
 /**
- * Store tile data in cache under given key.
- * @param key Cache key string
- * @param data Tile image data as Buffer
+ * Store tile data in cache under given key, unless in development mode.
  */
 export function setCachedTile(key: string, data: Buffer): void {
-  if (isDev) {
-    logger.debug(`Cache disabled in development mode. Skipping setCachedTile for ${key}`);
-    return; // Do not store cache in dev
-  }
-  logger.debug(`Caching tile ${key}`);
+  if (isDev) return;
+
   tileCache.set(key, data);
+  logger.debug(`Cached tile for ${key}`);
 }
 
 /**
- * Creates a cache key string based on the request method, path, and query parameters.
- * This ensures each unique request maps to a unique cache key.
- * 
- * @param req Express request object
- * @returns string Cache key
+ * Create a unique cache key from the request method, path, and query string.
  */
 export function createCacheKeyFromRequest(req: MapRequest): string {
-  if (isDev) {
-    logger.debug(`Cache disabled in development mode. Skipping createCacheKeyFromRequest`);
-    return `DEV:${req.method}:${req.path}`;
-  }
-  // Serialize query parameters into URLSearchParams string
-  const queryString = new URLSearchParams(
-    // Cast because URLSearchParams expects Record<string, string>
-    Object.entries(req.query)
-      .filter(([_, v]) => typeof v === "string") // ignore arrays or undefined for simplicity
-      .reduce((acc, [k, v]) => ({ ...acc, [k]: v as string }), {})
-  ).toString()
+  if (isDev) return `DEV:${req.method}:${req.path}`;
 
-  return `${req.method}:${req.path}?${queryString}`
+  const queryParams = Object.entries(req.query)
+    .filter(([, v]) => typeof v === "string")
+    .reduce<Record<string, string>>((acc, [k, v]) => {
+      acc[k] = v as string;
+      return acc;
+    }, {});
+
+  const queryString = new URLSearchParams(queryParams).toString();
+  return `${req.method}:${req.path}?${queryString}`;
 }
 
 /** @internal Only exported for testing purposes */

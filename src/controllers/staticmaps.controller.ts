@@ -1,7 +1,7 @@
 import StaticMaps from "../staticmaps/staticmaps"
 import { basemaps } from "../utils/basemaps"
 import logger from "../utils/logger"
-import { Request, Response } from "express"
+import { Response } from "express"
 import IconMarker from "../staticmaps/marker"
 import Polyline from "../staticmaps/polyline"
 import Circle from "../staticmaps/circle"
