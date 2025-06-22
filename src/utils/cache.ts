@@ -5,14 +5,20 @@ import logger from "./logger"
 // Cache with 1 hour TTL (3600 seconds)
 const tileCache = new NodeCache({ stdTTL: 3600, checkperiod: 120 })
 
+const isDev = process.env.NODE_ENV === "development";
+
 /**
  * Retrieve cached tile by key.
  * @param key Cache key string
  * @returns Buffer or undefined if cache miss
  */
 export function getCachedTile(key: string): Buffer | undefined {
-  logger.debug(`Retrieving cached tile for ${key}`)
-  return tileCache.get<Buffer>(key)
+  if (isDev) {
+    logger.debug(`Cache disabled in development mode. Skipping getCachedTile for ${key}`);
+    return undefined; // Always cache miss in dev
+  }
+  logger.debug(`Retrieving cached tile for ${key}`);
+  return tileCache.get<Buffer>(key);
 }
 
 /**
@@ -21,8 +27,12 @@ export function getCachedTile(key: string): Buffer | undefined {
  * @param data Tile image data as Buffer
  */
 export function setCachedTile(key: string, data: Buffer): void {
-  logger.debug(`Caching tile ${key}`)
-  tileCache.set(key, data)
+  if (isDev) {
+    logger.debug(`Cache disabled in development mode. Skipping setCachedTile for ${key}`);
+    return; // Do not store cache in dev
+  }
+  logger.debug(`Caching tile ${key}`);
+  tileCache.set(key, data);
 }
 
 /**
