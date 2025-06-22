@@ -8,7 +8,7 @@
 
 </div>
 
-**docker-staticmaps** is an open-source API for generating static map images. Easily create maps with markers, polygons, circles, polylines or text, making it perfect for embedding map images on websites. Ideal for continuous operation in personal use scenarios.
+**docker-staticmaps** is an open-source API for generating static map images. Easily create maps with markers, polygons, circles, polylines or text, making it perfect for embedding map images on websites. It includes rate limiting to avoid abuse and caching to reduce load on the server. Ideal for personal use scenarios.
 
 ## 🚀 Features
 
