@@ -10,7 +10,7 @@ function createTestRequest(overrides: Partial<MapRequest>): MapRequest {
     query: {},
     body: {},
     ...overrides,
-  } as unknown as MapRequest;
+  } as unknown as MapRequest
 }
 
 describe("tileCache module", () => {
@@ -19,7 +19,7 @@ describe("tileCache module", () => {
 
   beforeEach(() => {
     cache._tileCache.flushAll()
-    jest.resetModules(); // reset module cache to re-evaluate isDev
+    jest.resetModules() // reset module cache to re-evaluate isDev
     process.env.NODE_ENV = "production" // default to prod for tests
   })
 
@@ -34,19 +34,22 @@ describe("tileCache module", () => {
   })
 
   test("createCacheKeyFromRequest generates consistent keys", () => {
-    const req = createTestRequest({ query: { center: "-119.49280,37.81084", zoom: "9", layers: "topo" } });
+    const req = createTestRequest({
+      query: { center: "-119.49280,37.81084", zoom: "9", layers: "topo" },
+    })
 
     const key = cache.createCacheKeyFromRequest(req)
-    expect(key).toBe("GET:/staticmaps?center=-119.49280%2C37.81084&zoom=9&layers=topo")
-
+    expect(key).toBe(
+      "GET:/staticmaps?center=-119.49280%2C37.81084&zoom=9&layers=topo"
+    )
   })
 
   test("cache functions no-op in development mode", () => {
     process.env.NODE_ENV = "development"
-    jest.resetModules(); // reset module cache to re-evaluate isDev
-    
-    const cache = require("../../src/utils/cache"); // re-import after NODE_ENV set
-    
+    jest.resetModules() // reset module cache to re-evaluate isDev
+
+    const cache = require("../../src/utils/cache") // re-import after NODE_ENV set
+
     cache.setCachedTile(testKey, testData)
     const cached = cache.getCachedTile(testKey)
     expect(cached).toBeUndefined()

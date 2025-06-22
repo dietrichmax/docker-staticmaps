@@ -71,12 +71,7 @@ app.get("/health", (_req, res) => {
 
 // Global error handler
 app.use(
-  (
-    err: Error,
-    req: Request,
-    res: Response,
-    _next: NextFunction
-  ): void => {
+  (err: Error, req: Request, res: Response, _next: NextFunction): void => {
     logger.error("Unhandled error occurred", {
       error: err.message,
       stack: err.stack,
@@ -97,7 +92,7 @@ app.listen(PORT, () => {
     `🗺️${" "} docker-staticmaps running at http://localhost:${PORT}/api/staticmaps \nDemo running at http://localhost:${PORT}/`,
     {
       PORT: PORT,
-      ENVIRONMENT: process.env.NODE_ENV || "development"
+      ENVIRONMENT: process.env.NODE_ENV || "development",
     }
   )
 })

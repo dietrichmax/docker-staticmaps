@@ -1,4 +1,4 @@
-import { MultiPolygonOptions } from "src/types/types"
+import { MultiPolygonOptions, Coordinate } from "src/types/types"
 
 /**
  * Class to handle MultiPolygon operations.

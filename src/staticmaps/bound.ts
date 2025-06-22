@@ -1,18 +1,15 @@
+import { Coordinate } from "src/types/types"
+
 /**
  * Represents a bounding box or envelope for a set of coordinates.
  */
 export default class Bound {
   /**
    * Options passed to the Bound instance.
-   * @type {{ coords: [number, number][] }}
+   * @type {{ coords: Coordinate[] }}
    */
-  options: { coords: [number, number][] }
-
-  /**
-   * The coordinates used to calculate the bounding box.
-   * @type {[number, number][]}
-   */
-  coords: [number, number][]
+  options: { coords: Coordinate[] }
+  coords: Coordinate[]
 
   /**
    * Creates a new Bound instance with the provided options.
@@ -20,7 +17,7 @@ export default class Bound {
    * @param options - An object containing the coordinates.
    * @param options.coords - An array of coordinate pairs (longitude, latitude).
    */
-  constructor(options: { coords: [number, number][] }) {
+  constructor(options: { coords: Coordinate[] }) {
     this.options = options
     this.coords = options.coords
   }

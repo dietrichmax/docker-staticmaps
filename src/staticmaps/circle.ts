@@ -1,8 +1,10 @@
+import { Coordinate } from "src/types/types"
+
 /**
  * Represents a circle with a center coordinate, radius, color, fill, and line width.
  */
 export default class Circle {
-  coord: [number, number]
+  coord: Coordinate
   radius: number
   color: string
   fill: string
@@ -20,7 +22,7 @@ export default class Circle {
    * @method extent - asdasd.
    */
   constructor(options: {
-    coord: [number, number]
+    coord: Coordinate
     radius: number
     color?: string
     fill?: string

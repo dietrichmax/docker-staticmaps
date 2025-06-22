@@ -1,11 +1,11 @@
 import { createGeodesicLine } from "./utils"
-import { PolylineOptions  } from  "../types/types"
+import { PolylineOptions, Coordinate } from "../types/types"
 
 /**
  * Class to handle Polyline operations.
  */
 export default class Polyline {
-  coords: [number, number][]
+  coords: Coordinate[]
   color: string
   fill?: string
   width: number
@@ -28,14 +28,11 @@ export default class Polyline {
     this.coords =
       options.coords.length === 2
         ? (() => {
-            const fixedStart: [number, number] = [
+            const fixedStart: Coordinate = [
               this.coords[0][1],
               this.coords[0][0],
             ]
-            const fixedEnd: [number, number] = [
-              this.coords[1][1],
-              this.coords[1][0],
-            ]
+            const fixedEnd: Coordinate = [this.coords[1][1], this.coords[1][0]]
             createGeodesicLine(this.coords[0], this.coords[1])
             const geodesicCoords = createGeodesicLine(fixedStart, fixedEnd)
             return geodesicCoords

@@ -20,7 +20,11 @@ import {
   chaikinSmooth,
 } from "./utils"
 import logger from "../utils/logger"
-import { MapOptions, TileServerConfigOptions } from "src/types/types"
+import {
+  MapOptions,
+  TileServerConfigOptions,
+  Coordinate,
+} from "src/types/types"
 
 const RENDER_CHUNK_SIZE = 1000
 
@@ -488,7 +492,7 @@ class StaticMaps {
       throw Error("No text coords given")
     }
 
-    const mapcoords: [number, number] = [
+    const mapcoords: Coordinate = [
       this.xToPx(lonToX(text.coord[0], this.zoom)) - text.offset[0],
       this.yToPx(latToY(text.coord[1], this.zoom)) - text.offset[1],
     ]
@@ -516,7 +520,7 @@ class StaticMaps {
    */
   multiPolygonToSVG(multipolygon: any): string {
     const shapeArrays = multipolygon.coords.map((shape: any) =>
-      shape.map((coord: [number, number]) => [
+      shape.map((coord: Coordinate) => [
         this.xToPx(lonToX(coord[0], this.zoom)),
         this.yToPx(latToY(coord[1], this.zoom)),
       ])
@@ -531,7 +535,7 @@ class StaticMaps {
 
       const pathParts = [
         `M ${startPoint[0]} ${startPoint[1]}`, // Move to the first point
-        ...points.map((p: [number, number]) => `L ${p[0]} ${p[1]}`), // Line to the remaining points
+        ...points.map((p: Coordinate) => `L ${p[0]} ${p[1]}`), // Line to the remaining points
         "Z", // Close the path
       ]
 
@@ -553,14 +557,14 @@ class StaticMaps {
    * @returns {string} - SVG string for the line.
    */
   lineToSVG(line: any): string {
-    const rawPixels = line.coords.map(([lon, lat]: [number, number]) => [
+    const rawPixels = line.coords.map(([lon, lat]: Coordinate) => [
       this.xToPx(lonToX(lon, this.zoom)),
       this.yToPx(latToY(lat, this.zoom)),
     ])
 
     if (rawPixels.length < 2) return ""
 
-    let pointsToUse: [number, number][]
+    let pointsToUse: Coordinate[]
 
     if (line.type === "polygon") {
       // No smoothing for polygons!
