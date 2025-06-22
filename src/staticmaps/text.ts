@@ -1,10 +1,10 @@
-import { TextOptions } from "src/types/types"
+import { TextOptions, Coordinate } from "src/types/types"
 
 /**
  * Class to handle Text operations.
  */
 export default class Text {
-  coord?: [number, number]
+  coord?: Coordinate
   text?: string
   public readonly color: string
   public readonly width: string
@@ -14,7 +14,7 @@ export default class Text {
   public readonly anchor: "start" | "middle" | "end"
   offsetX: number
   offsetY: number
-  public readonly offset: [number, number]
+  public readonly offset: Coordinate
 
   /**
    * Constructor for the Text class.

@@ -1,8 +1,9 @@
 import Bound from "../../src/staticmaps/bound"
+import { Coordinate } from "../../src/types/types"
 
 describe("Bound Class", () => {
   it("should calculate the correct bounding box", () => {
-    const coords: [number, number][] = [
+    const coords: Coordinate[] = [
       [-119.4928, 37.81084],
       [-118.4928, 38.81084],
       [-120.4928, 36.81084],
@@ -15,7 +16,7 @@ describe("Bound Class", () => {
   })
 
   it("should handle a single coordinate", () => {
-    const coords: [number, number][] = [[-119.4928, 37.81084]]
+    const coords: Coordinate[] = [[-119.4928, 37.81084]]
 
     const bound = new Bound({ coords })
     const result = bound.extent()
@@ -32,7 +33,7 @@ describe("Bound Class", () => {
   })
 
   it("should handle negative coordinates", () => {
-    const coords: [number, number][] = [
+    const coords: Coordinate[] = [
       [-180, -90],
       [0, 0],
       [180, 90],
@@ -45,7 +46,7 @@ describe("Bound Class", () => {
   })
 
   it("should handle coordinates with mixed latitudes and longitudes", () => {
-    const coords: [number, number][] = [
+    const coords: Coordinate[] = [
       [-120.0, 40.0],
       [-110.0, 35.0],
       [-115.0, 45.0],

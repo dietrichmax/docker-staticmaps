@@ -43,7 +43,7 @@ export default class Image {
       const w = metadata.width + Math.min(0, x) - Math.max(0, extraWidth)
       const h = metadata.height + Math.min(0, y) - Math.max(0, extraHeight)
 
-      if (!w || !h) {
+      if (w <= 0 || h <= 0) {
         return { success: false }
       }
 

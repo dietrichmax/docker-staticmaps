@@ -7,8 +7,19 @@ import Polyline from "../staticmaps/polyline"
 import Circle from "../staticmaps/circle"
 import Text from "../staticmaps/text"
 import polyline from "@mapbox/polyline"
-import { getCachedTile, setCachedTile, createCacheKeyFromRequest } from "../utils/cache"
-import { MapRequest } from "../types/types"
+import {
+  getCachedTile,
+  setCachedTile,
+  createCacheKeyFromRequest,
+} from "../utils/cache"
+import {
+  MapRequest,
+  Coordinate,
+  ShapeType,
+  Feature,
+  MapParamsInput,
+  MapParamsOutput,
+} from "../types/types"
 
 /**
  * Handle a map request to generate a static map image.
@@ -20,28 +31,28 @@ export async function handleMapRequest(
   req: MapRequest,
   res: Response
 ): Promise<void> {
-  const cacheKey = createCacheKeyFromRequest(req) // you define this to create unique keys from request params
-    
-  // Try to serve cached tile
-  const cachedTile = getCachedTile(cacheKey)
-  if (cachedTile) {
-    logger.debug("Serving cached tile; cacheKey:", { cacheKey })
-    res.type("image/png").send(cachedTile)
-    return
-  }
-
-  const params = req.method === "GET" ? req.query : req.body
-  const { missingParams, options } = getMapParams(params)
-
-  if (missingParams.length > 0) {
-    logger.warn("Missing parameters", { missingParams })
-    res.status(422).json({ error: "Missing parameters", missingParams })
-    return
-  }
-
-  logger.debug("Request params:", { params })
-
   try {
+    const cacheKey = createCacheKeyFromRequest(req) // you define this to create unique keys from request params
+
+    // Try to serve cached tile
+    const cachedTile = getCachedTile(cacheKey)
+    if (cachedTile) {
+      logger.debug("Serving cached tile; cacheKey:", { cacheKey })
+      res.type("image/png").send(cachedTile)
+      return
+    }
+
+    const params = req.method === "GET" ? req.query : req.body
+    const { missingParams, options } = getMapParams(params)
+
+    if (missingParams.length > 0) {
+      logger.warn("Missing parameters", { missingParams })
+      res.status(422).json({ error: "Missing parameters", missingParams })
+      return
+    }
+
+    logger.debug("Request params:", { params })
+
     const img = await generateMap(options)
     logger.info("Image successfully rendered", {
       format: options.format,
@@ -49,7 +60,8 @@ export async function handleMapRequest(
     })
     // Cache the generated tile
     setCachedTile(cacheKey, img)
-    res.set({
+    res
+      .set({
         "Content-Type": `image/${options.format}`,
         "Content-Length": img.length.toString(),
       })
@@ -59,15 +71,29 @@ export async function handleMapRequest(
     res.status(500).json({ error: "Internal Server Error" })
   }
 }
+
 // --- Helpers ---
 
 const ALLOWED_COLORS = new Set([
-  "blue", "green", "red", "yellow", "orange", "purple", "black", "white",
+  "blue",
+  "green",
+  "red",
+  "yellow",
+  "orange",
+  "purple",
+  "black",
+  "white",
 ])
 
 const COLOR_KEYS = new Set(["color", "fill"])
 const NUMERIC_KEYS = new Set([
-  "weight", "radius", "width", "height", "size", "offsetX", "offsetY",
+  "weight",
+  "radius",
+  "width",
+  "height",
+  "size",
+  "offsetX",
+  "offsetY",
 ])
 
 /**
@@ -141,7 +167,7 @@ function parseMultipleShapes(
    * Supports raw numbers, arrays, and objects with `lat`/`lon`.
    */
   const normalizeCoords = (shape: Record<string, any>): number[][] => {
-    const coords = shape.coords
+    const coords = shape?.coords
 
     if (Array.isArray(coords)) {
       if (coords.length === 2 && typeof coords[0] === "number") {
@@ -155,7 +181,11 @@ function parseMultipleShapes(
       }
     }
 
-    if (typeof coords === "object" && coords?.lat !== undefined && coords?.lon !== undefined) {
+    if (
+      typeof coords === "object" &&
+      coords?.lat !== undefined &&
+      coords?.lon !== undefined
+    ) {
       return [[coords.lon, coords.lat]]
     }
 
@@ -198,8 +228,10 @@ function parseMultipleShapes(
 }
 
 // ——— Type Aliases —————————————————————————————————————————————
-type Point = [number, number]
-type CoordInput = Array<Point> | Array<string> | Array<{ lat: number; lon: number }>
+type CoordInput =
+  | Array<Coordinate>
+  | Array<string>
+  | Array<{ lat: number; lon: number }>
 
 // ——— Encoded‐Polyline Detector ————————————————————————————————————
 const ENCODED_POLYLINE_REGEX = /[^0-9.,|\- ]/
@@ -221,7 +253,7 @@ export function isEncodedPolyline(coords: string[]): boolean {
  *  - Encoded‐polyline strings
  *  - "lat,lon" string pairs
  */
-export function parseCoordinates(input: CoordInput): Point[] {
+export function parseCoordinates(input: CoordInput): Coordinate[] {
   if (!Array.isArray(input) || input.length === 0) return []
 
   // 1) Already numeric pairs or objects
@@ -232,14 +264,14 @@ export function parseCoordinates(input: CoordInput): Point[] {
     return input
       .map((c) => {
         if (Array.isArray(c) && c.length === 2) {
-          return c as Point
+          return c as Coordinate
         }
         if (typeof c === "object" && c !== null && "lat" in c && "lon" in c) {
-          return [c.lon, c.lat] as Point
+          return [c.lon, c.lat] as Coordinate
         }
         return null
       })
-      .filter((pt): pt is Point => pt !== null)
+      .filter((pt): pt is Coordinate => pt !== null)
   }
 
   // 2) Encoded polyline
@@ -248,9 +280,7 @@ export function parseCoordinates(input: CoordInput): Point[] {
     // remove optional surrounding braces
     const raw = strings.join("|").replace(/^\{|\}$/g, "")
     try {
-      return polyline
-        .decode(raw)
-        .map(([lat, lon]) => [lon, lat] as Point)
+      return polyline.decode(raw).map(([lat, lon]) => [lon, lat] as Coordinate)
     } catch (err: any) {
       logger.error("Polyline decode failed:", err.message)
       return []
@@ -261,26 +291,11 @@ export function parseCoordinates(input: CoordInput): Point[] {
   return strings
     .map((str) => {
       const [latStr, lonStr] = str.split(",").map((s) => s.trim())
-      const lat = Number(latStr), lon = Number(lonStr)
-      return isNaN(lat) || isNaN(lon) ? null : ([lon, lat] as Point)
+      const lat = Number(latStr),
+        lon = Number(lonStr)
+      return isNaN(lat) || isNaN(lon) ? null : ([lon, lat] as Coordinate)
     })
-    .filter((pt): pt is Point => pt !== null)
-}
-
-
-// ——— Types —————————————————————————————————————————————
-type ShapeType =
-  | "polyline"
-  | "polygon"
-  | "circle"
-  | "markers"
-  | "text"
-
-type Feature = Record<string, any>
-type MapParamsInput = Record<string, any>
-type MapParamsOutput = {
-  missingParams: string[]
-  options: Record<string, any>
+    .filter((pt): pt is Coordinate => pt !== null)
 }
 
 // ——— Defaults —————————————————————————————————————————————
@@ -315,12 +330,12 @@ const SHAPE_DEFAULTS: Record<ShapeType, Feature> = {
     font: "Arial",
     anchor: "start",
     offsetX: -12,
-    offsetY: 22
+    offsetY: 22,
   },
 }
 
 // ——— Center Coordinate Parser —————————————————————————————
-function parseCenter(val: any): [number, number] | null {
+function parseCenter(val: any): Coordinate | null {
   if (!val) return null
   if (typeof val === "string") {
     const [lat, lon] = val.split(",").map(Number)
@@ -329,7 +344,11 @@ function parseCenter(val: any): [number, number] | null {
   if (Array.isArray(val) && val.length === 2 && typeof val[0] === "number") {
     return [val[1], val[0]]
   }
-  if (typeof val === "object" && val.lat !== undefined && val.lon !== undefined) {
+  if (
+    typeof val === "object" &&
+    val.lat !== undefined &&
+    val.lon !== undefined
+  ) {
     return [val.lon, val.lat]
   }
   return null
@@ -348,12 +367,11 @@ export function getMapParams(params: MapParamsInput): MapParamsOutput {
   const features: Record<string, any> = {}
 
   for (const key of Object.keys(SHAPE_DEFAULTS) as ShapeType[]) {
-    features[key] = parseMultipleShapes(key, SHAPE_DEFAULTS[key], params)
+    features[key] = parseMultipleShapes(key, SHAPE_DEFAULTS[key], params || {})
     logger.debug(`Parsed ${key}:`, features[key])
   }
 
   const center = parseCenter(params.center)
-  
 
   const hasCoords = Object.values(features).some((list) =>
     Array.isArray(list)
@@ -361,7 +379,7 @@ export function getMapParams(params: MapParamsInput): MapParamsOutput {
       : list?.coords?.length
   )
 
-  const missingParams = !center && !hasCoords ? ["{center} or {coordinates}"] : []
+  const missingParams = []
 
   if (!center && !hasCoords) {
     missingParams.push("{center} or {coordinates}")
@@ -537,22 +555,25 @@ export async function generateMap(options: any): Promise<Buffer> {
  * @param {string|null} [basemap] - The desired base map type (e.g., "osm", "topo").
  * @returns {string} The tile URL string.
  */
-export function getTileUrl(customUrl: string | null, basemap: string | null): string {
+export function getTileUrl(
+  customUrl: string | null,
+  basemap: string | null
+): string {
   if (customUrl) {
-    logger.debug(`Using custom tile URL: ${customUrl}`);
-    return customUrl;
+    logger.debug(`Using custom tile URL: ${customUrl}`)
+    return customUrl
   }
 
-  const selectedBasemap = basemap ?? "osm"; // default to 'osm' if basemap is null
+  const selectedBasemap = basemap ?? "osm" // default to 'osm' if basemap is null
 
-  const tile = basemaps.find(({ basemap: b }) => b === selectedBasemap);
+  const tile = basemaps.find(({ basemap: b }) => b === selectedBasemap)
   if (!tile) {
     logger.error(
       `Unsupported basemap: "${selectedBasemap}"! Use a valid basemap name or remove the "basemap" parameter to use default ("osm").`
-    );
-    return "";
+    )
+    return ""
   }
 
-  logger.debug(`Using basemap: ${selectedBasemap} -> ${tile.url}`);
-  return tile.url;
+  logger.debug(`Using basemap: ${selectedBasemap} -> ${tile.url}`)
+  return tile.url
 }

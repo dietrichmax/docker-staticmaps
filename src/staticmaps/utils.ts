@@ -1,4 +1,5 @@
 // utils.ts
+import { Coordinate } from "src/types/types"
 
 /**
  * Transform longitude to tile number.
@@ -89,11 +90,11 @@ export const meterToPixel = (
  * @param index - Current index (default is 0).
  * @returns A promise that resolves when the queue is processed.
  */
-export const workOnQueue = async (
-  queue: (() => Promise<void>)[],
+export const workOnQueue = async <T>(
+  queue: (() => Promise<T>)[],
   index = 0
 ): Promise<boolean> => {
-  if (!queue[index]) return true // Finished
+  if (!queue[index]) return true
   await queue[index]()
   return workOnQueue(queue, index + 1)
 }
@@ -143,10 +144,10 @@ export function tileXYToQuadKey(x: number, y: number, z: number): string {
  * @returns Array of [lon, lat] points (for GeoJSON, static maps, etc.)
  */
 export function createGeodesicLine(
-  start: [number, number],
-  end: [number, number],
+  start: Coordinate,
+  end: Coordinate,
   segments: number = 70
-): [number, number][] {
+): Coordinate[] {
   const toRadians = (deg: number): number => (deg * Math.PI) / 180
   const toDegrees = (rad: number): number => (rad * 180) / Math.PI
 
@@ -166,7 +167,7 @@ export function createGeodesicLine(
       [end[1], end[0]],
     ] // [lon, lat]
 
-  const geodesic: [number, number][] = []
+  const geodesic: Coordinate[] = []
 
   for (let i = 0; i <= segments; i++) {
     const f = i / segments
@@ -191,22 +192,22 @@ export function createGeodesicLine(
 /**
  * Smooths a series of coordinates using the Chaikin's algorithm.
  *
- * @param {Array<[number, number]>} coords The input coordinates to smooth.
+ * @param {Array<Coordinate>} coords The input coordinates to smooth.
  * @param {number} [iterations=2] The number of iterations for smoothing.
  *
- * @returns {Array<[number, number]>} The smoothed set of coordinates.
+ * @returns {Array<Coordinate>} The smoothed set of coordinates.
  */
 export function chaikinSmooth(
-  coords: [number, number][],
+  coords: Coordinate[],
   iterations = 2
-): [number, number][] {
+): Coordinate[] {
   for (let i = 0; i < iterations; i++) {
-    const newCoords: [number, number][] = []
+    const newCoords: Coordinate[] = []
     for (let j = 0; j < coords.length - 1; j++) {
       const [x0, y0] = coords[j]
       const [x1, y1] = coords[j + 1]
-      const q: [number, number] = [0.75 * x0 + 0.25 * x1, 0.75 * y0 + 0.25 * y1]
-      const r: [number, number] = [0.25 * x0 + 0.75 * x1, 0.25 * y0 + 0.75 * y1]
+      const q: Coordinate = [0.75 * x0 + 0.25 * x1, 0.75 * y0 + 0.25 * y1]
+      const r: Coordinate = [0.25 * x0 + 0.75 * x1, 0.25 * y0 + 0.75 * y1]
       newCoords.push(q, r)
     }
     coords = [coords[0], ...newCoords, coords[coords.length - 1]]
@@ -217,17 +218,17 @@ export function chaikinSmooth(
 /**
  * Simplifies a series of coordinates using the Douglas-Peucker algorithm.
  *
- * @param {Array<[number, number]>} coords The input coordinates to simplify.
+ * @param {Array<Coordinate>} coords The input coordinates to simplify.
  * @param {number} epsilon The maximum distance allowed between original and simplified points.
  *
- * @returns {Array<[number, number]>} The simplified set of coordinates.
+ * @returns {Array<Coordinate>} The simplified set of coordinates.
  */
 export function douglasPeucker(
-  coords: [number, number][],
+  coords: Coordinate[],
   epsilon: number
-): [number, number][] {
+): Coordinate[] {
   const dmax = (
-    points: [number, number][],
+    points: Coordinate[],
     from: number,
     to: number
   ): { index: number; dist: number } => {
@@ -254,10 +255,10 @@ export function douglasPeucker(
   }
 
   const simplify = (
-    points: [number, number][],
+    points: Coordinate[],
     from: number,
     to: number
-  ): [number, number][] => {
+  ): Coordinate[] => {
     const { index, dist } = dmax(points, from, to)
     if (dist > epsilon) {
       const rec1 = simplify(points, from, index)

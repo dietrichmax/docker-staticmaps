@@ -1,10 +1,10 @@
-import { IconOptions } from "src/types/types"
+import { IconOptions, Coordinate } from "src/types/types"
 
 /**
  * Class to handle icon operations.
  */
 export default class Icon {
-  coord?: [number, number]
+  coord?: Coordinate
   img?: string
   height: number | null
   width: number | null
@@ -13,9 +13,9 @@ export default class Icon {
   resizeMode: string
   offsetX: number
   offsetY: number
-  offset: [number, number]
+  offset: Coordinate
   imgData?: string
-  position?: [number, number]
+  position?: Coordinate
 
   /**
    * Constructor for the Icon class.
