@@ -733,7 +733,7 @@ class StaticMaps {
   }
 
   /**
-   * Preloads marker images from local or remote sources.
+   * Builds marker images from svg or loads from remote sources.
    *
    * @returns {Promise<void>}
    */
@@ -746,18 +746,16 @@ class StaticMaps {
       const icons = this.markers
         .map((m) => ({
           file: m.img || "", // Fallback to an empty string if m.img is undefined
-          height: m.height ?? 20, // Use 0 if height is null or undefined
-          width: m.width ?? 20, // Use 0 if width is null or undefined
+          height: m.height ?? 20, // Use 20 if height is null or undefined
+          width: m.width ?? 20, // Use 20 if width is null or undefined
+          color: m.color || "#d9534f"
         }))
         .reduce(
           (acc, curr) => {
-            // Only push if `file` is not empty and it's not already in the accumulator
-            if (curr.file && !acc.some((item) => item.file === curr.file)) {
               acc.push(curr)
-            }
             return acc
           },
-          [] as { file: string; height: number; width: number; data?: Buffer }[] // Ensure `height` and `width` are numbers
+          [] as { file: string; height: number; width: number; color: string; data?: Buffer }[] // Ensure `height` and `width` are numbers
         )
 
       let count = 1
@@ -774,6 +772,7 @@ class StaticMaps {
           isUrl = false
         }
 
+        //console.log(icon)
         try {
           // Load marker from remote URL
           if (isUrl) {
@@ -794,9 +793,23 @@ class StaticMaps {
               .resize(icon.width, icon.height) // Resize to the specified width and height
               .toBuffer()
           } else {
+            // 1. Create the SVG string (red map pin)
+            const svgString = `
+            <svg xmlns="http://www.w3.org/2000/svg" width="${icon.width}" height="${icon.height}" viewBox="0 0 24 24">
+              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="${icon.color}"/>
+              <circle cx="12" cy="9" r="2.5" fill="white"/>
+            </svg>
+            `;
+
+            // 2. Encode as UTF-8
+            const encoder = new TextEncoder();
+            const uint8Array = encoder.encode(svgString);
+
+            // 3. Convert to ArrayBuffer
+            const arrayBuffer = uint8Array.buffer;
+
             // Load marker from local fs
-            icon.data = await sharp(icon.file)
-              .resize(icon.width, icon.height) // Resize to the specified width and height
+            icon.data = await sharp(Buffer.from(arrayBuffer))
               .toBuffer()
           }
         } catch (err) {

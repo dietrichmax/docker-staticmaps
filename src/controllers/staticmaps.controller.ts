@@ -314,11 +314,12 @@ const SHAPE_DEFAULTS: Record<ShapeType, Feature> = {
   polygon: { color: "#4874db", weight: 3, fill: "" },
   circle: { color: "#4874db", width: 3, fill: "", radius: 10 },
   markers: {
-    img: "./public/images/marker.png",
+    img: "",
     width: 28,
     height: 28,
     offsetX: 13.5,
     offsetY: 27.5,
+    color: "#d9534f"
   },
   text: {
     text: "Hello world!",
@@ -444,7 +445,7 @@ export async function generateMap(options: any): Promise<Buffer> {
 
   // MARKERS
   toArray(options.markers).forEach((marker: any, i: number) => {
-    const { coords = [], img, width, height, offsetX, offsetY } = marker
+    const { coords = [], img, width, height, offsetX, offsetY, color } = marker
     coords.forEach((coord: any, j: number) => {
       logger.debug(`Adding marker [${i}][${j}]`, { coord, img })
       map.addMarker(
@@ -455,6 +456,7 @@ export async function generateMap(options: any): Promise<Buffer> {
           height,
           offsetX,
           offsetY,
+          color
         })
       )
     })

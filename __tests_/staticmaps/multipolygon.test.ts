@@ -32,12 +32,12 @@ describe("MultiPolygon class", () => {
     const mp = new MultiPolygon({
       coords,
       color: "#FF0000AA",
-      fill: true,
+      fill: "#00FF003F",
       width: 7,
     })
 
     expect(mp.color).toBe("#FF0000AA")
-    expect(mp.fill).toBe(true)
+    expect(mp.fill).toBe("#00FF003F")
     expect(mp.width).toBe(7)
   })
 

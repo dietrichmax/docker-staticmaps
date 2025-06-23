@@ -10,7 +10,7 @@ describe("Circle class", () => {
     expect(c.coord).toEqual([10, 20])
     expect(c.radius).toBe(1000)
     expect(c.color).toBe("#000000BB") // default
-    expect(c.fill).toBe("#AA0000BB") // default
+    expect(c.fill).toBe("#000000BB") // default
     expect(c.width).toBe(3) // default
   })
 
