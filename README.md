@@ -234,14 +234,15 @@ markers=markerStyle|markerCoord1|markerCoord2|...
 - **markerCoord**: Coordinates for each marker in `lat, lon` format, separated by `|`. You need at least one coordinate.
 - **markerStyle**: Customize the marker with:
 
-  | Parameter | Default    | Description                                 |
-  | --------- | ---------- | ------------------------------------------- |
-  | `img`     | (optional) | URL or file path for a custom marker image. |
-  | `color`   | `#d9534f`  | Color of the Marker.                        |
-  | `width`   | `28`       | Sets the width of the marker.               |
-  | `height`  | `28`       | Sets the height of the marker.              |
-  | `offsetX` | `13.5`     | Horizontal offset for the marker position.  |
-  | `offsetY` | `27.5`     | Vertical offset for the marker position.    |
+  | Parameter    | Default    | Description                                                                                                                       |
+  | ------------ | ---------- | --------------------------------------------------------------------------------------------------------------------------------- |
+  | `img`        | (optional) | URL or file path for a custom marker image.                                                                                       |
+  | `color`      | `#d9534f`  | Color of the Marker.                                                                                                              |
+  | `width`      | `28`       | Sets the width of the marker.                                                                                                     |
+  | `height`     | `28`       | Sets the height of the marker.                                                                                                    |
+  | `offsetX`    | `13.5`     | Horizontal offset for the marker position.                                                                                        |
+  | `offsetY`    | `27.5`     | Vertical offset for the marker position.                                                                                          |
+  | `resizeMode` | `cover`    | Applied resize method if needed. See: [https://sharp.pixelplumbing.com/api-resize](https://sharp.pixelplumbing.com/api-resize)   |
 
 **Example**: Two markers.
 
