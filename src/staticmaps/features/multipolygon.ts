@@ -6,7 +6,7 @@ import { MultiPolygonOptions, Coordinate } from "../../types/types"
 export default class MultiPolygon {
   coords: number[][][]
   color: string
-  fill?: boolean
+  fill?: string
   width: number
 
   /**

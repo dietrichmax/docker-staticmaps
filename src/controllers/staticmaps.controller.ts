@@ -2,7 +2,7 @@ import StaticMaps from "../staticmaps/staticmaps"
 import { basemaps } from "../utils/basemaps"
 import logger from "../utils/logger"
 import { Response } from "express"
-import {Polyline,  Circle, Text, IconMarker  } from "../staticmaps/features"
+import { Polyline, Circle, Text, IconMarker } from "../staticmaps/features"
 import polyline from "@mapbox/polyline"
 import {
   getCachedTile,
@@ -307,13 +307,19 @@ const DEFAULTS = {
   reverseY: false,
   format: "png",
   quality: 100,
-};
+}
 
 const SHAPE_DEFAULTS: Record<ShapeType, Feature> = {
-  polyline: { weight: 5, color: "blue", fill: "#00FF003F" },
-  polygon: { color: "#4874db", weight: 3, fill: "#00FF003F" },
-  circle: { color: "#4874db", width: 3, fill: "#0000bb", radius: 10 },
-  markers: { img: "./public/images/marker-28.png", width: 28, height: 28 },
+  polyline: { weight: 5, color: "blue", fill: "" },
+  polygon: { color: "#4874db", weight: 3, fill: "" },
+  circle: { color: "#4874db", width: 3, fill: "", radius: 10 },
+  markers: {
+    img: "./public/images/marker.png",
+    width: 28,
+    height: 28,
+    offsetX: 13.5,
+    offsetY: 27.5,
+  },
   text: {
     text: "Hello world!",
     color: "#000000BB",
@@ -389,19 +395,31 @@ export function getMapParams(params: MapParamsInput): MapParamsOutput {
     ...(params.tileSize && { tileSize: parseInt(params.tileSize, 10) }),
     ...(params.zoom && { zoom: parseInt(params.zoom, 10) }),
     ...(params.format && { format: params.format }),
-    ...(params.tileRequestTimeout && { tileRequestTimeout: params.tileRequestTimeout }),
-    ...(params.tileRequestHeader && { tileRequestHeader: params.tileRequestHeader }),
-    ...(params.tileRequestLimit && { tileRequestLimit: params.tileRequestLimit }),
+    ...(params.tileRequestTimeout && {
+      tileRequestTimeout: params.tileRequestTimeout,
+    }),
+    ...(params.tileRequestHeader && {
+      tileRequestHeader: params.tileRequestHeader,
+    }),
+    ...(params.tileRequestLimit && {
+      tileRequestLimit: params.tileRequestLimit,
+    }),
     ...(params.zoomRange && { zoomRange: params.zoomRange }),
-    ...(typeof params.reverseY !== "undefined" && { reverseY: params.reverseY }),
-    ...(typeof params.tileSubdomains !== "undefined" && { tileSubdomains: params.tileSubdomains }),
-    ...(typeof params.tileLayers !== "undefined" && { tileLayers: params.tileLayers }),
+    ...(typeof params.reverseY !== "undefined" && {
+      reverseY: params.reverseY,
+    }),
+    ...(typeof params.tileSubdomains !== "undefined" && {
+      tileSubdomains: params.tileSubdomains,
+    }),
+    ...(typeof params.tileLayers !== "undefined" && {
+      tileLayers: params.tileLayers,
+    }),
 
     tileUrl: getTileUrl(params.tileUrl, params.basemap),
     center,
     quality,
     ...features,
-  };
+  }
 
   logger.debug("Final parsed options:", options)
 
@@ -426,7 +444,7 @@ export async function generateMap(options: any): Promise<Buffer> {
 
   // MARKERS
   toArray(options.markers).forEach((marker: any, i: number) => {
-    const { coords = [], img, width, height } = marker
+    const { coords = [], img, width, height, offsetX, offsetY } = marker
     coords.forEach((coord: any, j: number) => {
       logger.debug(`Adding marker [${i}][${j}]`, { coord, img })
       map.addMarker(
@@ -435,8 +453,8 @@ export async function generateMap(options: any): Promise<Buffer> {
           img,
           width,
           height,
-          offsetX: 13.6,
-          offsetY: 27.6,
+          offsetX,
+          offsetY,
         })
       )
     })
@@ -444,14 +462,14 @@ export async function generateMap(options: any): Promise<Buffer> {
 
   // POLYLINES
   toArray(options.polyline).forEach((line: any, i: number) => {
-    const { coords = [], color, weight } = line
+    const { coords = [], color, weight, fill } = line
     if (coords.length > 1) {
       logger.debug(`Adding polyline [${i}]`, {
         coordsCount: coords.length,
         color,
         width: weight,
       })
-      map.addLine(new Polyline({ coords, color, width: weight }))
+      map.addLine(new Polyline({ coords, color, width: weight, fill }))
     } else {
       logger.warn(`Skipping polyline [${i}] due to insufficient coordinates`, {
         coords,

@@ -1,4 +1,4 @@
-import { Polyline } from  "../../src/staticmaps/features"
+import { Polyline } from "../../src/staticmaps/features"
 import * as utils from "../../src/staticmaps/utils" // for mocking createGeodesicLine
 import { Coordinate } from "../../src/types/types"
 

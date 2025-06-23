@@ -31,7 +31,7 @@ export default class Circle {
     this.coord = options.coord
     this.radius = Number(options.radius)
     this.color = options.color || "#000000BB"
-    this.fill = options.fill || "#AA0000BB"
+    this.fill = options.fill || this.color
     this.width = Number.isFinite(options.width) ? Number(options.width) : 3
 
     if (!this.coord || !Array.isArray(this.coord) || this.coord.length < 2) {

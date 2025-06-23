@@ -81,7 +81,7 @@ export interface PolylineOptions {
 export interface MultiPolygonOptions {
   coords: number[][][] // Polygon Coordinate: [ [ [lon, lat], ... ], ... ]
   color?: string // Stroke color
-  fill?: boolean // Whether to fill the polygon
+  fill?: string // Whether to fill the polygon
   width?: number // Border width
 }
 

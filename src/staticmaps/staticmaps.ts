@@ -1,5 +1,13 @@
 import sharp from "sharp"
-import { Image, IconMarker, Polyline, MultiPolygon, Circle, Text, Bound } from "./features"
+import {
+  Image,
+  IconMarker,
+  Polyline,
+  MultiPolygon,
+  Circle,
+  Text,
+  Bound,
+} from "./features"
 import TileServerConfig from "./tileserverconfig"
 import {
   workOnQueue,
@@ -232,7 +240,7 @@ class StaticMaps {
 
     logger.debug("Rendering map with center and zoom", {
       center: [this.centerX, this.centerY],
-      zoom: this.zoom
+      zoom: this.zoom,
     })
 
     return this.drawFeatures()
