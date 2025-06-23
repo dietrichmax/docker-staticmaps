@@ -320,7 +320,7 @@ const SHAPE_DEFAULTS: Record<ShapeType, Feature> = {
     offsetX: 13.5,
     offsetY: 27.5,
     color: "#d9534f",
-    resizeMode: "cover"
+    resizeMode: "cover",
   },
   text: {
     text: "Hello world!",
@@ -446,9 +446,27 @@ export async function generateMap(options: any): Promise<Buffer> {
 
   // MARKERS
   toArray(options.markers).forEach((marker: any, i: number) => {
-    const { coords = [], img, width, height, offsetX, offsetY, color, resizeMode } = marker
+    const {
+      coords = [],
+      img,
+      width,
+      height,
+      offsetX,
+      offsetY,
+      color,
+      resizeMode,
+    } = marker
     coords.forEach((coord: any, j: number) => {
-      logger.debug(`Adding marker [${i}][${j}]`, { coord, img, width, height, offsetX, offsetY, color, resizeMode })
+      logger.debug(`Adding marker [${i}][${j}]`, {
+        coord,
+        img,
+        width,
+        height,
+        offsetX,
+        offsetY,
+        color,
+        resizeMode,
+      })
       map.addMarker(
         new IconMarker({
           coord,
@@ -458,7 +476,7 @@ export async function generateMap(options: any): Promise<Buffer> {
           offsetX,
           offsetY,
           color,
-          resizeMode
+          resizeMode,
         })
       )
     })
@@ -472,7 +490,7 @@ export async function generateMap(options: any): Promise<Buffer> {
         coordsCount: coords.length,
         color,
         width: weight,
-        fill
+        fill,
       })
       map.addLine(new Polyline({ coords, color, width: weight, fill }))
     } else {

@@ -91,7 +91,7 @@ export interface MultiPolygonOptions {
 export interface IconOptions {
   coord?: Coordinate // Icon anchor coordinate
   img?: string // Image source (URL or base64)
-  color?: string  // Icon color (default: "#d9534f")
+  color?: string // Icon color (default: "#d9534f")
   height?: number // Image height
   width?: number // Image width
   drawWidth?: number // Final draw width
