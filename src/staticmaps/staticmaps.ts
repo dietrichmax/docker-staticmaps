@@ -824,16 +824,20 @@ class StaticMaps {
         if (count++ === icons.length) {
           // Preloaded all icons
           this.markers.forEach((marker: any, index: number) => {
+            const icon = icons[index]
+
+            // Set the offset based on icon size (middle bottom)
+            marker.offset = [icon.width / 2, icon.height]
+
             marker.coord = [
               this.xToPx(lonToX(marker.coord[0], this.zoom)) - marker.offset[0],
               this.yToPx(latToY(marker.coord[1], this.zoom)) - marker.offset[1],
             ]
 
-            if (icons[index]) {
-              marker.set(icons[index].data as Buffer)
+            if (icon) {
+              marker.set(icon.data as Buffer)
             }
           })
-
           resolve(true)
         }
       })

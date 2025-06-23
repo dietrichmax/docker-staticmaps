@@ -238,8 +238,10 @@ markers=markerStyle|markerCoord1|markerCoord2|...
   | --- | --- | --- |
   | `img` | (optional) | URL or file path for a custom marker image. |
   | `color` | `#d9534f` | Color of the Marker. |
-  | `width` | `28` | Sets the width of the marker. |
-  | `height` | `28` | Sets the height of the marker. |
+  | `width` | `28` | Width of marker image in px. |
+  | `height` | `28` | Height of marker image in px. |
+  | `drawWidth` | `width` | Resize marker image to width in px. |
+  | `drawHeight` | `height` | Resize marker image to height in px. |
   | `offsetX` | `13.5` | Horizontal offset for the marker position. |
   | `offsetY` | `27.5` | Vertical offset for the marker position. |
   | `resizeMode` | `cover` | Applied resize method if needed. See: [https://sharp.pixelplumbing.com/api-resize](https://sharp.pixelplumbing.com/api-resize) |

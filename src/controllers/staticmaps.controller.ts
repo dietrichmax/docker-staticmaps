@@ -310,17 +310,32 @@ const DEFAULTS = {
 }
 
 const SHAPE_DEFAULTS: Record<ShapeType, Feature> = {
-  polyline: { weight: 5, color: "blue", fill: "" },
-  polygon: { color: "#4874db", weight: 3, fill: "" },
-  circle: { color: "#4874db", width: 3, fill: "", radius: 10 },
+  polyline: {
+    weight: 5,
+    color: "blue",
+    fill: "",
+  },
+  polygon: {
+    weight: 3,
+    color: "#4874db",
+    fill: "",
+  },
+  circle: {
+    color: "#4874db",
+    width: 3, // usually for border width; you wrote "width" before
+    fill: "",
+    radius: 10,
+  },
   markers: {
     img: "",
     width: 28,
     height: 28,
-    offsetX: 13.5,
-    offsetY: 27.5,
+    offsetX: 14, // default offsetX should be half width (middle)
+    offsetY: 28, // default offsetY should be height (bottom)
     color: "#d9534f",
     resizeMode: "cover",
+    drawWidth: undefined,
+    drawHeight: undefined,
   },
   text: {
     text: "Hello world!",
@@ -455,6 +470,8 @@ export async function generateMap(options: any): Promise<Buffer> {
       offsetY,
       color,
       resizeMode,
+      drawWidth,
+      drawHeight,
     } = marker
     coords.forEach((coord: any, j: number) => {
       logger.debug(`Adding marker [${i}][${j}]`, {
@@ -466,6 +483,8 @@ export async function generateMap(options: any): Promise<Buffer> {
         offsetY,
         color,
         resizeMode,
+        drawWidth,
+        drawHeight,
       })
       map.addMarker(
         new IconMarker({
@@ -477,6 +496,8 @@ export async function generateMap(options: any): Promise<Buffer> {
           offsetY,
           color,
           resizeMode,
+          drawWidth,
+          drawHeight,
         })
       )
     })

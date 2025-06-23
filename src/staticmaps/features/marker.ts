@@ -8,7 +8,7 @@ export default class Icon {
   img?: string
   height: number | null
   width: number | null
-  color?: string
+  color: string
   drawWidth: number
   drawHeight: number
   resizeMode: string
@@ -17,63 +17,62 @@ export default class Icon {
   offset: Coordinate
   imgData?: string
 
-  /**
-   * Constructor for the Icon class.
-   * @param options - Icon options including coordinates, image source, dimensions, and resizing mode.
-   */
   constructor(options: IconOptions = {}) {
     this.coord = options.coord
     this.img = options.img
 
-    this.height = Number.isFinite(options.height)
+    // Use Number.isFinite after coercion, else null
+    this.height = Number.isFinite(Number(options.height))
       ? Number(options.height)
       : null
-    this.width = Number.isFinite(options.width) ? Number(options.width) : null
+    this.width = Number.isFinite(Number(options.width))
+      ? Number(options.width)
+      : null
 
     this.color = options.color || "#d9534f"
-    this.drawWidth = Number(options.drawWidth ?? options.width)
-    this.drawHeight = Number(options.drawHeight ?? options.height)
+
+    // Use drawWidth or fallback to width or 0
+    this.drawWidth = Number.isFinite(Number(options.drawWidth))
+      ? Number(options.drawWidth)
+      : (this.width ?? 0)
+
+    this.drawHeight = Number.isFinite(Number(options.drawHeight))
+      ? Number(options.drawHeight)
+      : (this.height ?? 0)
+
     this.resizeMode = options.resizeMode || "cover"
 
-    this.offsetX = Number.isFinite(options.offsetX)
+    // Use offsetX or default to half of drawWidth
+    this.offsetX = Number.isFinite(Number(options.offsetX))
       ? Number(options.offsetX)
       : this.drawWidth / 2
-    this.offsetY = Number.isFinite(options.offsetY)
+
+    // Use offsetY or default to full drawHeight
+    this.offsetY = Number.isFinite(Number(options.offsetY))
       ? Number(options.offsetY)
       : this.drawHeight
+
     this.offset = [this.offsetX, this.offsetY]
   }
 
-  /**
-   * Set the size of the icon.
-   * @param width - The new width of the icon.
-   * @param height - The new height of the icon.
-   */
   setSize(width: number, height: number): void {
     this.width = Number(width)
     this.height = Number(height)
 
-    if (Number.isNaN(this.drawWidth)) {
-      this.drawWidth = this.width
+    // Only update drawWidth if current drawWidth is NaN or 0
+    if (!Number.isFinite(this.drawWidth) || this.drawWidth === 0) {
+      this.drawWidth = this.width ?? 0
     }
 
-    if (Number.isNaN(this.drawHeight)) {
-      this.drawHeight = this.height
+    if (!Number.isFinite(this.drawHeight) || this.drawHeight === 0) {
+      this.drawHeight = this.height ?? 0
     }
   }
 
-  /**
-   * Set icon data.
-   * @param img - The image data for the icon.
-   */
   set(img: string): void {
     this.imgData = img
   }
 
-  /**
-   * Get the extent of the icon in pixels.
-   * @returns An array representing the extent [left, bottom, right, top].
-   */
   extentPx(): [number, number, number, number] {
     return [
       this.offset[0],
