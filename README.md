@@ -177,6 +177,7 @@ polyline=polylineStyle|polylineCoord1|polylineCoord2|...
   | --------- | --------- | ----------------------------------------- |
   | `weight`  | `6`       | Sets the stroke width of the polyline.    |
   | `color`   | `#0000ff` | Defines the stroke color of the polyline. |
+  | `fill`    |           | Specifies the fill color of the polyline. |
 
 Note: Polylines with only two coordinates are rendered as geodesic line.
 
@@ -211,7 +212,7 @@ polygon=polygonStyle|polygonCoord1|polygonCoord2|...
   | --------- | --------- | ---------------------------------------- |
   | `color`   | `#4874db` | Defines the stroke color of the polygon. |
   | `weight`  | `5`       | Sets the stroke width of the polygon.    |
-  | `fill`    | `#00ff3f` | Specifies the fill color of the polygon. |
+  | `fill`    |           | Specifies the fill color of the polygon. |
 
 <details>
   <summary><b>Example:</b> Polygon with color <code>4874db</code>, weight <code>7</code>, and fill <code>eb7a34</code></summary>
@@ -236,10 +237,11 @@ markers=markerStyle|markerCoord1|markerCoord2|...
   | Parameter | Default    | Description                                 |
   | --------- | ---------- | ------------------------------------------- |
   | `img`     | (optional) | URL or file path for a custom marker image. |
+  | `color`   | `#d9534f`  | Color of the Marker.                        |
   | `width`   | `28`       | Sets the width of the marker.               |
   | `height`  | `28`       | Sets the height of the marker.              |
-  | `offsetX` | (optional) | Horizontal offset for the marker position.  |
-  | `offsetY` | (optional) | Vertical offset for the marker position.    |
+  | `offsetX` | `13.5`     | Horizontal offset for the marker position.  |
+  | `offsetY` | `27.5`     | Vertical offset for the marker position.    |
 
 **Example**: Two markers.
 
@@ -267,7 +269,7 @@ circle=circleStyle|circleCoord
   | `radius`  | (required) | Specifies the radius of the element.     |
   | `color`   | `#0000bb`  | Defines the stroke color of the element. |
   | `width`   | `3`        | Sets the stroke width of the element.    |
-  | `fill`    | `#AA0000`  | Specifies the fill color of the element. |
+  | `fill`    | `{color}`  | Specifies the fill color of the element. |
 
 **Example**: Circle with a radius of `20` meters.
 
@@ -323,7 +325,7 @@ http://localhost:3000/api/staticmaps?width=600&height=600&zoom=2&center=2.3522,4
 
 <details>
   <summary>Multiple Markers and multiple Polylines with encodedPolyline aswell as lon,lat coordinatesExample</summary>
-  <p><code>http://localhost:3000/api/staticmaps?width=600&height=400&markers=48.8566,2.3522|40.7128,-74.006&markers=img:https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Airport_symbol.svg/131px-Airport_symbol.svg.png|-33.924869,18.424055&polyline=weight:3|yheiHkljMxqup@zu`qM&polyline=weight:3|color:ff8800|40.7128,-74.006|-33.924869,18.424055</code></p>
+  <p><code>http://localhost:3000/api/staticmaps?width=600&height=400&markers=color:green|48.8566,2.3522|40.7128,-74.006&markers=img:https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Airport_symbol.svg/131px-Airport_symbol.svg.png|-33.924869,18.424055&polyline=weight:3|yheiHkljMxqup@zu`qM&polyline=weight:3|color:ff8800|40.7128,-74.006|-33.924869,18.424055</code></p>
 </details>
 
 ![Polyline & Markers](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/markersandpolyline.png)
