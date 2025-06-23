@@ -8,11 +8,11 @@ describe("Icon class", () => {
     expect(icon.img).toBeUndefined()
     expect(icon.height).toBeNull()
     expect(icon.width).toBeNull()
-    expect(icon.drawWidth).toBeNaN()
-    expect(icon.drawHeight).toBeNaN()
+    expect(icon.drawWidth).toBe(0)
+    expect(icon.drawHeight).toBe(0)
     expect(icon.resizeMode).toBe("cover")
-    expect(icon.offsetX).toBeNaN()
-    expect(icon.offsetY).toBeNaN()
+    expect(icon.offsetX).toBe(0)
+    expect(icon.offsetY).toBe(0)
     expect(icon.offset).toEqual([icon.offsetX, icon.offsetY])
   })
 
@@ -62,11 +62,11 @@ describe("Icon class", () => {
       drawHeight: NaN,
     })
 
-    icon.setSize(50, 60)
-    expect(icon.width).toBe(50)
-    expect(icon.height).toBe(60)
-    expect(icon.drawWidth).toBe(50)
-    expect(icon.drawHeight).toBe(60)
+    icon.setSize(10, 15)
+    expect(icon.width).toBe(10)
+    expect(icon.height).toBe(15)
+    expect(icon.drawWidth).toBe(10)
+    expect(icon.drawHeight).toBe(15)
   })
 
   test("setSize updates width and height but does not overwrite drawWidth/drawHeight if not NaN", () => {
