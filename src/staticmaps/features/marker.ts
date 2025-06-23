@@ -8,6 +8,7 @@ export default class Icon {
   img?: string
   height: number | null
   width: number | null
+  color?: string
   drawWidth: number
   drawHeight: number
   resizeMode: string
@@ -29,6 +30,7 @@ export default class Icon {
       : null
     this.width = Number.isFinite(options.width) ? Number(options.width) : null
 
+    this.color = options.color || "#d9534f"
     this.drawWidth = Number(options.drawWidth ?? options.width)
     this.drawHeight = Number(options.drawHeight ?? options.height)
     this.resizeMode = options.resizeMode || "cover"
