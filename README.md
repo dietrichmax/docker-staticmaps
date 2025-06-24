@@ -46,7 +46,7 @@ A small demo UI is available at [http://localhost:3000](http://localhost:3000 "D
   - [Required Parameters](#-required-parameters)
   - [Optional Parameters](#-optional-parameters)
   - [Basemap](#-basemap)
-  - [Attribution](#x-a-attribution)
+  - [Attribution](#-attribution)
   - [Polylines](#️-polylines)
   - [Polygons](#-polygons)
   - [Markers](#-markers)
