@@ -41,9 +41,12 @@ A small demo UI is available at [http://localhost:3000](http://localhost:3000 "D
 
 - [Installation & Configuration](#️-installation--configuration)
   - [Supported Environment Variables](#️-supported-environment-variables)
-  - [Deployment using Docker](#-deployment-using-docker)
+  - [Docker Deployment](#-docker-deployment)
 - [API Reference](#-api-reference)
+  - [Required Parameters](#-required-parameters)
+  - [Optional Parameters](#-optional-parameters)
   - [Basemap](#-basemap)
+  - [Attribution](#x-a-attribution)
   - [Polylines](#️-polylines)
   - [Polygons](#-polygons)
   - [Markers](#-markers)
