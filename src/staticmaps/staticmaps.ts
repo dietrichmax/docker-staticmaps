@@ -521,7 +521,7 @@ class StaticMaps {
           ${text.text}
       </text>`
   }
-
+  
   /**
    * Renders a MultiPolygon to SVG.
    *
