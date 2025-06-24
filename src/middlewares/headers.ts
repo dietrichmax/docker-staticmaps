@@ -27,8 +27,8 @@ export function headers(req: Request, res: Response, next: NextFunction): void {
     "Content-Security-Policy": [
       "default-src 'self';",
       "img-src 'self' data: blob: *;",
-      "style-src 'self';",
-      "script-src 'self';",
+      "style-src 'self' 'unsafe-inline';",
+      "script-src 'self' 'unsafe-inline';",
       "connect-src 'self';",
       "font-src 'self' data:;",
       "object-src 'none';",
