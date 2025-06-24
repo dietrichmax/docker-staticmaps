@@ -159,10 +159,6 @@ Make sure to respect the usage policy of each provider!
 
 ---
 
-Here’s a suggested **README section** to document the attribution parameter behavior in your static map service:
-
----
-
 ## 📝 Attribution
 
 The map service supports an optional `attribution` query parameter to control whether and how attribution is rendered on the generated image.
