@@ -217,7 +217,7 @@ Note: Polylines with only two coordinates are rendered as geodesic line.
 
 <details>
   <summary>Multiple Encoded Polylines <code>no zoom</code>, <code>weight:6</code> and <code>color:0000ff</code></summary>
-  <p>http://localhost:3000/api/staticmaps?width=600&height=800&format=png&basemap=satellite&polyline=weight:6|color:0000ff|yheiHkljMxqup@zu`qM&polyline=weight:6|color:0000ff|_vnwFnhubMltpfMyvcsP</p>
+  <p>http://localhost:3000/api/staticmaps?width=600&height=800&format=png&basemap=national-geographic&polyline=weight:6|color:0000ff|yheiHkljMxqup@zu`qM&polyline=weight:6|color:0000ff|_vnwFnhubMltpfMyvcsP</p>
 </details>
 
 ![Multiple Encoded Polylines Example](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/multipleEncodedPolylines.png)
