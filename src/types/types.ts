@@ -180,4 +180,5 @@ export interface ClientRateLimitInfo {
 export interface Basemaps {
   basemap: string // Name of the basemap
   url: string // Tile URL template
+  attribution: string
 }

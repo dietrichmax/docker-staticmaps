@@ -121,6 +121,7 @@ Request static maps from the `/staticmaps` endpoint using the following paramete
 | `format` | `png` | Output format: `png`, `jpg`, or `webp` |
 | `quality` | `100` | Image quality (0–100) for `jpg`/`webp` |
 | `basemap` | `osm` | Tile layer (see **Basemap** for supported types) |
+| `attribution` |   | Attribution text (see **Attribution**) |
 | `tileUrl` |  | Tile URL with `{x}`, `{y}`, `{z}` or `{quadkey}` placeholders |
 | `tileSubdomains` | `[]` | Tile subdomains like `['a', 'b', 'c']` |
 | `tileLayers` | `[]` | Multiple tile layers with `tileUrl` and `tileSubdomains` |
@@ -147,7 +148,7 @@ Use the `basemap` parameter to select a predefined basemap or specify a `custom`
 | `topo` | Esri [Topographic](https://www.arcgis.com/home/webmap/viewer.html?webmap=a72b0766aea04b48bf7a0e8c27ccc007) |
 | `gray` | Esri Gray w/ labels |
 | `gray-background` | Esri [Gray background only](https://www.arcgis.com/home/webmap/viewer.html?webmap=8b3d38c0819547faa83f7b7aca80bd76) |
-| `oceans` | Esri [Oceans](https://www.arcgis.com/home/webmap/viewer.html?webmap=5ae9e138a17842688b0b79283a4353f6&center=-122.255816,36.573652&level=8) |
+| `hillshade` | Esri [Hillshade](https://www.arcgis.com/home/item.html?id=1b243539f4514b6ba35e7d995890db1d) |
 | `national-geographic` | [National Geographic](https://www.arcgis.com/home/webmap/viewer.html?webmap=d94dcdbe78e141c2b2d3a91d5ca8b9c9) |
 | `stamen-toner` | [Stamen Toner (B/W)](http://maps.stamen.com/toner/) |
 | `stamen-watercolor` | [Stamen Watercolor](http://maps.stamen.com/watercolor/) |
@@ -155,6 +156,36 @@ Use the `basemap` parameter to select a predefined basemap or specify a `custom`
 | `carto-dark` | [Carto Dark](https://carto.com/location-data-services/basemaps/) |
 
 Make sure to respect the usage policy of each provider!
+
+---
+
+Here’s a suggested **README section** to document the attribution parameter behavior in your static map service:
+
+---
+
+## 📝 Attribution
+
+The map service supports an optional `attribution` query parameter to control whether and how attribution is rendered on the generated image.
+
+### Basic Behavior
+
+* Attribution is **shown by default** (if nothing is passed).
+* If no custom text is provided, the service uses the default attribution for the selected basemap.
+
+### Parameter Format
+
+The `attribution` parameter accepts key-value pairs separated by `|`, for example:
+
+```
+&attribution=show:true|text:© OpenStreetMap contributors
+```
+
+### Supported Keys
+
+| Key  | Description                             | Example                        |
+| ---- | --------------------------------------- | ------------------------------ |
+| show | `true` or `false` – controls visibility | `show:false`                   |
+| text | Custom attribution text (URL-encoded)   | `text:%C2%A9%20Your%20Company` |
 
 ---
 
@@ -190,7 +221,7 @@ Note: Polylines with only two coordinates are rendered as geodesic line.
 
 <details>
   <summary>Multiple Encoded Polylines <code>no zoom</code>, <code>weight:6</code> and <code>color:0000ff</code></summary>
-  <p>http://localhost:3000/api/staticmaps?width=600&height=600&format=png&basemap=satellite&polyline=weight:6|color:0000ff|yheiHkljMxqup@zu`qM&polyline=weight:6|color:0000ff|_vnwFnhubMltpfMyvcsP</p>
+  <p>http://localhost:3000/api/staticmaps?width=600&height=800&format=png&basemap=satellite&polyline=weight:6|color:0000ff|yheiHkljMxqup@zu`qM&polyline=weight:6|color:0000ff|_vnwFnhubMltpfMyvcsP</p>
 </details>
 
 ![Multiple Encoded Polylines Example](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/multipleEncodedPolylines.png)
@@ -320,15 +351,15 @@ http://localhost:3000/api/staticmaps?width=600&height=600&zoom=2&center=2.3522,4
 ### 🔍 More usage examples
 
 <details>
-  <summary>Example with <code>width=500</code>, <code>height=500</code>, <code>center=-73.99515,40.76761</code>, <code>zoom=10</code>, <code>basemap=carto-voyager</code></summary>
-  <p>http://localhost:3000/api/staticmaps?width=500&height=500&center=-73.99515,40.76761&zoom=10&format=webp&basemap=carto-voyager</p>
+  <summary>Example with <code>width=500</code>, <code>height=500</code>, <code>center=-73.99515,40.76761</code>, <code>zoom=10</code>, <code>basemap=national-geographic</code></summary>
+  <p>http://localhost:3000/api/staticmaps?width=500&height=500&center=-73.99515,40.76761&zoom=10&format=webp&basemap=national-geographic</p>
 </details>
 
 ![Example Request 2](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/example2.webp)
 
 <details>
-  <summary>Multiple Markers and multiple Polylines with encodedPolyline aswell as lon,lat coordinatesExample</summary>
-  <p><code>http://localhost:3000/api/staticmaps?width=600&height=400&markers=color:blue|height:50|width:50|48.8566,2.3522&markers=40.7128,-74.006&markers=img:https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Airport_symbol.svg/131px-Airport_symbol.svg.png|-33.924869,18.424055&polyline=weight:3|yheiHkljMxqup@zu`qM&polyline=weight:3|color:ff8800|40.7128,-74.006|-33.924869,18.424055</code></p>
+  <summary>Multiple Markers and multiple Polylines with encodedPolyline aswell as lon,lat coordinatesExample and a custom attribution</summary>
+  <p><code>http://localhost:3000/api/staticmaps?width=600&height=400&markers=color:blue|height:50|width:50|48.8566,2.3522&markers=40.7128,-74.006&markers=img:https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Airport_symbol.svg/131px-Airport_symbol.svg.png|-33.924869,18.424055&polyline=weight:3|yheiHkljMxqup@zu`qM&polyline=weight:3|color:ff8800|40.7128,-74.006|-33.924869,18.424055&attribution=show:true|text:openstreetmap%20contributors</code></p>
 </details>
 
 ![Polyline & Markers](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/markersandpolyline.png)

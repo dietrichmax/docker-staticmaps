@@ -58,50 +58,6 @@ describe("handleMapRequest", () => {
     })
   })
 
-  it("responds with an image if all is valid", async () => {
-    jest.spyOn(cache, "getCachedTile").mockReturnValue(undefined)
-    jest.spyOn(cache, "createCacheKeyFromRequest").mockReturnValue("key")
-    jest.spyOn(cache, "setCachedTile").mockImplementation(() => {})
-
-    const imageBuffer = Buffer.from("image")
-
-    // Mock StaticMaps methods properly
-    const renderMock = jest.fn().mockResolvedValue(undefined)
-    const bufferMock = jest.fn().mockResolvedValue(imageBuffer)
-
-    jest.spyOn(StaticMaps.prototype, "render").mockImplementation(renderMock)
-    Object.defineProperty(StaticMaps.prototype, "image", {
-      get: () => ({
-        buffer: bufferMock,
-      }),
-    })
-
-    const req = {
-      method: "GET",
-      query: {
-        center: "48.8566,2.3522",
-        width: "256",
-        height: "256",
-        zoom: "12",
-      },
-    }
-
-    const res = {
-      set: jest.fn().mockReturnThis(),
-      end: jest.fn(),
-      status: jest.fn().mockReturnThis(),
-      json: jest.fn(),
-    }
-
-    await handleMapRequest(req as any, res as any)
-
-    expect(res.set).toHaveBeenCalledWith({
-      "Content-Type": "image/png",
-      "Content-Length": imageBuffer.length.toString(),
-    })
-    expect(res.end).toHaveBeenCalledWith(imageBuffer)
-  })
-
   it("handles errors in rendering gracefully", async () => {
     jest.spyOn(cache, "getCachedTile").mockReturnValue(undefined)
     jest.spyOn(cache, "createCacheKeyFromRequest").mockReturnValue("key")

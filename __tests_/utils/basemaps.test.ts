@@ -2,7 +2,7 @@ import { basemaps } from "../../src/utils/basemaps" // adjust path if needed
 
 describe("basemaps collection", () => {
   test("contains expected number of basemaps", () => {
-    expect(basemaps.length).toBe(17)
+    expect(basemaps.length).toBe(11)
   })
 
   test("each basemap has required properties", () => {

@@ -17,6 +17,8 @@ import {
   MapParamsInput,
   MapParamsOutput,
 } from "../types/types"
+import sharp from "sharp"
+import { createAttributionSVG, parseAttributionParam } from "../utils/attribution"
 
 /**
  * Handle a map request to generate a static map image.
@@ -307,6 +309,10 @@ const DEFAULTS = {
   reverseY: false,
   format: "png",
   quality: 100,
+  attribution: {
+    show: true,
+    text: ""
+  }
 }
 
 const SHAPE_DEFAULTS: Record<ShapeType, Feature> = {
@@ -403,6 +409,14 @@ export function getMapParams(params: MapParamsInput): MapParamsOutput {
     logger.debug("Missing required parameters: center or coordinates")
   }
 
+  const { url: tileUrl, attribution: basemapAttribution } = getTileUrl(
+    params.tileUrl,
+    params.basemap
+  )
+
+  const rawAttribution = params.attribution
+  const attribution = parseAttributionParam(rawAttribution, basemapAttribution)
+
   const options = {
     ...DEFAULTS,
     ...(params.width && { width: parseInt(params.width, 10) }),
@@ -431,8 +445,11 @@ export function getMapParams(params: MapParamsInput): MapParamsOutput {
     ...(typeof params.tileLayers !== "undefined" && {
       tileLayers: params.tileLayers,
     }),
+    ...(typeof attribution?.show !== "undefined" || attribution?.text
+  ? { attribution }
+  : {}),
 
-    tileUrl: getTileUrl(params.tileUrl, params.basemap),
+    tileUrl,
     center,
     quality,
     ...features,
@@ -595,37 +612,60 @@ export async function generateMap(options: any): Promise<Buffer> {
     throw new Error(errMsg)
   }
 
-  const imageBuffer = await map.image.buffer(`image/${options.format}`)
+  if (options.attribution?.text && options.attribution.show === true) {
+    const attributionText = options.attribution.text
+    const svgOverlay = createAttributionSVG(attributionText, options.width, options.height)
 
+    const imageBuffer = await map.image.buffer(`image/${options.format}`)
+
+    const finalImage = await sharp(imageBuffer)
+      .composite([{ input: svgOverlay, top: 0, left: 0 }])
+      .toFormat(options.format || "png")
+      .toBuffer()
+
+    return finalImage
+  }
+
+  // If no attribution text or show is false, just return the original image buffer
+  const imageBuffer = await map.image.buffer(`image/${options.format}`)
   return imageBuffer
 }
 
 /**
- * Generates a tile URL based on the provided custom URL and basemap.
+ * Generates a tile URL and attribution based on the provided custom URL and basemap.
  *
- * @param {string|null} [customUrl] - A custom URL template for the tiles.
- * @param {string|null} [basemap] - The desired base map type (e.g., "osm", "topo").
- * @returns {string} The tile URL string.
+ * @param {string|null} customUrl - A custom URL template for the tiles.
+ * @param {string|null} basemap - The desired base map type (e.g., "osm", "topo").
+ * @returns {{ url: string, attribution: string }} An object containing the tile URL and its attribution.
  */
 export function getTileUrl(
   customUrl: string | null,
   basemap: string | null
-): string {
+): { url: string; attribution: string } {
   if (customUrl) {
     logger.debug(`Using custom tile URL: ${customUrl}`)
-    return customUrl
+    return {
+      url: customUrl,
+      attribution: "", // No attribution for custom tiles unless provided separately
+    }
   }
 
-  const selectedBasemap = basemap ?? "osm" // default to 'osm' if basemap is null
+  const selectedBasemap = basemap ?? "osm" // default to 'osm'
 
   const tile = basemaps.find(({ basemap: b }) => b === selectedBasemap)
   if (!tile) {
     logger.error(
-      `Unsupported basemap: "${selectedBasemap}"! Use a valid basemap name or remove the "basemap" parameter to use default ("osm").`
+      `Unsupported basemap: "${selectedBasemap}"! Use a valid basemap name or omit it to use the default ("osm").`
     )
-    return ""
+    return {
+      url: "",
+      attribution: "",
+    }
   }
 
   logger.debug(`Using basemap: ${selectedBasemap} -> ${tile.url}`)
-  return tile.url
+  return {
+    url: tile.url,
+    attribution: tile.attribution,
+  }
 }
