@@ -12,6 +12,9 @@ documentation:
 server:
   - "src/**"
 
+tests:
+  - "__tests__/**"
+
 web:
   - "public/**"
 
