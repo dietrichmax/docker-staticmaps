@@ -159,7 +159,7 @@ Make sure to respect the usage policy of each provider!
 
 ---
 
-## 📝 Attribution
+### 📝 Attribution
 
 The map service supports an optional `attribution` query parameter to control whether and how attribution is rendered on the generated image.
 
