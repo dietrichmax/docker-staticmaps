@@ -7,7 +7,7 @@ import {
 } from "../utils/cache"
 import { MapRequest } from "../types/types"
 import { generateMap } from "../services/map.services"
-import { getMapParams } from "../services/params-parser"
+import { getMapParams } from "../services/params-parser.services"
 
 /**
  * Controller to handle incoming requests for generating static map images.

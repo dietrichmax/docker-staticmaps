@@ -2,14 +2,13 @@
 
 import {
   handleMapRequest,
-  getMapParams,
-  parseCoordinates,
-  isEncodedPolyline,
 } from "../../src/controllers/staticmaps.controller"
+import { 
+  parseCoordinates,
+  isEncodedPolyline } from "../../src/services/params-parser.services"
 import { Request, Response } from "express"
 import StaticMaps from "../../src/staticmaps/staticmaps"
 import * as cache from "../../src/utils/cache"
-import logger from "../../src/utils/logger"
 
 jest.mock("../../src/staticmaps/staticmaps")
 jest.mock("../../src/utils/cache")
