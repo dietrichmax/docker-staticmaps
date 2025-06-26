@@ -88,13 +88,21 @@ app.use(
 
 // Start server and log URLs
 app.listen(PORT, () => {
+  logger.info("📦 Environment Configuration:\n" +
+    `  PORT: ${PORT}\n` +
+    `  ENVIRONMENT: ${process.env.NODE_ENV || "development"}\n` +
+    `  TILE_CACHE_TTL: ${process.env.TILE_CACHE_TTL || "3600"}\n` +
+    `  TILE_CACHE_DISABLE: ${process.env.TILE_CACHE_DISABLE || "false"}\n` +
+    `  TILE_USER_AGENT: ${process.env.TILE_USER_AGENT || "(not set)"}\n` +
+    `  API_KEY: ${process.env.API_KEY ? "(set)" : "(not set)"}\n` +
+    `  RATE_LIMIT_MS: ${process.env.RATE_LIMIT_MS || "60000"}\n` +
+    `  RATE_LIMIT_MAX: ${process.env.RATE_LIMIT_MAX || "60"}\n` +
+    `  LOG_LEVEL: ${process.env.LOG_LEVEL || "INFO"}`
+  )
   logger.info(
-    `🗺️${" "} docker-staticmaps running at http://localhost:${PORT}/api/staticmaps \nDemo running at http://localhost:${PORT}/`,
-    {
-      PORT: PORT,
-      ENVIRONMENT: process.env.NODE_ENV || "development",
-    }
+    `🗺️  docker-staticmaps running at http://localhost:${PORT}/api/staticmaps \nDemo running at http://localhost:${PORT}/`
   )
 })
+
 
 export default app
