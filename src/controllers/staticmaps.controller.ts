@@ -55,7 +55,6 @@ export async function handleMapRequest(req: MapRequest, res: Response): Promise<
 
     // Cache the generated image for future requests
     setCachedTile(cacheKey, img)
-    logger.info("Image rendered", { size: img.length })
 
     // Send the generated image as the response
     res

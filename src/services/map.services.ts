@@ -133,6 +133,9 @@ function addTexts(map: StaticMaps, texts: any[]): void {
 export async function generateMap(options: any): Promise<Buffer> {
   logger.debug("Starting map generation with options:", options)
 
+  // ⏱ Measure render time using process.hrtime
+  const start = process.hrtime()
+
   const map = new StaticMaps(options)
 
   // Add all feature types
@@ -163,6 +166,12 @@ export async function generateMap(options: any): Promise<Buffer> {
       .toFormat(options.format)
       .toBuffer()
   }
+
+  
+  const [sec, nano] = process.hrtime(start)
+  const renderDurationMs = Math.round(sec * 1000 + nano / 1e6)
+  
+  logger.info(`Image rendered in ${renderDurationMs} ms`, { size: buffer.length })
 
   return buffer
 }
