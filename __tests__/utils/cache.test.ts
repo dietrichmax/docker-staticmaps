@@ -1,6 +1,5 @@
 // __tests__/cache.test.ts
 import * as cache from "../../src/utils/cache"
-
 import { MapRequest } from "../../src/types/types"
 
 function createTestRequest(overrides: Partial<MapRequest>): MapRequest {
@@ -19,8 +18,8 @@ describe("tileCache module", () => {
 
   beforeEach(() => {
     cache._tileCache.flushAll()
-    jest.resetModules() // reset module cache to re-evaluate isDev
-    process.env.NODE_ENV = "production" // default to prod for tests
+    jest.resetModules()
+    process.env.DISABLE_TILE_CACHE = "false" // enable cache by default
   })
 
   test("setCachedTile stores data in cache", () => {
@@ -44,11 +43,10 @@ describe("tileCache module", () => {
     )
   })
 
-  test("cache functions no-op in development mode", () => {
-    process.env.NODE_ENV = "development"
-    jest.resetModules() // reset module cache to re-evaluate isDev
-
-    const cache = require("../../src/utils/cache") // re-import after NODE_ENV set
+  test("cache functions are disabled when DISABLE_TILE_CACHE is true", () => {
+    process.env.DISABLE_TILE_CACHE = "true"
+    jest.resetModules()
+    const cache = require("../../src/utils/cache")
 
     cache.setCachedTile(testKey, testData)
     const cached = cache.getCachedTile(testKey)
