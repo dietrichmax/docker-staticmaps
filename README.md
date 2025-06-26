@@ -68,8 +68,6 @@ A small demo UI is available at [http://localhost:3000](http://localhost:3000 "D
 | `DISABLE_TILE_CACHE` | `boolean` | `false` | Set to `true` to disable tile caching |
 | `RATE_LIMIT_MS` | `number` | `60000` | Rate limit window in milliseconds |
 | `RATE_LIMIT_MAX` | `number` | `60` | Max requests per IP per window |
-| `TILE_USER_AGENT` | `string` | (none) | 	Optional custom `User-Agent` header to send with tile requests. If not set, no `User-Agent` 
-header is added. |
 
 
 ### 🐳 Docker Deployment
@@ -83,6 +81,7 @@ docker run -d \
   -e API_KEY="your_api_key" \
   -e LOG_LEVEL="INFO" \
   -e TILE_CACHE_TTL=3600 \
+  -e DISABLE_TILE_CACHE=false \
   -e RATE_LIMIT_MS=60000 \
   -e RATE_LIMIT_MAX=60 \
   mxdcodes/docker-staticmaps:latest
@@ -102,6 +101,7 @@ services:
       - API_KEY=your_api_key
       - LOG_LEVEL=INFO
       - TILE_CACHE_TTL=3600
+      - DISABLE_TILE_CACHE=false
       - RATE_LIMIT_MS=60000
       - RATE_LIMIT_MAX=60
 ```
