@@ -25,8 +25,9 @@ import logger from "../utils/logger"
 import {
   MapOptions,
   TileServerConfigOptions,
-  Coordinate,
+  Coordinate
 } from "src/types/types"
+import { getCachedTile, setCachedTile, createCacheKeyFromRequest } from "../utils/cache"
 
 const RENDER_CHUNK_SIZE = 1000
 
@@ -851,11 +852,26 @@ class StaticMaps {
    * @returns {Promise<TileFetchResult>}
    */
   async getTile(data: any) {
+    const cacheKey = `GET:${data.url}`
+
+    const cached = getCachedTile(cacheKey)
+    if (cached) {
+      return {
+        success: true,
+        tile: {
+          url: data.url,
+          box: data.box,
+          body: cached,
+        },
+      }
+    }
+
     const options = {
       method: "GET",
       headers: this.tileRequestHeader || {},
       timeout: this.tileRequestTimeout,
     }
+
 
     try {
       const res = await fetch(data.url, options)
@@ -864,15 +880,17 @@ class StaticMaps {
         throw new Error(`Failed to fetch tile: ${res.statusText}`)
       }
 
-      const contentType = res.headers.get("content-type")
+      logger.debug(`Fetched tile: ${data.url}`)
 
+      const contentType = res.headers.get("content-type")
       if (contentType && !contentType.startsWith("image/")) {
         throw new Error("Tiles server response with wrong data")
       }
 
-      // Use arrayBuffer() to handle binary data and convert it to a Node.js Buffer
       const arrayBuffer = await res.arrayBuffer()
-      const body = Buffer.from(arrayBuffer) // Convert ArrayBuffer to Buffer
+      const body = Buffer.from(arrayBuffer)
+
+      setCachedTile(cacheKey, body)
 
       return {
         success: true,
@@ -889,6 +907,7 @@ class StaticMaps {
       }
     }
   }
+
 
   /**
    *  Fetching tiles and limit concurrent connections
