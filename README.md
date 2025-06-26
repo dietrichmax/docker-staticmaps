@@ -67,7 +67,10 @@ A small demo UI is available at [http://localhost:3000](http://localhost:3000 "D
 | `TILE_CACHE_TTL` | `number` | `3600` | Tile cache TTL in seconds. |
 | `RATE_LIMIT_MS` | `number` | `60000` | Rate limit window in milliseconds |
 | `RATE_LIMIT_MAX` | `number` | `60` | Max requests per IP per window |
-| `TILE_USER_AGENT` | `string` | (none) | 	Optional custom `User-Agent` header to send with tile requests. If not set, no `User-Agent` header is added.|
+| `TILE_USER_AGENT` | `string` | (none) | 	Optional custom `User-Agent` header to send with tile requests. If not set, no `User-Agent` 
+header is added. |
+| `DISABLE_TILE_CACHE` | `boolean` | `false` | Set to `true` to disable tile caching |
+
 
 ### 🐳 Docker Deployment
 
