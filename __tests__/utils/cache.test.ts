@@ -39,7 +39,7 @@ describe("tileCache module", () => {
 
     const key = cache.createCacheKeyFromRequest(req)
     expect(key).toBe(
-      "GET:/staticmaps?center=-119.49280%2C37.81084&zoom=9&layers=topo"
+      "GET:/staticmaps?center=-119.49280%2C37.81084&layers=topo&zoom=9"
     )
   })
 
