@@ -33,7 +33,7 @@ RUN apk add --no-cache --virtual .build-deps \
 COPY package*.json ./
 
 # Install dependencies using npm ci for reproducibility
-RUN npm ci
+RUN npm ci --omit=dev
 
 # Copy app source
 COPY . .
@@ -57,12 +57,11 @@ WORKDIR /opt/app
 COPY --from=build /opt/app/dist ./dist
 COPY --from=build /opt/app/public ./public
 COPY --from=build /opt/app/package*.json ./
+COPY --from=build /opt/app/node_modules ./node_modules
 COPY --from=build /usr/share/fonts /usr/share/fonts
 
 # Install only production deps and add non-root user
-RUN npm ci --omit=dev && \
-    rm -rf node_modules/.cache && \
-    addgroup -S appgroup && adduser -S appuser -G appgroup && \
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup && \
     chown -R appuser:appgroup /opt/app
 
 # Switch to non-root user for security
