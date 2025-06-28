@@ -17,7 +17,7 @@ export function createAttributionSVG(
   const fontSize = 12
   const paddingX = 10
   const paddingY = 4
-  const margin = 5
+  const margin = 0
 
   // Estimate text width
   const textWidth = measureTextWidth(text, fontSize)
@@ -43,8 +43,6 @@ export function createAttributionSVG(
         }
         .attr-bg {
           fill: rgba(0, 0, 0, 0.5);
-          rx: 4;
-          ry: 4;
         }
       </style>
       <rect x="${rectX}" y="${rectY}" width="${rectWidth}" height="${rectHeight}" class="attr-bg"/>
