@@ -15,8 +15,8 @@ export function createAttributionSVG(
   height: number
 ): Buffer {
   const fontSize = 12
-  const paddingX = 10
-  const paddingY = 4
+  const paddingX = 8
+  const paddingY = 3
   const margin = 0
 
   // Estimate text width
