@@ -69,7 +69,6 @@ A small demo UI is available at [http://localhost:3000](http://localhost:3000 "D
 | `RATE_LIMIT_MS` | `number` | `60000` | Rate limit window in milliseconds |
 | `RATE_LIMIT_MAX` | `number` | `60` | Max requests per IP per window |
 
-
 ### 🐳 Docker Deployment
 
 To run the container in detached mode:
@@ -128,7 +127,7 @@ Request static maps from the `/staticmaps` endpoint using the following paramete
 | `format` | `png` | Output format: `png`, `jpg`, or `webp` |
 | `quality` | `100` | Image quality (0–100) for `jpg`/`webp` |
 | `basemap` | `osm` | Tile layer (see **Basemap** for supported types) |
-| `attribution` |   | Attribution text (see **Attribution**) |
+| `attribution` |  | Attribution text (see **Attribution**) |
 | `tileUrl` |  | Tile URL with `{x}`, `{y}`, `{z}` or `{quadkey}` placeholders |
 | `tileSubdomains` | `[]` | Tile subdomains like `['a', 'b', 'c']` |
 | `tileLayers` | `[]` | Multiple tile layers with `tileUrl` and `tileSubdomains` |
@@ -172,8 +171,8 @@ The map service supports an optional `attribution` query parameter to control wh
 
 ### Basic Behavior
 
-* Attribution is **shown by default** (if nothing is passed).
-* If no custom text is provided, the service uses the default attribution for the selected basemap.
+- Attribution is **shown by default** (if nothing is passed).
+- If no custom text is provided, the service uses the default attribution for the selected basemap.
 
 ### Parameter Format
 
@@ -185,10 +184,10 @@ The `attribution` parameter accepts key-value pairs separated by `|`, for exampl
 
 ### Supported Keys
 
-| Key  | Description                             | Example                        |
-| ---- | --------------------------------------- | ------------------------------ |
-| show | `true` or `false` – controls visibility | `show:false`                   |
-| text | Custom attribution text (URL-encoded)   | `text:%C2%A9%20Your%20Company` |
+| Key | Description | Example |
+| --- | --- | --- |
+| show | `true` or `false` – controls visibility | `show:false` |
+| text | Custom attribution text (URL-encoded) | `text:%C2%A9%20Your%20Company` |
 
 ---
 

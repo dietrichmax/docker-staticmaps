@@ -28,20 +28,31 @@ function addMarkers(map: StaticMaps, markers: any[]): void {
     const {
       coords = [],
       img,
-      width, height,
-      offsetX, offsetY,
-      color, resizeMode,
-      drawWidth, drawHeight,
+      width,
+      height,
+      offsetX,
+      offsetY,
+      color,
+      resizeMode,
+      drawWidth,
+      drawHeight,
     } = marker
     coords.forEach((coord: any, j: number) => {
       logger.debug(`Adding marker [${i}][${j}]`, marker)
-      map.addMarker(new IconMarker({
-        coord, img,
-        width, height,
-        offsetX, offsetY,
-        color, resizeMode,
-        drawWidth, drawHeight,
-      }))
+      map.addMarker(
+        new IconMarker({
+          coord,
+          img,
+          width,
+          height,
+          offsetX,
+          offsetY,
+          color,
+          resizeMode,
+          drawWidth,
+          drawHeight,
+        })
+      )
     })
   })
 }
@@ -53,15 +64,14 @@ function addMarkers(map: StaticMaps, markers: any[]): void {
  * @param items - Array of line or polygon configs
  * @param isPolygon - True to call addPolygon, false to call addLine
  */
-function addPolylines(
-  map: StaticMaps,
-  items: any[],
-  isPolygon = false
-): void {
+function addPolylines(map: StaticMaps, items: any[], isPolygon = false): void {
   items.forEach((item, i) => {
     const { coords = [], color, weight, fill } = item
     if (coords.length < 2) {
-      logger.warn(`Skipping ${isPolygon ? "polygon" : "polyline"} [${i}] due to insufficient coords`, item)
+      logger.warn(
+        `Skipping ${isPolygon ? "polygon" : "polyline"} [${i}] due to insufficient coords`,
+        item
+      )
       return
     }
     logger.debug(`Adding ${isPolygon ? "polygon" : "polyline"} [${i}]`, item)
@@ -98,10 +108,16 @@ function addCircles(map: StaticMaps, circles: any[]): void {
 function addTexts(map: StaticMaps, texts: any[]): void {
   texts.forEach((txt, i) => {
     const {
-      coords = [], text,
-      color, width, fill,
-      size, font, anchor,
-      offsetX = 0, offsetY = 0,
+      coords = [],
+      text,
+      color,
+      width,
+      fill,
+      size,
+      font,
+      anchor,
+      offsetX = 0,
+      offsetY = 0,
     } = txt
     const coord = coords[0]
     if (!coord) {
@@ -109,13 +125,20 @@ function addTexts(map: StaticMaps, texts: any[]): void {
       return
     }
     logger.debug(`Adding text [${i}]`, txt)
-    map.addText(new Text({
-      coord, text,
-      color, width, fill,
-      size, font, anchor,
-      offsetX: parseInt(offsetX as any, 10) || 0,
-      offsetY: parseInt(offsetY as any, 10) || 0,
-    }))
+    map.addText(
+      new Text({
+        coord,
+        text,
+        color,
+        width,
+        fill,
+        size,
+        font,
+        anchor,
+        offsetX: parseInt(offsetX as any, 10) || 0,
+        offsetY: parseInt(offsetY as any, 10) || 0,
+      })
+    )
   })
 }
 
@@ -160,18 +183,23 @@ export async function generateMap(options: any): Promise<Buffer> {
   // If attribution is enabled, overlay the SVG
   if (options.attribution?.show && options.attribution.text) {
     logger.debug("Adding attribution overlay", options.attribution)
-    const svg = createAttributionSVG(options.attribution.text, options.width, options.height)
+    const svg = createAttributionSVG(
+      options.attribution.text,
+      options.width,
+      options.height
+    )
     buffer = await sharp(buffer)
       .composite([{ input: svg, top: 0, left: 0 }])
       .toFormat(options.format)
       .toBuffer()
   }
 
-  
   const [sec, nano] = process.hrtime(start)
   const renderDurationMs = Math.round(sec * 1000 + nano / 1e6)
-  
-  logger.info(`Image rendered in ${renderDurationMs} ms`, { size: buffer.length })
+
+  logger.info(`Image rendered in ${renderDurationMs} ms`, {
+    size: buffer.length,
+  })
 
   return buffer
 }

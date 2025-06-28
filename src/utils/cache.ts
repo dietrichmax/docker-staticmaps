@@ -45,16 +45,16 @@ export function createCacheKeyFromRequest(req: MapRequest): string {
     return devKey
   }
 
-const queryParams = Object.entries(req.query)
-  .map(([k, v]) => {
-    if (Array.isArray(v)) {
-      return [k, v.join(",")]; // join array values with a comma
-    }
-    return [k, v as string];
-  })
-  .sort(([a], [b]) => a.localeCompare(b)) // sort keys for consistent order
-  .map(([k, v]) => `${k}=${v}`) // turn into key=value strings
-  .join("&"); // join to form cache key string
+  const queryParams = Object.entries(req.query)
+    .map(([k, v]) => {
+      if (Array.isArray(v)) {
+        return [k, v.join(",")] // join array values with a comma
+      }
+      return [k, v as string]
+    })
+    .sort(([a], [b]) => a.localeCompare(b)) // sort keys for consistent order
+    .map(([k, v]) => `${k}=${v}`) // turn into key=value strings
+    .join("&") // join to form cache key string
 
   const queryString = new URLSearchParams(queryParams).toString()
   const cacheKey = `${req.method}:${req.path}?${queryString}`

@@ -25,9 +25,13 @@ import logger from "../utils/logger"
 import {
   MapOptions,
   TileServerConfigOptions,
-  Coordinate
+  Coordinate,
 } from "src/types/types"
-import { getCachedTile, setCachedTile, createCacheKeyFromRequest } from "../utils/cache"
+import {
+  getCachedTile,
+  setCachedTile,
+  createCacheKeyFromRequest,
+} from "../utils/cache"
 
 const RENDER_CHUNK_SIZE = 1000
 
@@ -522,7 +526,7 @@ class StaticMaps {
           ${text.text}
       </text>`
   }
-  
+
   /**
    * Renders a MultiPolygon to SVG.
    *
@@ -872,6 +876,14 @@ class StaticMaps {
       timeout: this.tileRequestTimeout,
     }
 
+    const notSupported = [".pbf", ".pmtiles"]
+    if (notSupported.some((ext) => data.url.endsWith(ext))) {
+      logger.warn(`Vector tile not supported for rendering: ${data.url}`)
+      return {
+        success: false,
+        error: "Vector tiles (.pbf/.pmtiles) are not supported for rendering.",
+      }
+    }
 
     try {
       const res = await fetch(data.url, options)
@@ -907,7 +919,6 @@ class StaticMaps {
       }
     }
   }
-
 
   /**
    *  Fetching tiles and limit concurrent connections

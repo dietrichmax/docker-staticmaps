@@ -1,11 +1,10 @@
 // __tests__/handleMapRequest.test.ts
 
+import { handleMapRequest } from "../../src/controllers/staticmaps.controller"
 import {
-  handleMapRequest,
-} from "../../src/controllers/staticmaps.controller"
-import { 
   parseCoordinates,
-  isEncodedPolyline } from "../../src/services/params-parser.services"
+  isEncodedPolyline,
+} from "../../src/services/params-parser.services"
 import { Request, Response } from "express"
 import StaticMaps from "../../src/staticmaps/staticmaps"
 import * as cache from "../../src/utils/cache"

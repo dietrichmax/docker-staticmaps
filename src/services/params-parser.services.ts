@@ -105,8 +105,8 @@ export function getMapParams(params: MapParamsInput): MapParamsOutput {
       tileLayers: params.tileLayers,
     }),
     ...(typeof attribution?.show !== "undefined" || attribution?.text
-  ? { attribution }
-  : {}),
+      ? { attribution }
+      : {}),
 
     tileUrl,
     center,
@@ -253,15 +253,11 @@ function extractParams(
   return { extracted, coordinates }
 }
 
-
-
-
 // ——— Type Aliases —————————————————————————————————————————————
 type CoordInput =
   | Array<Coordinate>
   | Array<string>
   | Array<{ lat: number; lon: number }>
-
 
 /**
  * Detect if input strings look like an encoded polyline
@@ -340,8 +336,8 @@ const DEFAULTS = {
   quality: 100,
   attribution: {
     show: true,
-    text: ""
-  }
+    text: "",
+  },
 }
 
 const SHAPE_DEFAULTS: Record<ShapeType, Feature> = {
@@ -416,14 +412,12 @@ export function getTileUrl(
   customUrl: string | null,
   basemapName: string | null
 ): { url: string; attribution: string } {
-  if (customUrl) return { url: customUrl, attribution: '' }
-  const name = basemapName || 'osm'
+  if (customUrl) return { url: customUrl, attribution: "" }
+  const name = basemapName || "osm"
   const tile = basemaps.find((b) => b.basemap === name)
   if (!tile) {
     logger.error(`Unknown basemap: ${name}`)
-    return { url: '', attribution: '' }
+    return { url: "", attribution: "" }
   }
   return { url: tile.url, attribution: tile.attribution }
 }
-
-

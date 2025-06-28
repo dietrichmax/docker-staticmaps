@@ -28,8 +28,14 @@ describe("headers middleware", () => {
     headers(req as Request, res as Response, next)
 
     expect(res.setHeader).toHaveBeenCalledWith("X-Frame-Options", "DENY")
-    expect(res.setHeader).toHaveBeenCalledWith("X-Content-Type-Options", "nosniff")
-    expect(res.setHeader).toHaveBeenCalledWith("Referrer-Policy", "no-referrer-when-downgrade")
+    expect(res.setHeader).toHaveBeenCalledWith(
+      "X-Content-Type-Options",
+      "nosniff"
+    )
+    expect(res.setHeader).toHaveBeenCalledWith(
+      "Referrer-Policy",
+      "no-referrer-when-downgrade"
+    )
     expect(res.setHeader).toHaveBeenCalledWith(
       "Permissions-Policy",
       "geolocation=(), microphone=(), camera=(), fullscreen=(), payment=()"
@@ -38,7 +44,10 @@ describe("headers middleware", () => {
       "Strict-Transport-Security",
       "max-age=31536000; includeSubDomains; preload"
     )
-    expect(res.setHeader).toHaveBeenCalledWith("Cross-Origin-Resource-Policy", "same-origin")
+    expect(res.setHeader).toHaveBeenCalledWith(
+      "Cross-Origin-Resource-Policy",
+      "same-origin"
+    )
 
     expect(res.setHeader).toHaveBeenCalledWith(
       "Content-Security-Policy",

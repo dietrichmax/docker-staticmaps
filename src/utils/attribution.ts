@@ -1,4 +1,8 @@
-export function createAttributionSVG(text: string, width: number, height: number): Buffer {
+export function createAttributionSVG(
+  text: string,
+  width: number,
+  height: number
+): Buffer {
   const fontSize = 12
   const paddingX = 10
   const paddingY = 4
@@ -40,8 +44,6 @@ export function createAttributionSVG(text: string, width: number, height: number
   return Buffer.from(svg)
 }
 
-
-
 export function parseAttributionParam(
   param?: string,
   basemapAttribution?: string
@@ -81,4 +83,3 @@ export function parseAttributionParam(
 
   return result
 }
-

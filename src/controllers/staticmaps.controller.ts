@@ -11,20 +11,23 @@ import { getMapParams } from "../services/params-parser.services"
 
 /**
  * Controller to handle incoming requests for generating static map images.
- * 
+ *
  * Steps:
  * - Generate a cache key based on request
  * - Serve a cached image if it exists
  * - Parse and validate input parameters
  * - Generate map image if no cache hit
  * - Cache the result and respond with the image
- * 
+ *
  * @param req - Express request object with typed query/body for map generation
  * @param res - Express response object used to return image or error
- * 
+ *
  * @returns A PNG or specified format image stream or an error response
  */
-export async function handleMapRequest(req: MapRequest, res: Response): Promise<void> {
+export async function handleMapRequest(
+  req: MapRequest,
+  res: Response
+): Promise<void> {
   try {
     // Create a unique cache key based on request parameters
     const cacheKey = createCacheKeyFromRequest(req)

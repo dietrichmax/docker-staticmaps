@@ -15,7 +15,8 @@ export function headers(req: Request, res: Response, next: NextFunction): void {
     "Referrer-Policy": "no-referrer-when-downgrade",
 
     // Restrict browser feature access
-    "Permissions-Policy": "geolocation=(), microphone=(), camera=(), fullscreen=(), payment=()",
+    "Permissions-Policy":
+      "geolocation=(), microphone=(), camera=(), fullscreen=(), payment=()",
 
     // Enforce HTTPS (HSTS)
     "Strict-Transport-Security": "max-age=31536000; includeSubDomains; preload",
