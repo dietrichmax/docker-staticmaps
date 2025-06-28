@@ -14,26 +14,20 @@ LABEL org.opencontainers.image.licenses=GPL
 # Create app directory
 WORKDIR /opt/app
 
-RUN apk add --no-cache msttcorefonts-installer fontconfig && \
-    update-ms-fonts && \
-    fc-cache -f -v
-
-# Install build dependencies needed for 'canvas' and node-gyp
-RUN apk add --no-cache --virtual .build-deps \
-    python3 \
-    make \
-    g++ \
-    cairo-dev \
-    pango-dev \
-    giflib-dev \
-    jpeg-dev \
-    librsvg-dev
+# Install font tooling, canvas build deps, and Python for node-gyp
+RUN apk add --no-cache \
+  msttcorefonts-installer fontconfig \
+  python3 make g++ libc6-compat \
+  cairo-dev pango-dev giflib-dev libpng-dev jpeg-dev \
+  libtool pkgconfig && \
+  update-ms-fonts && fc-cache -f -v && \
+  ln -sf /usr/bin/python3 /usr/bin/python
 
 # Copy package.json and package-lock.json first to utilize Docker cache for dependencies
 COPY package*.json ./
 
-# Install dependencies using npm ci for reproducibility
-RUN npm ci --omit=dev
+# Install all dependencies (including dev deps) using npm ci for reproducibility
+RUN npm ci
 
 # Copy app source
 COPY . .
@@ -41,15 +35,14 @@ COPY . .
 # Build the app
 RUN npm run build
 
-# Remove build dependencies to reduce image size after build
-RUN apk del .build-deps
+# Remove dev dependencies to keep only production deps and native modules
+RUN npm prune --production
 
 # Stage 2: Final Stage (Minimal Image)
 FROM node:22-alpine AS final
 
 # Set environment variable for production
 ENV NODE_ENV=production
-
 # Set working directory
 WORKDIR /opt/app
 
