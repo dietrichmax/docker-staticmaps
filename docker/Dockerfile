@@ -43,7 +43,7 @@ FROM node:22-alpine AS final
 
 # Install runtime dependencies required by node-canvas
 RUN apk add --no-cache \
-  cairo pango giflib libpng jpeg
+  cairo pango
   
 # Set environment variable for production
 ENV NODE_ENV=production
