@@ -41,10 +41,16 @@ describe('createAttributionSVG', () => {
     expect(rectMatch).not.toBeNull()
     if (rectMatch) {
       const [_, x, y, w, h] = rectMatch.map(Number)
-      expect(x).toBeCloseTo(width - 5 - (80 + 20)) // rectX = width - margin - rectWidth
-      expect(y).toBeCloseTo(height - 5 - (12 + 8))  // rectY = height - margin - rectHeight
-      expect(w).toBeCloseTo(80 + 20)                // rectWidth = textWidth + paddingX*2
-      expect(h).toBeCloseTo(12 + 8)                 // rectHeight = fontSize + paddingY*2
+      
+      const expectedRectWidth = 80 + 8 * 2      // textWidth + paddingX * 2
+      const expectedRectHeight = 12 + 3 * 2     // fontSize + paddingY * 2
+      const expectedX = width - expectedRectWidth
+      const expectedY = height - expectedRectHeight
+
+      expect(x).toBeCloseTo(expectedX)
+      expect(y).toBeCloseTo(expectedY)
+      expect(w).toBeCloseTo(expectedRectWidth)
+      expect(h).toBeCloseTo(expectedRectHeight)
     }
   })
 })
