@@ -1,55 +1,79 @@
 // __tests__/cache.test.ts
-import * as cache from "../../src/utils/cache"
+import { getCachedTile, setCachedTile, createCacheKeyFromRequest, _tileCache } from "../../src/utils/cache"
 import { MapRequest } from "../../src/types/types"
 
-function createTestRequest(overrides: Partial<MapRequest>): MapRequest {
-  return {
-    method: "GET",
-    path: "/staticmaps",
-    query: {},
-    body: {},
-    ...overrides,
-  } as unknown as MapRequest
-}
-
-describe("tileCache module", () => {
-  const testKey = "GET:/staticmaps?center=-119.49280,37.81084&zoom=9"
-  const testData = Buffer.from("testdata")
+describe('Tile Cache', () => {
+  const key = 'test:key'
+  const value = Buffer.from('mock tile data')
 
   beforeEach(() => {
-    cache._tileCache.flushAll()
-    jest.resetModules()
-    process.env.DISABLE_TILE_CACHE = "false" // enable cache by default
+    _tileCache.flushAll()
+    process.env.DISABLE_TILE_CACHE = 'false'
   })
 
-  test("setCachedTile stores data in cache", () => {
-    cache.setCachedTile(testKey, testData)
-    const cached = cache.getCachedTile(testKey)
-    expect(cached).toEqual(testData)
+  afterAll(() => {
+    _tileCache.flushAll()
   })
 
-  test("getCachedTile returns undefined for missing key", () => {
-    expect(cache.getCachedTile("missing")).toBeUndefined()
-  })
+  
+  const mockRequest = (method: string, path: string, query: Record<string, any> = {}): MapRequest =>
+    ({
+      method,
+      path,
+      query,
+    } as unknown as MapRequest)
 
-  test("createCacheKeyFromRequest generates consistent keys", () => {
-    const req = createTestRequest({
-      query: { center: "-119.49280,37.81084", zoom: "9", layers: "topo" },
+  describe('getCachedTile & setCachedTile', () => {
+    it('should store and retrieve tile data', () => {
+      setCachedTile(key, value)
+      const cached = getCachedTile(key)
+      expect(cached?.equals(value)).toBe(true)
     })
 
-    const key = cache.createCacheKeyFromRequest(req)
-    expect(key).toBe(
-      "GET:/staticmaps?center=-119.49280%2C37.81084&layers=topo&zoom=9"
-    )
+    it('should return undefined if key not found', () => {
+      expect(getCachedTile('nonexistent:key')).toBeUndefined()
+    })
+
+    it('should not store or retrieve if cache is disabled', () => {
+      process.env.DISABLE_TILE_CACHE = 'true'
+      setCachedTile(key, value)
+      expect(getCachedTile(key)).toBeUndefined()
+    })
   })
 
-  test("cache functions are disabled when DISABLE_TILE_CACHE is true", () => {
-    process.env.DISABLE_TILE_CACHE = "true"
-    jest.resetModules()
-    const cache = require("../../src/utils/cache")
+  describe('createCacheKeyFromRequest', () => {
+    it('should create consistent cache key with sorted query parameters', () => {
+      const req1 = mockRequest('GET', '/api/staticmaps', {
+        width: '800',
+        height: '600',
+        zoom: '10',
+      })
+      const req2 = mockRequest('GET', '/api/staticmaps', {
+        height: '600',
+        zoom: '10',
+        width: '800',
+      })
 
-    cache.setCachedTile(testKey, testData)
-    const cached = cache.getCachedTile(testKey)
-    expect(cached).toBeUndefined()
+      const key1 = createCacheKeyFromRequest(req1)
+      const key2 = createCacheKeyFromRequest(req2)
+      expect(key1).toBe(key2)
+    })
+
+    it('should handle array query parameters by joining with commas', () => {
+      process.env.DISABLE_TILE_CACHE = 'false'
+      const req = mockRequest('GET', '/tiles', {
+        layers: ['base', 'roads'],
+      })
+
+      const key = createCacheKeyFromRequest(req)
+      expect(key).toContain('layers=base%2Croads')
+    })
+
+    it('should return DEV key if cache is disabled', () => {
+      process.env.DISABLE_TILE_CACHE = 'true'
+      const req = mockRequest('GET', '/tiles')
+      const key = createCacheKeyFromRequest(req)
+      expect(key).toBe('DEV:GET:/tiles')
+    })
   })
 })
