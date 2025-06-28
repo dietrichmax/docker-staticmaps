@@ -33,7 +33,7 @@ RUN apk add --no-cache --virtual .build-deps \
 COPY package*.json ./
 
 # Install dependencies using npm ci for reproducibility
-RUN npm ci
+RUN npm install
 
 # Copy app source
 COPY . .
