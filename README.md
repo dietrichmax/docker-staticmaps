@@ -27,7 +27,7 @@ Run the service with Docker:
 docker run -p '3000:3000/tcp' mxdcodes/docker-staticmaps:latest
 ```
 
-Example request:
+Send a sample request:
 
 ```bash
 curl "http://localhost:3000/api/staticmaps?center=-119.49280,37.81084&zoom=9"
@@ -107,14 +107,14 @@ services:
 
 ## 🧑‍💻 API Reference
 
-Request static maps from the `/staticmaps` endpoint using the following parameters:
+Request static maps from the `/api/staticmaps` endpoint using the following parameters:
 
 ### Required Parameters
 
-| Parameter | Default    | Description                                      |
-| --------- | ---------- | ------------------------------------------------ |
-| `center`  | (required) | Center of map (`lon,lat`, `-119.49280,37.81084`) |
-| `zoom`    | (required) | Zoom level (`1` to `18`).                        |
+| Parameter | Default    | Description                                           |
+| --------- | ---------- | ------------------------------------------------------|
+| `center`  | (required) | Center of map (`lon,lat`, e.g. `-119.49280,37.81084`) |
+| `zoom`    | (required) | Zoom level (`1` to `18`).                             |
 
 ### Optional Parameters
 
