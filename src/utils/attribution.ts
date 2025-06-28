@@ -1,3 +1,14 @@
+import { measureTextWidth } from "./helpers"
+
+/**
+ * Creates an SVG buffer containing an attribution box with the given text,
+ * positioned in the bottom-right corner of the specified width/height area.
+ *
+ * @param {string} text - The attribution text to display.
+ * @param {number} width - The width of the SVG canvas.
+ * @param {number} height - The height of the SVG canvas.
+ * @returns {Buffer} - A Buffer containing the rendered SVG markup.
+ */
 export function createAttributionSVG(
   text: string,
   width: number,
@@ -9,7 +20,7 @@ export function createAttributionSVG(
   const margin = 5
 
   // Estimate text width
-  const textWidth = text.length * fontSize * 0.48 // Approximate character width
+  const textWidth = measureTextWidth(text, fontSize)
   const textHeight = fontSize
 
   const rectWidth = textWidth + paddingX * 2
@@ -44,6 +55,14 @@ export function createAttributionSVG(
   return Buffer.from(svg)
 }
 
+/**
+ * Parses an attribution parameter string into an object indicating whether to show attribution
+ * and what text to display. Falls back to a given basemap attribution if needed.
+ *
+ * @param {string} [param] - The attribution param, e.g. "show:true|text:Powered%20by%20X".
+ * @param {string} [basemapAttribution] - Default attribution text to use if none provided.
+ * @returns {{ show: boolean, text?: string }} - Parsed attribution configuration.
+ */
 export function parseAttributionParam(
   param?: string,
   basemapAttribution?: string

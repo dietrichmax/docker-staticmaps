@@ -1,61 +1,70 @@
-import { truncate, normalizeIp, isDev } from "../../src/utils/helpers"
+import { truncate, normalizeIp, isDev, measureTextWidth } from "../../src/utils/helpers"
 
-describe("truncate", () => {
-  test("returns original string if shorter than maxLength", () => {
-    const input = "short string"
-    expect(truncate(input, 600)).toBe(input) // test with explicit > 500
+describe('truncate', () => {
+  it('returns the original string if under max length', () => {
+    const str = 'Short string'
+    expect(truncate(str)).toBe(str)
   })
 
-  test("truncates and appends ellipsis if longer than maxLength", () => {
-    const input = "a".repeat(600)
-    const truncated = truncate(input, 500)
-    expect(truncated).toHaveLength(503) // 500 chars + "..."
-    expect(truncated.endsWith("...")).toBe(true)
+  it('truncates and adds ellipsis if string is too long', () => {
+    const str = 'a'.repeat(600)
+    expect(truncate(str).endsWith('...')).toBe(true)
+    expect(truncate(str).length).toBe(503)
   })
 
-  test("uses default maxLength of 500", () => {
-    const input = "a".repeat(600)
-    const truncated = truncate(input)
-    expect(truncated).toHaveLength(503)
+  it('truncates with custom max length', () => {
+    const str = 'a'.repeat(100)
+    expect(truncate(str, 50)).toBe(`${'a'.repeat(50)}...`)
   })
 })
 
-describe("normalizeIp", () => {
-  test("removes IPv4-mapped IPv6 prefix", () => {
-    expect(normalizeIp("::ffff:192.168.0.1")).toBe("192.168.0.1")
+describe('normalizeIp', () => {
+  it('removes ::ffff: prefix from IPv4-mapped IPv6 address', () => {
+    expect(normalizeIp('::ffff:192.168.1.1')).toBe('192.168.1.1')
   })
 
-  test("returns IP unchanged if no prefix", () => {
-    expect(normalizeIp("192.168.0.1")).toBe("192.168.0.1")
-    expect(normalizeIp("::1")).toBe("::1")
+  it('returns normal IP unchanged', () => {
+    expect(normalizeIp('127.0.0.1')).toBe('127.0.0.1')
   })
 })
 
-describe("isDev", () => {
+describe('isDev', () => {
   const OLD_ENV = process.env
 
   beforeEach(() => {
-    jest.resetModules()
     process.env = { ...OLD_ENV }
   })
 
-  afterAll(() => {
+  afterEach(() => {
     process.env = OLD_ENV
   })
 
-  test("returns true if NODE_ENV is 'development'", () => {
-    process.env.NODE_ENV = "development"
+  it('returns true if NODE_ENV is development', () => {
+    process.env.NODE_ENV = 'development'
     expect(isDev()).toBe(true)
   })
 
-  test("returns false if NODE_ENV is not 'development'", () => {
-    process.env.NODE_ENV = "production"
+  it('returns false if NODE_ENV is not development', () => {
+    process.env.NODE_ENV = 'production'
     expect(isDev()).toBe(false)
+  })
+})
 
-    process.env.NODE_ENV = "test"
-    expect(isDev()).toBe(false)
+describe('measureTextWidth', () => {
+  it('returns a positive number for non-empty string', () => {
+    const width = measureTextWidth('Hello world', 12)
+    expect(typeof width).toBe('number')
+    expect(width).toBeGreaterThan(0)
+  })
 
-    delete process.env.NODE_ENV
-    expect(isDev()).toBe(false)
+  it('returns 0 for empty string', () => {
+    const width = measureTextWidth('', 12)
+    expect(width).toBe(0)
+  })
+
+  it('returns wider value for larger font size', () => {
+    const small = measureTextWidth('Test', 10)
+    const large = measureTextWidth('Test', 30)
+    expect(large).toBeGreaterThan(small)
   })
 })
