@@ -1,3 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`generateMap returns expected buffer snapshot 1`] = `"image-buffer"`;

@@ -1,3 +1,5 @@
+import util from "util"
+
 /**
  * Represents different levels of logging.
  */
@@ -49,7 +51,7 @@ const log = (
 
   let logMessage = `${colorMap[level]}[${timestamp}] | [${level}]\x1b[0m | ${message}`
   if (meta && Object.keys(meta).length > 0) {
-    logMessage += ` ${JSON.stringify(meta)}`
+    logMessage += ` ${util.inspect(meta, { depth: null, colors: true, compact: false })}`
   }
 
   console.log(logMessage)
@@ -65,12 +67,17 @@ const logger = {
     log("INFO", message, meta),
   warn: (message: string, meta?: Record<string, unknown>): void =>
     log("WARN", message, meta),
-  error: (error: Error | string, meta?: Record<string, unknown>): void => {
-    if (typeof error === "string") {
-      log("ERROR", error, meta)
+  error: (err: Error | string, meta?: Record<string, unknown>): void => {
+    if (typeof err === "string") {
+      log("ERROR", err, meta)
     } else {
-      log("ERROR", error.message, meta)
-      console.error(error.stack)
+      const errorMeta = {
+        ...meta,
+        message: err.message,
+        stack: err.stack?.split("\n").map((line) => line.trim()),
+        name: err.name,
+      }
+      log("ERROR", err.message, errorMeta)
     }
   },
 }

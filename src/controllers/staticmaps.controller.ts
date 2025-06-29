@@ -6,8 +6,8 @@ import {
   createCacheKeyFromRequest,
 } from "../utils/cache"
 import { MapRequest } from "../types/types"
-import { generateMap } from "../services/map.services"
-import { getMapParams } from "../services/params-parser.services"
+import { generateMap } from "../generate/generateMap"
+import { getMapParams } from "../generate/generateParams"
 
 /**
  * Controller to handle incoming requests for generating static map images.
@@ -28,14 +28,18 @@ export async function handleMapRequest(
   req: MapRequest,
   res: Response
 ): Promise<void> {
+  const method = req.method
+  const ip = req.ip
+  const route = req.originalUrl
+
   try {
     // Create a unique cache key based on request parameters
     const cacheKey = createCacheKeyFromRequest(req)
-
     // Check if an image with the same parameters already exists in cache
     const cachedTile = getCachedTile(cacheKey)
+
     if (cachedTile) {
-      logger.debug("Serving cached tile", { cacheKey })
+      logger.debug("Serving cached tile", { cacheKey, ip, route })
       res.type("image/png").send(cachedTile)
       return
     }
@@ -59,16 +63,26 @@ export async function handleMapRequest(
     // Cache the generated image for future requests
     setCachedTile(cacheKey, img)
 
+    // Determine correct content type
+    const contentType =
+      options.format === "pdf" ? "application/pdf" : `image/${options.format}`
+
     // Send the generated image as the response
     res
       .set({
-        "Content-Type": `image/${options.format}`,
+        "Content-Type": contentType,
         "Content-Length": img.length.toString(),
       })
       .end(img)
   } catch (error) {
-    // Log unexpected errors and return a 500 Internal Server Error
-    logger.error("Error rendering image", { error })
+    logger.error("Error rendering map image", {
+      message: (error as Error).message,
+      stack: (error as Error).stack,
+      ip,
+      method,
+      route,
+    })
+
     res.status(500).json({ error: "Internal Server Error" })
   }
 }

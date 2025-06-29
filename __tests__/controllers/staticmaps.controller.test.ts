@@ -4,8 +4,8 @@ import { handleMapRequest } from "../../src/controllers/staticmaps.controller"
 import {
   parseCoordinates,
   isEncodedPolyline,
-} from "../../src/services/params-parser.services"
-import * as mapService from "../../src/services/map.services"
+} from "../../src/generate/generateParams"
+import * as mapService from "../../src/generate/generateMap"
 import { Request, Response } from "express"
 import StaticMaps from "../../src/staticmaps/staticmaps"
 import * as cache from "../../src/utils/cache"
