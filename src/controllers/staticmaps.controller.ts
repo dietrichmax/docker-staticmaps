@@ -8,6 +8,7 @@ import {
 import { MapRequest } from "../types/types"
 import { generateMap } from "../generate/generateMap"
 import { getMapParams } from "../generate/generateParams"
+import { formatBytes } from "../utils/helpers"
 
 /**
  * Express controller handling requests to generate static map images.
@@ -40,7 +41,7 @@ export async function handleMapRequest(
     const cachedTile = getCachedTile(cacheKey)
 
     if (cachedTile) {
-      logger.debug("Serving cached tile", { cacheKey, ip, route })
+      logger.info("Serving cached tile", { cacheKey, route })
       res.type("image/png").send(cachedTile)
       return
     }
@@ -59,10 +60,10 @@ export async function handleMapRequest(
     }
 
     // Generate the static map image based on the options
-    const img = await generateMap(options)
+    const { buffer, renderTime} = await generateMap(options)
 
     // Cache the generated image for future requests
-    setCachedTile(cacheKey, img)
+    setCachedTile(cacheKey, buffer)
 
     // Determine correct content type
     const contentType =
@@ -72,9 +73,12 @@ export async function handleMapRequest(
     res
       .set({
         "Content-Type": contentType,
-        "Content-Length": img.length.toString(),
+        "Content-Length": buffer.length.toString(),
       })
-      .end(img)
+      .end(buffer)
+          logger.info(`Image rendered in ${renderTime} ms`, {
+      size: formatBytes(buffer.length),
+    })
   } catch (error) {
     logger.error("Error rendering map image", {
       message: (error as Error).message,

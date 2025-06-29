@@ -6,7 +6,6 @@ import { addCircles } from "../features/addCircles"
 import { addTexts } from "../features/addTexts"
 import { asArray } from "../features/asArray"
 import { createAttributionSVG } from "../utils/attribution"
-import { formatBytes } from "../utils/helpers"
 import { MapOptions } from "../types/types"
 
 /**
@@ -20,7 +19,7 @@ import { MapOptions } from "../types/types"
  * @param {MapOptions} options - Map rendering options
  * @returns A buffer containing the final image
  */
-export async function generateMap(options: MapOptions): Promise<Buffer> {
+export async function generateMap(options: MapOptions): Promise<{ buffer: Buffer; renderTime: number }> {
   const start = process.hrtime()
   const map = new StaticMaps(options)
 
@@ -51,13 +50,9 @@ export async function generateMap(options: MapOptions): Promise<Buffer> {
     const buffer = await map.image.buffer(options.format)
 
     const [sec, nano] = process.hrtime(start)
+    const renderTime = Math.round(sec * 1000 + nano / 1e6)
 
-    // Usage in your logger:
-    logger.info(`Image rendered in ${Math.round(sec * 1000 + nano / 1e6)} ms`, {
-      size: formatBytes(buffer.length),
-    })
-
-    return buffer
+    return { buffer, renderTime }
   } catch (error) {
     logger.error("Error generating map image", {
       message: (error as Error).message,
