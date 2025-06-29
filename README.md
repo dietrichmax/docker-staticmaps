@@ -126,7 +126,7 @@ Request static maps from the `/api/staticmaps` endpoint using the following para
 | `height` | `800` | Image height in pixels |
 | `paddingX` | `0` | Horizontal padding in pixels |
 | `paddingY` | `0` | Vertical padding in pixels |
-| `format` | `png` | Output format: `png`, `jpg`, or `webp` |
+| `format` | `png` | Output format: `png`, `jpg`, `webp` or `pdf` |
 | `quality` | `100` | Image quality (0–100) for `jpg`/`webp` |
 | `basemap` | `osm` | Tile layer (see **Basemap** for supported types) |
 | `attribution` |  | Attribution text (see **Attribution**) |

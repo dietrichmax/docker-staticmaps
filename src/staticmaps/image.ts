@@ -1,5 +1,8 @@
 import sharp from "sharp"
 import { ImageOptions, TileData, TilePart } from "../types/types"
+import PDFDocument from "pdfkit"
+import { Writable } from "stream"
+import logger from "../utils/logger"
 
 /**
  * Class to handle image operations such as drawing tiles and saving images.
@@ -104,50 +107,92 @@ export default class Image {
   }
 
   /**
-   * Save the image to a file.
-   * @param fileName - The name of the output file.
-   * @param outOpts - Additional options for saving the image.
+   * Convert internal image buffer to a PDF buffer.
    */
-  async save(
-    fileName = "output.png",
-    outOpts: Record<string, any> = {}
-  ): Promise<void> {
-    const format = (fileName.split(".").pop() || "").toLowerCase()
-    outOpts.quality = outOpts.quality || this.quality
+  private async toPDFBuffer(width: number, height: number): Promise<Buffer> {
+    return new Promise((resolve, reject) => {
+      if (!this.image) throw new Error("Image buffer missing")
+      const doc = new PDFDocument({ size: [width, height], margin: 0 })
+      const chunks: Buffer[] = []
 
-    const sharpInstance = sharp(this.image)
-    switch (format) {
-      case "webp":
-        await sharpInstance.webp(outOpts).toFile(fileName)
-        break
-      case "jpg":
-      case "jpeg":
-        await sharpInstance.jpeg(outOpts).toFile(fileName)
-        break
-      default:
-        await sharpInstance.png(outOpts).toFile(fileName)
-    }
+      const writable = new Writable({
+        write(chunk, encoding, callback) {
+          chunks.push(Buffer.from(chunk))
+          callback()
+        },
+      })
+
+      doc.pipe(writable)
+      doc.image(this.image, 0, 0, { width, height })
+      doc.end()
+
+      writable.on("finish", () => resolve(Buffer.concat(chunks)))
+      writable.on("error", reject)
+    })
+  }
+
+  /**
+   * Composite an SVG buffer onto the image.
+   */
+  async compositeSVG(
+    svgBuffer: Buffer,
+    options?: { top?: number; left?: number }
+  ) {
+    if (!this.image) throw new Error("No image to composite on")
+
+    this.image = await sharp(this.image)
+      .composite([
+        { input: svgBuffer, top: options?.top || 0, left: options?.left || 0 },
+      ])
+      .toBuffer()
+
+    return this
   }
 
   /**
    * Return the image as a buffer.
-   * @param mime - The MIME type of the output image.
+   * @param mime - The MIME type or short format name (e.g., "png", "jpeg", "webp", "pdf").
    * @param outOpts - Additional options for converting to a buffer.
    */
   async buffer(
     mime = "image/png",
     outOpts: Record<string, any> = {}
   ): Promise<Buffer> {
+    const normalized = mime.toLowerCase().trim()
     outOpts.quality = outOpts.quality || this.quality
+
     const sharpInstance = sharp(this.image)
-    switch (mime.toLowerCase()) {
+
+    switch (normalized) {
       case "image/webp":
+      case "webp":
         return sharpInstance.webp(outOpts).toBuffer()
+
       case "image/jpeg":
       case "image/jpg":
+      case "jpeg":
+      case "jpg":
         return sharpInstance.jpeg(outOpts).toBuffer()
-      default:
+
+      case "image/png":
+      case "png":
         return sharpInstance.png(outOpts).toBuffer()
+
+      case "application/pdf":
+      case "pdf":
+        const metadata = await sharpInstance.metadata()
+        const originalWidth = metadata.width || 600
+        const originalHeight = metadata.height || 600
+
+        const width = outOpts.width ?? originalWidth
+        const height =
+          outOpts.height ??
+          Math.round((originalHeight / originalWidth) * width)
+
+        return this.toPDFBuffer(width, height)
+      default:
+        logger.error(`Unsupported image format: "${mime}"`)
+        throw new Error(`Unsupported image format: "${mime}"`)
     }
   }
 }
