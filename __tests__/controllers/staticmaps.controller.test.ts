@@ -82,7 +82,10 @@ describe("handleMapRequest", () => {
     const setCacheSpy = jest.spyOn(cache, "setCachedTile").mockImplementation()
 
     const fakeImage = Buffer.from("image-bytes")
-    jest.spyOn(mapService, "generateMap").mockResolvedValue(fakeImage)
+    jest.spyOn(mapService, "generateMap").mockResolvedValue({
+      buffer: fakeImage,
+      renderTime: 123, // some mock render time number
+    });
 
     req.query = {
       center: "48.1,11.6",
@@ -109,7 +112,11 @@ describe("handleMapRequest", () => {
     const setCacheSpy = jest.spyOn(cache, "setCachedTile").mockImplementation()
 
     const fakeImage = Buffer.from("image-bytes")
-    jest.spyOn(mapService, "generateMap").mockResolvedValue(fakeImage)
+
+    jest.spyOn(mapService, "generateMap").mockResolvedValue({
+      buffer: fakeImage,
+      renderTime: 123, // some mock render time number
+    });
 
     req.method = "POST"
     req.body = {

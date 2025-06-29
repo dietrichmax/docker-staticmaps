@@ -18,7 +18,7 @@ describe("StaticMaps", () => {
         width: 400,
         height: 300,
         zoom: 10,
-        center: { lat: 0, lon: 0 },
+        center: [0, 0] as Coordinate
       })
 
       expect(map.width).toBe(400)
@@ -44,7 +44,7 @@ describe("StaticMaps", () => {
         width: 100,
         height: 100,
         zoom: 10,
-        center: { lat: 0, lon: 0 },
+        center: [0, 0] as Coordinate,
         tileLayers: layerConfig,
       })
 
@@ -59,7 +59,7 @@ describe("StaticMaps", () => {
         width: 100,
         height: 100,
         zoom: 10,
-        center: { lat: 0, lon: 0 },
+        center: [0, 0] as Coordinate,
         tileUrl: "http://base/{z}/{x}/{y}.png",
       })
 
@@ -74,7 +74,7 @@ describe("StaticMaps", () => {
         width: 200,
         height: 200,
         zoom: 10,
-        center: { lat: 0, lon: 0 },
+        center: [0, 0] as Coordinate
       })
       const polylineOptions = {
         coords: [
@@ -266,7 +266,7 @@ describe("StaticMaps", () => {
         width: 200,
         height: 200,
         zoom: 10,
-        center: { lat: 0, lon: 0 },
+        center: [0, 0] as Coordinate
       })
 
       const offset: Coordinate = [5, -5]
@@ -303,7 +303,7 @@ describe("StaticMaps", () => {
         width: 200,
         height: 200,
         zoom: 10,
-        center: { lat: 0, lon: 0 },
+        center: [ 0, 0 ] as Coordinate,
       })
 
       const boundOptions = {

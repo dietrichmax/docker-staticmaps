@@ -40,7 +40,7 @@ describe("generateParams", () => {
       expect(result.options.height).toBe(400)
       expect(result.options.tileUrl).toBe(getTileUrl(null, null).url)
       expect(result.options.quality).toBe(80)
-      expect(result.options.attribution.text).toContain(
+      expect(result.options.attribution?.text).toContain(
         getTileUrl(null, null).attribution
       )
     })

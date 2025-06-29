@@ -62,11 +62,11 @@ export interface MapOptions {
   tileUrl?: string // Tile URL override
   center?: Coordinate // Center Coordinate
   quality?: number
-  markers?: Record<string, unknown>
-  circle?: Record<string, unknown>
-  polyline?: Record<string, unknown>
-  polygon?: Record<string, unknown>
-  text?: Record<string, unknown>
+  markers?: Record<string, unknown>[]
+  circle?: Record<string, unknown>[]
+  polyline?: Record<string, unknown>[]
+  polygon?: Record<string, unknown>[]
+  text?: Record<string, unknown>[]
 }
 
 /**

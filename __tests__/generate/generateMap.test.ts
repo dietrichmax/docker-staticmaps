@@ -1,5 +1,5 @@
 import { generateMap } from "../../src/generate/generateMap"
-
+import { Coordinate } from "../../src/types/types"
 jest.mock("../../src/staticmaps/staticmaps")
 jest.mock("../../src/features/addMarkers")
 jest.mock("../../src/features/addPolylines")
@@ -70,7 +70,7 @@ describe("generateMap", () => {
       ],
       circle: [{ coords: [1, 2], radius: 10 }],
       text: [{ coords: [1, 2], text: "Hello" }],
-      center: [1, 2],
+      center: [1, 2] as Coordinate,
       zoom: 10,
       width: 300,
       height: 200,
@@ -78,7 +78,7 @@ describe("generateMap", () => {
       attribution: { show: true, text: "© My Map" },
     }
 
-    const buffer = await generateMap(options)
+    const result = await generateMap(options)
 
     expect(StaticMaps).toHaveBeenCalledWith(options)
     expect(addMarkersModule.addMarkers).toHaveBeenCalledWith(
@@ -116,17 +116,19 @@ describe("generateMap", () => {
       "<svg></svg>"
     )
     expect(mockMapInstance.image.buffer).toHaveBeenCalledWith(options.format)
-    expect(buffer).toBeInstanceOf(Buffer)
+    expect(result.buffer).toBeInstanceOf(Buffer)
   })
 
   it("should skip compositing SVG if attribution.show is false", async () => {
     const options = {
-      attribution: { show: false },
+      attribution: { show: false, text: "Attribution" },
       format: "png",
+      width: 300,
+      height: 200,
     }
-    const buffer = await generateMap(options)
+    const result = await generateMap(options)
     expect(mockMapInstance.image.compositeSVG).not.toHaveBeenCalled()
-    expect(buffer).toBeInstanceOf(Buffer)
+    expect(result.buffer).toBeInstanceOf(Buffer)
   })
 
   it("should throw an error if map.image is undefined after render", async () => {
@@ -134,6 +136,8 @@ describe("generateMap", () => {
 
     const options = {
       format: "png",
+      width: 300,
+      height: 200,
     }
     await expect(generateMap(options)).rejects.toThrow(
       "Map image is undefined after rendering"
@@ -146,6 +150,8 @@ describe("generateMap", () => {
 
     const options = {
       format: "png",
+      width: 300,
+      height: 200,
     }
 
     await expect(generateMap(options)).rejects.toThrow(error)

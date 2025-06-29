@@ -38,7 +38,7 @@ export async function generateMap(options: MapOptions): Promise<{ buffer: Buffer
       throw new Error(errMsg)
     }
 
-    if (options.attribution?.show && map.image) {
+    if (options.attribution && options.attribution.show && map.image) {
       const svg = createAttributionSVG(
         options.attribution.text,
         options.width,
