@@ -1,7 +1,23 @@
 import { Request, Response, NextFunction } from "express"
 
 /**
- * Middleware to set strong security headers on all responses.
+ * Express middleware to set strong HTTP security headers on all responses.
+ *
+ * This middleware enhances security by setting headers that:
+ * - Prevent clickjacking via X-Frame-Options
+ * - Disable MIME type sniffing via X-Content-Type-Options
+ * - Control referrer information with Referrer-Policy
+ * - Restrict browser feature usage with Permissions-Policy
+ * - Enforce HTTPS with Strict-Transport-Security (HSTS)
+ * - Restrict cross-origin resource sharing with Cross-Origin-Resource-Policy
+ * - Implement a strict Content Security Policy (CSP)
+ * 
+ * Additionally, it removes the `Server` and `X-Powered-By` headers
+ * to minimize information disclosure about the backend server.
+ *
+ * @param {Request} req - The Express request object.
+ * @param {Response} res - The Express response object.
+ * @param {NextFunction} next - The next middleware function in the chain.
  */
 export function headers(req: Request, res: Response, next: NextFunction): void {
   const securityHeaders: Record<string, string> = {

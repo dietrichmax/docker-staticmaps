@@ -10,19 +10,20 @@ import { generateMap } from "../generate/generateMap"
 import { getMapParams } from "../generate/generateParams"
 
 /**
- * Controller to handle incoming requests for generating static map images.
+ * Express controller handling requests to generate static map images.
  *
- * Steps:
- * - Generate a cache key based on request
- * - Serve a cached image if it exists
- * - Parse and validate input parameters
- * - Generate map image if no cache hit
- * - Cache the result and respond with the image
+ * Workflow:
+ * 1. Generate a unique cache key from the incoming request parameters.
+ * 2. Serve a cached image immediately if available.
+ * 3. Parse and validate map parameters from the request.
+ * 4. If validation fails, respond with HTTP 422 and details.
+ * 5. Generate a static map image with the parsed parameters.
+ * 6. Cache the generated image for future requests.
+ * 7. Respond with the generated image in the requested format.
  *
- * @param req - Express request object with typed query/body for map generation
- * @param res - Express response object used to return image or error
- *
- * @returns A PNG or specified format image stream or an error response
+ * @param {MapRequest} req - The incoming HTTP request, with typed query or body parameters for map generation.
+ * @param {Response} res - The Express response object used to send the image or error response.
+ * @returns {Promise<void>} Resolves after sending the image or error response.
  */
 export async function handleMapRequest(
   req: MapRequest,

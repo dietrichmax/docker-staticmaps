@@ -50,3 +50,18 @@ export function measureTextWidth(
   ctx.font = `${fontSize}px ${fontFamily}`
   return ctx.measureText(text).width
 }
+
+/**
+ * Converts a number of bytes into a human-readable string with appropriate units.
+ *
+ * @param {number} bytes - The size in bytes to format.
+ * @returns {string} A human-readable string representation of the byte size,
+ *                   e.g., "0 Bytes", "1.23 KB", "4.56 MB".
+ */
+export function formatBytes(bytes: number): string {
+  if (bytes === 0) return "0 Bytes"
+  const k = 1024
+  const sizes = ["Bytes", "KB", "MB", "GB", "TB"]
+  const i = Math.floor(Math.log(bytes) / Math.log(k))
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i]
+}

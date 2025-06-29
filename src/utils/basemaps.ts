@@ -1,7 +1,17 @@
 import { Basemaps } from "src/types/types"
 
+
 /**
- * A collection of predefined basemaps with their corresponding URLs.
+ * A collection of predefined basemaps with their corresponding tile URL templates and attribution strings.
+ *
+ * Each basemap object contains:
+ * - `basemap`: A unique identifier/name for the basemap.
+ * - `url`: The URL template for fetching map tiles, with `{z}`, `{x}`, and `{y}` placeholders for zoom and tile coordinates.
+ * - `attribution`: The attribution text required for using the basemap's data, typically to be displayed on the map.
+ *
+ * These basemaps can be used to provide different base layers in mapping applications.
+ *
+ * @type {Basemaps[]}
  */
 export const basemaps: Basemaps[] = [
   {

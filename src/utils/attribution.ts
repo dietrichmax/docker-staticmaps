@@ -1,13 +1,17 @@
 import { measureTextWidth } from "./helpers"
 
 /**
- * Creates an SVG buffer containing an attribution box with the given text,
- * positioned in the bottom-right corner of the specified width/height area.
+ * Creates an SVG buffer containing an attribution box with the specified text,
+ * positioned at the bottom-right corner of a canvas with the given width and height.
  *
- * @param {string} text - The attribution text to display.
- * @param {number} width - The width of the SVG canvas.
- * @param {number} height - The height of the SVG canvas.
- * @returns {Buffer} - A Buffer containing the rendered SVG markup.
+ * The attribution box includes a semi-transparent background rectangle and
+ * right-aligned text, styled with Arial font.
+ *
+ * @param {string} text - The attribution text to display inside the box.
+ * @param {number} width - The total width of the SVG canvas.
+ * @param {number} height - The total height of the SVG canvas.
+ * @returns {Buffer} A Buffer containing the SVG markup as a UTF-8 encoded string,
+ * ready for use in image compositing or saving.
  */
 export function createAttributionSVG(
   text: string,
@@ -54,12 +58,24 @@ export function createAttributionSVG(
 }
 
 /**
- * Parses an attribution parameter string into an object indicating whether to show attribution
- * and what text to display. Falls back to a given basemap attribution if needed.
+ * Parses an attribution parameter string into an object specifying whether to show attribution
+ * and what text to display. If the parameter is missing or incomplete, it falls back
+ * to a default basemap attribution string if provided.
  *
- * @param {string} [param] - The attribution param, e.g. "show:true|text:Powered%20by%20X".
- * @param {string} [basemapAttribution] - Default attribution text to use if none provided.
- * @returns {{ show: boolean, text?: string }} - Parsed attribution configuration.
+ * The `param` string can contain multiple key-value pairs separated by `|`,
+ * for example: `"show:true|text:Powered%20by%20X"`.
+ *
+ * Supported keys:
+ * - `show`: `"true"` or `"false"` to explicitly set attribution visibility.
+ * - `text`: URL-encoded string to specify custom attribution text.
+ *
+ * If `param` is just `"true"` or `"false"` (without keys), it is interpreted as the `show` flag.
+ *
+ * @param {string} [param] - Attribution parameter string, e.g. `"show:true|text:Powered%20by%20X"`.
+ * @param {string} [basemapAttribution] - Default attribution text to use if none is provided in `param`.
+ * @returns {{ show: boolean, text?: string }} Object containing:
+ *  - `show`: Whether attribution should be shown (default `true`).
+ *  - `text`: The attribution text to display (optional).
  */
 export function parseAttributionParam(
   param?: string,

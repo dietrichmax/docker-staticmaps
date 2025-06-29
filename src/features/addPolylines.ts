@@ -3,11 +3,18 @@ import StaticMaps from "../staticmaps/staticmaps"
 import { Polyline } from "../staticmaps/features"
 
 /**
- * Add polyline or polygon features to the map.
+ * Adds polyline or polygon features to the given StaticMaps instance.
  *
- * @param map - StaticMaps instance
- * @param items - Array of line or polygon configs
- * @param isPolygon - True to call addPolygon, false to call addLine
+ * Each item must have at least two coordinates; otherwise it will be skipped with a warning.
+ * When `isPolygon` is true, items are added as polygons; otherwise as polylines.
+ *
+ * @param {StaticMaps} map - The StaticMaps instance to add features to.
+ * @param {Array<Object>} items - Array of line or polygon configuration objects. Each should include:
+ *   - `coords` {Array<[number, number]>} - Array of coordinate tuples (lng, lat).
+ *   - `color` {string} - Stroke color.
+ *   - `weight` {number} - Stroke width.
+ *   - `fill` {string} - Fill color (used for polygons).
+ * @param {boolean} [isPolygon=false] - If true, add items as polygons; else as polylines.
  */
 export function addPolylines(
   map: StaticMaps,

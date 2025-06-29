@@ -3,10 +3,22 @@ import StaticMaps from "../staticmaps/staticmaps"
 import { Text } from "../staticmaps/features"
 
 /**
- * Add text features to the map.
+ * Adds text features to the given StaticMaps instance.
  *
- * @param map - StaticMaps instance
- * @param texts - Array of text configs
+ * Each text item must have at least one coordinate; otherwise it will be skipped with a warning.
+ *
+ * @param {StaticMaps} map - The StaticMaps instance to add text features to.
+ * @param {Array<Object>} texts - Array of text configuration objects. Each should include:
+ *   - `coords` {Array<[number, number]>} - Array with at least one coordinate tuple (lng, lat). Only the first coordinate is used.
+ *   - `text` {string} - The text string to render.
+ *   - `color` {string} - Text stroke color.
+ *   - `width` {number} - Stroke width for the text outline.
+ *   - `fill` {string} - Fill color for the text.
+ *   - `size` {number} - Font size.
+ *   - `font` {string} - Font family or font name.
+ *   - `anchor` {string} - Anchor position for the text (e.g., "center", "left").
+ *   - `offsetX` {number|string} - Horizontal offset in pixels (parsed to integer, defaults to 0).
+ *   - `offsetY` {number|string} - Vertical offset in pixels (parsed to integer, defaults to 0).
  */
 export function addTexts(map: StaticMaps, texts: any[]): void {
   texts.forEach((txt, i) => {

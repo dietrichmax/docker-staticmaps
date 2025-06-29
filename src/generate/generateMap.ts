@@ -6,6 +6,7 @@ import { addCircles } from "../features/addCircles"
 import { addTexts } from "../features/addTexts"
 import { asArray } from "../features/asArray"
 import { createAttributionSVG } from "../utils/attribution"
+import { formatBytes } from "../utils/helpers"
 
 /**
  * Generates a static map image based on the provided options.
@@ -52,8 +53,9 @@ export async function generateMap(options: any): Promise<Buffer> {
 
     const [sec, nano] = process.hrtime(start)
 
+    // Usage in your logger:
     logger.info(`Image rendered in ${Math.round(sec * 1000 + nano / 1e6)} ms`, {
-      size: buffer.length,
+      size: formatBytes(buffer.length),
     })
 
     return buffer

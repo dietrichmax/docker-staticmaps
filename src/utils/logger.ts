@@ -5,18 +5,34 @@ import util from "util"
  */
 type LogLevel = "DEBUG" | "INFO" | "WARN" | "ERROR"
 
+
+/**
+ * Type guard to check if a given value is a valid LogLevel.
+ *
+ * @param {any} level - The value to check.
+ * @returns {level is LogLevel} True if the value is one of the valid log levels.
+ */
 const isValidLogLevel = (level: any): level is LogLevel => {
   return ["DEBUG", "INFO", "WARN", "ERROR"].includes(level)
 }
 
+/**
+ * Log level retrieved from environment variables.
+ */
 const envLogLevel = process.env.LOG_LEVEL
 
-// Set the current log level from the environment (defaults to "INFO")
+/**
+ * The current log level used by the logger.
+ * Defaults to "INFO" if the environment variable is invalid or missing.
+ */
 export const currentLogLevel: LogLevel = isValidLogLevel(envLogLevel)
   ? envLogLevel
   : "INFO"
 
-// Define priorities for each log level
+/**
+ * Numeric priority mapping for each log level.
+ * Lower numbers indicate more verbose logging.
+ */
 const levelPriority: Record<LogLevel, number> = {
   DEBUG: 0,
   INFO: 1,
@@ -25,11 +41,12 @@ const levelPriority: Record<LogLevel, number> = {
 }
 
 /**
- * Logs a message to the console with a given level and timestamp, if the level meets the threshold.
+ * Logs a message to the console with a specified level and timestamp, using color coding.
+ * Only logs the message if its level is equal to or higher than the current logging threshold.
  *
- * @param level - The log level (DEBUG, INFO, WARN, ERROR).
- * @param message - The message to log.
- * @param meta - Optional metadata object for additional context.
+ * @param {LogLevel} level - The severity level of the log message (e.g., DEBUG, INFO, WARN, ERROR).
+ * @param {string} message - The message string to be logged.
+ * @param {Record<string, unknown>} [meta] - Optional metadata object for additional context, logged with colors and full depth.
  */
 const log = (
   level: LogLevel,
@@ -58,7 +75,14 @@ const log = (
 }
 
 /**
- * Logger object that provides methods for logging at different levels.
+ * Logger object providing methods for logging messages at different levels.
+ * Each method accepts a message and optional metadata.
+ *
+ * @property {function(string, Record<string, unknown>=): void} debug - Logs debug-level messages.
+ * @property {function(string, Record<string, unknown>=): void} info - Logs informational messages.
+ * @property {function(string, Record<string, unknown>=): void} warn - Logs warning messages.
+ * @property {function(Error | string, Record<string, unknown>=): void} error - Logs error messages.
+ *   If an Error object is provided, it extracts and logs its message, stack trace, and name.
  */
 const logger = {
   debug: (message: string, meta?: Record<string, unknown>): void =>

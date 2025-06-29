@@ -2,12 +2,36 @@ import rateLimit, { MemoryStore } from "express-rate-limit"
 import logger from "./logger"
 import type { Request, Response } from "express"
 
-// Read from env with fallback defaults
-const RATE_LIMIT_MS = parseInt(process.env.RATE_LIMIT_MS || "60000", 10) // default 1 minute
-const RATE_LIMIT_MAX = parseInt(process.env.RATE_LIMIT_MAX || "60", 10) // default 60 requests
 
+/**
+ * Rate limit window duration in milliseconds.
+ * Read from environment variable RATE_LIMIT_MS or defaults to 60000 (1 minute).
+ */
+const RATE_LIMIT_MS = parseInt(process.env.RATE_LIMIT_MS || "60000", 10)
+
+/**
+ * Maximum allowed requests per window per IP.
+ * Read from environment variable RATE_LIMIT_MAX or defaults to 60.
+ */
+const RATE_LIMIT_MAX = parseInt(process.env.RATE_LIMIT_MAX || "60", 10)
+
+/**
+ * In-memory store for tracking rate limit data.
+ * Shared by the rate limiter middleware.
+ */
 export const memoryStore = new MemoryStore()
 
+/**
+ * Configuration object for the Express rate limiter middleware.
+ * - windowMs: Time frame for rate limiting (in milliseconds).
+ * - max: Maximum number of requests allowed per IP per window.
+ * - standardHeaders: Disable sending standardized rate limit headers.
+ * - legacyHeaders: Disable sending legacy rate limit headers.
+ * - store: MemoryStore instance to keep track of IP request counts.
+ * - handler: Custom handler function called when the rate limit is exceeded.
+ *   Logs a warning with the IP and request count,
+ *   then sends HTTP 429 response with a JSON error message.
+ */
 export const rateLimiterConfig = {
   windowMs: RATE_LIMIT_MS,
   max: RATE_LIMIT_MAX,
