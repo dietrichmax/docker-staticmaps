@@ -30,7 +30,7 @@ docker run -p '3000:3000/tcp' mxdcodes/docker-staticmaps:latest
 Send a sample request:
 
 ```bash
-curl "http://localhost:3000/api/staticmaps?center=-119.49280,37.81084&zoom=9"
+curl "http://localhost:3000/api/staticmaps?center=37.81084,-119.49280&zoom=9"
 ```
 
 ![Minimal Example](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/minimalexample.png)
@@ -224,8 +224,8 @@ Note: Polylines with only two coordinates are rendered as geodesic line.
 ![Regular Coordinates Example](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/polylinepath.png)
 
 <details>
-  <summary>Multiple Encoded Polylines <code>no zoom</code>, <code>weight:6</code> and <code>color:0000ff</code></summary>
-  <p>http://localhost:3000/api/staticmaps?width=600&height=800&format=png&basemap=national-geographic&polyline=weight:6|color:0000ff|yheiHkljMxqup@zu`qM&polyline=weight:6|color:0000ff|_vnwFnhubMltpfMyvcsP</p>
+  <summary>Multiple Encoded Polylines</summary>
+  <p>http://localhost:3000/api/staticmaps?width=1200&height=600&format=png&basemap=national-geographic&polyline=weight:6|color:red|g}cbFbawi@~lqv@jrv|@&polyline=weight:6|color:red|goqjDntngBvquWrni}I&polyline=weight:6|color:red|o|zqCbdyeMnpxDba|n@&polyline=weight:6|color:red|_kalCffvuN~lbXg__z@&&polyline=weight:6|color:green|ke}}Evfke@rmz_C~geoI&polyline=weight:6|color:green|wva}AvoquJsxrQzv{[&polyline=weight:6|color:green|kpuoBrgnrKw_CjdjV&polyline=weight:6|color:orange|ke}}Evfke@j{f}Cf{cnI&polyline=weight:6|color:orange|_iu_A~bptJj{hK~jiF&polyline=weight:6|color:orange|slks@~nz{Jocm{@~|}l@&polyline=weight:6|color:blue|ke}}Evfke@jfnpBb}rmL&polyline=weight:6|color:blue|_~mlBzd_tMvuhKfysv@&polyline=weight:6|color:blue|ggd`Bb_tkOjdag@kg~c@</p>
 </details>
 
 ![Multiple Encoded Polylines Example](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/multipleEncodedPolylines.png)
@@ -356,7 +356,7 @@ http://localhost:3000/api/staticmaps?width=600&height=600&zoom=2&center=2.3522,4
 
 <details>
   <summary>Example with <code>width=500</code>, <code>height=500</code>, <code>center=-73.99515,40.76761</code>, <code>zoom=10</code>, <code>basemap=national-geographic</code></summary>
-  <p>http://localhost:3000/api/staticmaps?width=500&height=500&center=-73.99515,40.76761&zoom=10&format=webp&basemap=national-geographic</p>
+  <p>http://localhost:3000/api/staticmaps?width=500&height=500&center=40.76761,-73.99515&zoom=10&format=webp&basemap=national-geographic</p>
 </details>
 
 ![Example Request 2](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/example2.webp)
