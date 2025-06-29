@@ -311,7 +311,7 @@ circle=circleStyle|circleCoord
 **Example**: Circle with a radius of `20` meters.
 
 ```
-http://localhost:3000/api/staticmaps?width=600&height=600&basemap=osm&circle=radius:20|color:4874db|fill:0000bb|width:10|48.726304979176675,-3.9829935637739382
+http://localhost:3000/api/staticmaps?width=600&height=600&basemap=osm&circle=radius:20|color:4874dbb2|fill:0000bbbd|width:10|48.726304979176675,-3.9829935637739382
 ```
 
 ![Circle Example](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/circle.png)
