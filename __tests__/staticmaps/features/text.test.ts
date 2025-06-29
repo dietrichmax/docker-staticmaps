@@ -9,7 +9,7 @@ describe("Text class", () => {
     expect(text.text).toBeUndefined()
     expect(text.color).toBe("#000000BB")
     expect(text.width).toBe("1px")
-    expect(text.fill).toBe("#000000")
+    expect(text.fill).toBe("#000000BB")
     expect(text.size).toBe(12)
     expect(text.font).toBe("Arial")
     expect(text.anchor).toBe("start")
