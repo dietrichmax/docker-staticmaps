@@ -281,8 +281,6 @@ markers=markerStyle|markerCoord1|markerCoord2|...
   | `offsetY` | `27.5` | Vertical offset for the marker position. |
   | `resizeMode` | `cover` | Applied resize method if needed. See: [https://sharp.pixelplumbing.com/api-resize](https://sharp.pixelplumbing.com/api-resize) |
 
-**Example**: Two markers.
-
 <details>
   <summary><b>Example:</b> Multiple Markers</summary>
    <p><code>http://localhost:3000/api/staticmaps?width=1200&height=800&format=png&basemap=national-geographic&markers=color:red|37.2159,-7.0050&markers=color:red|28.0997,-17.1092&markers=color:red|24.0617,-74.4767&markers=color:red|24.2000,-74.5000&markers=color:red|23.1167,-82.3833&markers=color:red|19.0000,-72.7000&markers=color:green|38.7169,-27.2231&markers=color:green|38.7169,-9.1399&markers=color:green|36.5271,-6.2886&markers=color:green|15.4150,-61.3710&markers=color:green|16.2650,-61.5510&markers=color:green|18.4655,-66.1057&markers=color:green|18.4861,-69.9312&markers=color:orange|21.5218,-77.7812&markers=color:orange|36.7781,-6.3515&markers=color:orange|14.9167,-23.5167&markers=color:orange|10.6000,-61.2000&markers=color:orange|8.5833,-62.4000&markers=color:blue|36.5271,-6.2886&markers=color:blue|17.9352,-76.8419&markers=color:blue|15.9194,-85.9597&markers=color:blue|9.3547,-79.9014</code></p>
