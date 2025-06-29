@@ -1,7 +1,7 @@
 import util from "util"
 
 /**
-* Represents different levels of logging.
+ * Represents different levels of logging.
  */
 type LogLevel = "DEBUG" | "INFO" | "WARN" | "ERROR"
 

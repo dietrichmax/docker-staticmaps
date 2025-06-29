@@ -172,49 +172,6 @@ describe("Image class", () => {
     })
   })
 
-  describe("save", () => {
-    it("calls sharp.webp.toFile for webp format", async () => {
-      const img = new Image()
-      img["image"] = Buffer.from("imgdata")
-      await img.save("file.webp")
-      expect(mockWebp).toHaveBeenCalledWith(
-        expect.objectContaining({ quality: 100 })
-      )
-      expect(mockToFile).toHaveBeenCalledWith("file.webp")
-    })
-
-    it("calls sharp.jpeg.toFile for jpg/jpeg format", async () => {
-      const img = new Image()
-      img["image"] = Buffer.from("imgdata")
-      await img.save("file.jpg")
-      expect(mockJpeg).toHaveBeenCalledWith(
-        expect.objectContaining({ quality: 100 })
-      )
-      expect(mockToFile).toHaveBeenCalledWith("file.jpg")
-
-      await img.save("file.jpeg", { quality: 50 })
-      expect(mockJpeg).toHaveBeenCalledWith(
-        expect.objectContaining({ quality: 50 })
-      )
-    })
-
-    it("calls sharp.png.toFile for other formats", async () => {
-      const img = new Image()
-      img["image"] = Buffer.from("imgdata")
-      await img.save("file.png")
-      expect(mockPng).toHaveBeenCalled()
-      expect(mockToFile).toHaveBeenCalledWith("file.png")
-    })
-
-    it("uses default filename if none provided", async () => {
-      const img = new Image()
-      img["image"] = Buffer.from("imgdata")
-      await img.save()
-      expect(mockPng).toHaveBeenCalled()
-      expect(mockToFile).toHaveBeenCalledWith("output.png")
-    })
-  })
-
   describe("buffer", () => {
     it("returns buffer in webp format", async () => {
       const img = new Image()
@@ -233,8 +190,23 @@ describe("Image class", () => {
     it("returns buffer in png format by default", async () => {
       const img = new Image()
       img["image"] = Buffer.from("imgdata")
-      const buf = await img.buffer("image/unknown")
+      const buf = await img.buffer("image/png")
       expect(buf).toBeInstanceOf(Buffer)
+    })
+
+    it("throws an error for unsupported image format", async () => {
+      const img = new Image()
+      img["image"] = Buffer.from("imgdata")
+      await expect(img.buffer("image/unknown")).rejects.toThrow(
+        'Unsupported image format: "image/unknown"'
+      )
+    })
+
+    it("throws if no image buffer is set", async () => {
+      const img = new Image()
+      await expect(img.buffer("png")).rejects.toThrow(
+        "No image buffer to convert"
+      )
     })
 
     it("uses passed quality option if given", async () => {

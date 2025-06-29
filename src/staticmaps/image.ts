@@ -137,7 +137,7 @@ export default class Image {
   async compositeSVG(
     svgBuffer: Buffer,
     options?: { top?: number; left?: number }
-  ) {
+  ): Promise<this> {
     if (!this.image) throw new Error("No image to composite on")
 
     this.image = await sharp(this.image)
@@ -158,6 +158,11 @@ export default class Image {
     mime = "image/png",
     outOpts: Record<string, any> = {}
   ): Promise<Buffer> {
+    console.log("buffer() called, this.image:", this.image?.length)
+    if (!this.image) {
+      throw new Error("No image buffer to convert")
+    }
+
     const normalized = mime.toLowerCase().trim()
     outOpts.quality = outOpts.quality || this.quality
 
@@ -183,11 +188,12 @@ export default class Image {
         const metadata = await sharpInstance.metadata()
         const originalWidth = metadata.width || 600
         const originalHeight = metadata.height || 600
-
         const width = outOpts.width ?? originalWidth
         const height =
           outOpts.height ??
-          Math.round((originalHeight / originalWidth) * width)
+          (originalWidth
+            ? Math.round((originalHeight / originalWidth) * width)
+            : originalHeight)
 
         return this.toPDFBuffer(width, height)
       default:
