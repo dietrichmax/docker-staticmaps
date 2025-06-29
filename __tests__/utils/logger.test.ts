@@ -122,6 +122,11 @@ describe("logger", () => {
 
   describe("logger methods", () => {
     it("debug calls log with level DEBUG", () => {
+      process.env.LOG_LEVEL = "DEBUG"
+      jest.resetModules()
+      const mod = require("../../src/utils/logger")
+      const logger = mod.default
+
       logger.debug("debug msg")
       const call = consoleLogSpy.mock.calls[0][0]
       expect(call).toContain("[DEBUG]")
@@ -129,6 +134,11 @@ describe("logger", () => {
     })
 
     it("info calls log with level INFO", () => {
+      process.env.LOG_LEVEL = "INFO"
+      jest.resetModules()
+      const mod = require("../../src/utils/logger")
+      const logger = mod.default
+
       logger.info("info msg")
       const call = consoleLogSpy.mock.calls[0][0]
       expect(call).toContain("[INFO]")
@@ -136,6 +146,11 @@ describe("logger", () => {
     })
 
     it("warn calls log with level WARN", () => {
+      process.env.LOG_LEVEL = "WARN"
+      jest.resetModules()
+      const mod = require("../../src/utils/logger")
+      const logger = mod.default
+      
       logger.warn("warn msg")
       const call = consoleLogSpy.mock.calls[0][0]
       expect(call).toContain("[WARN]")
@@ -144,6 +159,11 @@ describe("logger", () => {
 
     describe("error method", () => {
       it("logs error string message", () => {
+        process.env.LOG_LEVEL = "ERROR"
+        jest.resetModules()
+        const mod = require("../../src/utils/logger")
+        const logger = mod.default
+        
         logger.error("string error message")
 
         const call = consoleLogSpy.mock.calls[0][0]
