@@ -448,22 +448,38 @@ export function parseCoordinates(input: CoordInput): Coordinate[] {
  */
 export function parseCenter(val: any): Coordinate | null {
   if (!val) return null
+
   if (typeof val === "string") {
-    const [lat, lon] = val.split(",").map(Number)
-    return [lat, lon]
+    const parts = val.split(",")
+    if (parts.length !== 2) return null
+
+    const lat = Number(parts[0].trim())
+    const lon = Number(parts[1].trim())
+    if (isNaN(lat) || isNaN(lon)) return null
+
+    return [lon, lat]
   }
-  if (Array.isArray(val) && val.length === 2 && typeof val[0] === "number") {
-    return [val[1], val[0]]
+
+  if (Array.isArray(val) && val.length === 2) {
+    const [a, b] = val
+    if (typeof a === "number" && typeof b === "number") {
+      return [b, a]
+    }
+    return null
   }
+
   if (
     typeof val === "object" &&
-    val.lat !== undefined &&
-    val.lon !== undefined
+    val !== null &&
+    typeof val.lat === "number" &&
+    typeof val.lon === "number"
   ) {
     return [val.lon, val.lat]
   }
+
   return null
 }
+
 
 /**
  * Generates a tile URL and attribution based on the provided custom URL and basemap.

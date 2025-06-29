@@ -35,7 +35,7 @@ describe("generateParams", () => {
 
       expect(logger.debug).toHaveBeenCalled()
       expect(result.missingParams).toHaveLength(0)
-      expect(result.options.center).toEqual([50, 10])
+      expect(result.options.center).toEqual([10,50])
       expect(result.options.width).toBe(500)
       expect(result.options.height).toBe(400)
       expect(result.options.tileUrl).toBe(getTileUrl(null, null).url)
@@ -212,7 +212,7 @@ describe("generateParams", () => {
     })
 
     it("parses string 'lat,lon' into [lat, lon]", () => {
-      expect(parseCenter("10,20")).toEqual([10, 20])
+      expect(parseCenter("10,20")).toEqual([20, 10])
     })
 
     it("parses array [lon, lat] into [lat, lon]", () => {
@@ -223,9 +223,18 @@ describe("generateParams", () => {
       expect(parseCenter({ lat: 10, lon: 20 })).toEqual([20, 10])
     })
 
-    it("returns null on invalid input", () => {
-      expect(parseCenter({ foo: 1 })).toBeNull()
+    it("returns null for invalid string", () => {
+      expect(parseCenter("invalid")).toBeNull()
     })
+
+    it("returns null for invalid array length", () => {
+      expect(parseCenter([11.6])).toBeNull()
+    })
+
+    it("returns null for missing lat/lon object keys", () => {
+      expect(parseCenter({ lat: 48.1 })).toBeNull()
+    })
+    
   })
 
   describe("getTileUrl", () => {

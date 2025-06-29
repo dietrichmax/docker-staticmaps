@@ -60,7 +60,7 @@ export async function handleMapRequest(
     }
 
     // Generate the static map image based on the options
-    const { buffer, renderTime} = await generateMap(options)
+    const { buffer, renderTime } = await generateMap(options)
 
     // Cache the generated image for future requests
     setCachedTile(cacheKey, buffer)
@@ -76,7 +76,7 @@ export async function handleMapRequest(
         "Content-Length": buffer.length.toString(),
       })
       .end(buffer)
-          logger.info(`Image rendered in ${renderTime} ms`, {
+    logger.info(`Image rendered in ${renderTime} ms`, {
       size: formatBytes(buffer.length),
     })
   } catch (error) {

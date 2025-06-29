@@ -19,7 +19,9 @@ import { MapOptions } from "../types/types"
  * @param {MapOptions} options - Map rendering options
  * @returns A buffer containing the final image
  */
-export async function generateMap(options: MapOptions): Promise<{ buffer: Buffer; renderTime: number }> {
+export async function generateMap(
+  options: MapOptions
+): Promise<{ buffer: Buffer; renderTime: number }> {
   const start = process.hrtime()
   const map = new StaticMaps(options)
 

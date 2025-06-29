@@ -18,7 +18,7 @@ describe("StaticMaps", () => {
         width: 400,
         height: 300,
         zoom: 10,
-        center: [0, 0] as Coordinate
+        center: [0, 0] as Coordinate,
       })
 
       expect(map.width).toBe(400)
@@ -74,7 +74,7 @@ describe("StaticMaps", () => {
         width: 200,
         height: 200,
         zoom: 10,
-        center: [0, 0] as Coordinate
+        center: [0, 0] as Coordinate,
       })
       const polylineOptions = {
         coords: [
@@ -266,7 +266,7 @@ describe("StaticMaps", () => {
         width: 200,
         height: 200,
         zoom: 10,
-        center: [0, 0] as Coordinate
+        center: [0, 0] as Coordinate,
       })
 
       const offset: Coordinate = [5, -5]
@@ -303,7 +303,7 @@ describe("StaticMaps", () => {
         width: 200,
         height: 200,
         zoom: 10,
-        center: [ 0, 0 ] as Coordinate,
+        center: [0, 0] as Coordinate,
       })
 
       const boundOptions = {
