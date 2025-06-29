@@ -7,6 +7,7 @@ import { addTexts } from "../features/addTexts"
 import { asArray } from "../features/asArray"
 import { createAttributionSVG } from "../utils/attribution"
 import { formatBytes } from "../utils/helpers"
+import { MapOptions } from "../types/types"
 
 /**
  * Generates a static map image based on the provided options.
@@ -16,12 +17,10 @@ import { formatBytes } from "../utils/helpers"
  * - Renders the map
  * - Optionally composites an attribution SVG overlay
  *
- * @param options - Map rendering options
+ * @param {MapOptions} options - Map rendering options
  * @returns A buffer containing the final image
  */
-export async function generateMap(options: any): Promise<Buffer> {
-  logger.debug("Starting map generation with options:", options)
-
+export async function generateMap(options: MapOptions): Promise<Buffer> {
   const start = process.hrtime()
   const map = new StaticMaps(options)
 

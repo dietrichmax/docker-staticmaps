@@ -196,11 +196,11 @@ class StaticMaps {
   /**
    * Renders a static map with all map features that were added to the map before.
    *
-   * @param {Array<number>} center - Array of two numbers representing the longitude and latitude of the map's center.
-   * @param {number} [zoom] - Zoom level for the map. If not provided, it will be calculated.
+   * @param {Coordinate} [center] - Optional array of two numbers representing the longitude and latitude of the map's center. If omitted, center is calculated from map features.
+   * @param {number} [zoom] - Optional zoom level for the map. If not provided, it will be calculated.
    * @returns {Promise<string>} - Promise that resolves to the SVG string representing the rendered map.
    */
-  async render(center: number[], zoom?: number): Promise<string> {
+  async render(center?: Coordinate, zoom?: number): Promise<string> {
     if (
       !this.lines &&
       !this.markers &&
@@ -213,7 +213,7 @@ class StaticMaps {
       )
     }
 
-    this.center = center
+    this.center = center!
     this.zoom = zoom || this.calculateZoom()
 
     const maxZoom = this.zoomRange.max

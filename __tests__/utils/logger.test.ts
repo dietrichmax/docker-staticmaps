@@ -150,7 +150,7 @@ describe("logger", () => {
       jest.resetModules()
       const mod = require("../../src/utils/logger")
       const logger = mod.default
-      
+
       logger.warn("warn msg")
       const call = consoleLogSpy.mock.calls[0][0]
       expect(call).toContain("[WARN]")
@@ -163,7 +163,7 @@ describe("logger", () => {
         jest.resetModules()
         const mod = require("../../src/utils/logger")
         const logger = mod.default
-        
+
         logger.error("string error message")
 
         const call = consoleLogSpy.mock.calls[0][0]

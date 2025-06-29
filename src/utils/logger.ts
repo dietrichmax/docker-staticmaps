@@ -5,7 +5,6 @@ import util from "util"
  */
 type LogLevel = "DEBUG" | "INFO" | "WARN" | "ERROR"
 
-
 /**
  * Type guard to check if a given value is a valid LogLevel.
  *

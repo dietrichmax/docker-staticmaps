@@ -2,7 +2,6 @@ import rateLimit, { MemoryStore } from "express-rate-limit"
 import logger from "./logger"
 import type { Request, Response } from "express"
 
-
 /**
  * Rate limit window duration in milliseconds.
  * Read from environment variable RATE_LIMIT_MS or defaults to 60000 (1 minute).

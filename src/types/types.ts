@@ -34,7 +34,7 @@ export type MapParamsInput = Record<string, any>
  */
 export interface MapParamsOutput {
   missingParams: string[]
-  options: Record<string, any>
+  options: MapOptions
 }
 
 /**
@@ -43,22 +43,30 @@ export interface MapParamsOutput {
 export interface MapOptions {
   width: number // Output image width
   height: number // Output image height
-  zoom?: number // Zoom level
-  center?: { lat: number; lon: number } // Center Coordinate
-  markers?: IconMarker[] // Array of icon markers
-  lines?: Array<Array<Polyline>> // Array of polyline groups
-  tileUrl?: string // Tile URL override
-  tileSubdomains?: string[] // Subdomains for tile fetching
-  tileLayers?: TileServerConfigOptions[] // Optional array of tile layer configs
   paddingX?: number // Horizontal padding
   paddingY?: number // Vertical padding
   tileSize?: number // Size of each tile (usually 256)
+  zoom?: number // Zoom level
+  format?: string
   tileRequestTimeout?: number // Timeout for tile requests (ms)
   tileRequestHeader?: any // Optional headers for tile requests
   tileRequestLimit?: number // Max number of tile requests
-  reverseY?: boolean // Whether to reverse Y tile Coordinate
   zoomRange?: { min?: number; max?: number } // Allowed zoom range
+  reverseY?: boolean // Whether to reverse Y tile Coordinate
+  tileSubdomains?: string[] // Subdomains for tile fetching
+  tileLayers?: TileServerConfigOptions[] // Optional array of tile layer configs
+  attribution?: {
+    show: boolean
+    text: string
+  }
+  tileUrl?: string // Tile URL override
+  center?: Coordinate // Center Coordinate
   quality?: number
+  markers?: Record<string, unknown>
+  circle?: Record<string, unknown>
+  polyline?: Record<string, unknown>
+  polygon?: Record<string, unknown>
+  text?: Record<string, unknown>
 }
 
 /**

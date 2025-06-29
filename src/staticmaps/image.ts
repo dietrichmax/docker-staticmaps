@@ -158,7 +158,6 @@ export default class Image {
     mime = "image/png",
     outOpts: Record<string, any> = {}
   ): Promise<Buffer> {
-    console.log("buffer() called, this.image:", this.image?.length)
     if (!this.image) {
       throw new Error("No image buffer to convert")
     }

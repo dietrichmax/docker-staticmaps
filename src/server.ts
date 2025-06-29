@@ -15,7 +15,6 @@
  * @module app
  */
 
-
 import express, { Request, Response, NextFunction } from "express"
 import dotenv from "dotenv"
 import path from "path"
@@ -57,7 +56,6 @@ app.use((req: Request, _res: Response, next: NextFunction) => {
  */
 app.use(headers)
 
-
 /**
  * Middleware to parse incoming JSON request bodies.
  */
@@ -72,7 +70,7 @@ app.use(express.urlencoded({ extended: true }))
 /**
  * Redirect handler for legacy `/staticmaps` route.
  * Redirects permanently (HTTP 301) to `/api/staticmaps`, preserving query string.
- * 
+ *
  * @param {Request} req - HTTP request.
  * @param {Response} res - HTTP response.
  */
@@ -112,7 +110,7 @@ app.use(express.static(path.join(__dirname, "..", "public")))
 /**
  * Route handler for root `/` path.
  * Sends the main index.html file from the parent 'public' folder.
- * 
+ *
  * @param {Request} _req - HTTP request (not used).
  * @param {Response} res - HTTP response.
  */
@@ -123,7 +121,7 @@ app.get("/", (_req, res) => {
 /**
  * Health check endpoint.
  * Returns JSON with status "ok" and server uptime in seconds.
- * 
+ *
  * @param {Request} _req - HTTP request (not used).
  * @param {Response} res - HTTP response.
  */
@@ -134,7 +132,7 @@ app.get("/health", (_req, res) => {
 /**
  * Global error handling middleware.
  * Logs error details and responds with HTTP 500.
- * 
+ *
  * @param {Error} err - Error thrown in route handlers or middleware.
  * @param {Request} req - HTTP request.
  * @param {Response} res - HTTP response.
@@ -155,7 +153,6 @@ app.use(
     res.status(500).json({ error: "Internal server error" })
   }
 )
-
 
 /**
  * Start HTTP server listening on configured PORT.

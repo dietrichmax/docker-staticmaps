@@ -11,7 +11,7 @@ import { Request, Response, NextFunction } from "express"
  * - Enforce HTTPS with Strict-Transport-Security (HSTS)
  * - Restrict cross-origin resource sharing with Cross-Origin-Resource-Policy
  * - Implement a strict Content Security Policy (CSP)
- * 
+ *
  * Additionally, it removes the `Server` and `X-Powered-By` headers
  * to minimize information disclosure about the backend server.
  *

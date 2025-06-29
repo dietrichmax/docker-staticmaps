@@ -1,6 +1,5 @@
 import { Basemaps } from "src/types/types"
 
-
 /**
  * A collection of predefined basemaps with their corresponding tile URL templates and attribution strings.
  *

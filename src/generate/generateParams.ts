@@ -9,6 +9,7 @@ import {
   MapParamsInput,
   MapParamsOutput,
   CoordInput,
+  MapOptions,
 } from "../types/types"
 import logger from "../utils/logger"
 
@@ -86,42 +87,42 @@ const DEFAULTS = {
  */
 const SHAPE_DEFAULTS: Record<ShapeType, Feature> = {
   polyline: {
-    weight: 5,        // Line thickness
-    color: "blue",    // Stroke color
-    fill: "",         // No fill for lines
+    weight: 5, // Line thickness
+    color: "blue", // Stroke color
+    fill: "", // No fill for lines
   },
   polygon: {
-    weight: 3,         // Border thickness
-    color: "#4874db",  // Border color
-    fill: "",          // No fill by default
+    weight: 3, // Border thickness
+    color: "#4874db", // Border color
+    fill: "", // No fill by default
   },
   circle: {
-    color: "#4874db",  // Border color
-    width: 3,          // Border width (stroke width)
-    fill: "",          // No fill by default
-    radius: 10,        // Radius in pixels
+    color: "#4874db", // Border color
+    width: 3, // Border width (stroke width)
+    fill: "", // No fill by default
+    radius: 10, // Radius in pixels
   },
   markers: {
-    img: "",           // Marker image URL or base64 data
-    width: 28,         // Marker width in pixels
-    height: 28,        // Marker height in pixels
-    offsetX: 14,       // Horizontal offset, defaults to half width (center)
-    offsetY: 28,       // Vertical offset, defaults to full height (bottom)
-    color: "#d9534f",  // Marker color fallback
+    img: "", // Marker image URL or base64 data
+    width: 28, // Marker width in pixels
+    height: 28, // Marker height in pixels
+    offsetX: 14, // Horizontal offset, defaults to half width (center)
+    offsetY: 28, // Vertical offset, defaults to full height (bottom)
+    color: "#d9534f", // Marker color fallback
     resizeMode: "cover", // Image resize mode
-    drawWidth: undefined,  // Optional override for drawing width
+    drawWidth: undefined, // Optional override for drawing width
     drawHeight: undefined, // Optional override for drawing height
   },
   text: {
-    text: "Hello world!",   // Default label text
-    color: "#000000BB",     // Text fill color with transparency
-    width: 1,               // Stroke width around text (if any)
-    fill: "#000000",        // Fill color for text background or shape
-    size: 12,               // Font size in pixels
-    font: "Arial",          // Font family
-    anchor: "start",        // Text anchor position (start, middle, end)
-    offsetX: -12,           // Horizontal text offset
-    offsetY: 22,            // Vertical text offset
+    text: "Hello world!", // Default label text
+    color: "#000000BB", // Text fill color with transparency
+    width: 1, // Stroke width around text (if any)
+    fill: "#000000", // Fill color for text background or shape
+    size: 12, // Font size in pixels
+    font: "Arial", // Font family
+    anchor: "start", // Text anchor position (start, middle, end)
+    offsetX: -12, // Horizontal text offset
+    offsetY: 22, // Vertical text offset
   },
 }
 
@@ -177,7 +178,7 @@ export function getMapParams(params: MapParamsInput): MapParamsOutput {
   const rawAttribution = params.attribution
   const attribution = parseAttributionParam(rawAttribution, basemapAttribution)
 
-  const options = {
+  const options: MapOptions = {
     ...DEFAULTS,
     ...(params.width && { width: parseInt(params.width, 10) }),
     ...(params.height && { height: parseInt(params.height, 10) }),
@@ -215,7 +216,7 @@ export function getMapParams(params: MapParamsInput): MapParamsOutput {
     ...features,
   }
 
-  logger.debug("Final parsed options:", options)
+  logger.debug("Final parsed options:", { ...options })
 
   return {
     missingParams,
@@ -436,7 +437,7 @@ export function parseCoordinates(input: CoordInput): Coordinate[] {
 
 /**
  * Parses a center coordinate input and returns a Coordinate tuple or null if invalid.
- * 
+ *
  * Supports:
  * - String input in "lat,lon" format (returns [lat, lon])
  * - Array input [longitude, latitude] or [lat, lon] (returns [lon, lat])
