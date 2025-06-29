@@ -218,14 +218,14 @@ Note: Polylines with only two coordinates are rendered as geodesic line.
 
 <details>
   <summary>Regular Coordinates example with <code>no zoom</code>, <code>weight:6</code> and <code>color:0000ff</code></summary>
-  <p>http://localhost:3000/api/staticmaps?width=600&height=600&polyline=weight:6|color:0000ff|48.726304979176675,-3.9829935637739382|48.72623035828412,-3.9829726446543385|48.726126671101639,-3.9829546542797467|48.725965124843256,-3.9829070729298808|48.725871429380568,-3.9828726793245273|48.725764250990267,-3.9828064532306628|48.725679557682362,-3.9827385375789146|48.72567025076134,-3.9827310750289113|48.725529844164292,-3.9826617613709225|48.725412537198615,-3.9826296635284164|48.725351694726704,-3.9826201452878531|48.725258599474508,-3.9826063049230411|48.725157520450125,-3.9825900299314232|48.725077863838543,-3.9825779905509102|48.724930435729831,-3.9825514102373938|48.724815578113535,-3.9825237355887291|48.724760905376989,-3.9825013965800564|48.724677938456551,-3.9824534296566916|48.724379435330384,-3.9822469276001118|48.724304509274596,-3.9821850264836076|48.7242453124599,-3.9821320570321772|48.724206187829317,-3.9821063430223207|48.724117073204575,-3.9820862134785551</p>
+  <p>http://localhost:3000/api/staticmaps?width=1200&height=600&format=png&basemap=national-geographic&polyline=weight:6|color:red|37.2159,-7.0050|28.0997,-17.1092||24.0617,-74.4767||24.2000,-74.5000||23.1167,-82.3833||19.0000,-72.7000||38.7169,-27.2231||38.7169,-9.1399||37.2159,-7.0050</p>
 </details>
 
 ![Regular Coordinates Example](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/polylinepath.png)
 
 <details>
   <summary>Multiple Encoded Polylines</summary>
-  <p>http://localhost:3000/api/staticmaps?width=1200&height=600&format=png&basemap=national-geographic&polyline=weight:6|color:red|g}cbFbawi@~lqv@jrv|@&polyline=weight:6|color:red|goqjDntngBvquWrni}I&polyline=weight:6|color:red|o|zqCbdyeMnpxDba|n@&polyline=weight:6|color:red|_kalCffvuN~lbXg__z@&&polyline=weight:6|color:green|ke}}Evfke@rmz_C~geoI&polyline=weight:6|color:green|wva}AvoquJsxrQzv{[&polyline=weight:6|color:green|kpuoBrgnrKw_CjdjV&polyline=weight:6|color:orange|ke}}Evfke@j{f}Cf{cnI&polyline=weight:6|color:orange|_iu_A~bptJj{hK~jiF&polyline=weight:6|color:orange|slks@~nz{Jocm{@~|}l@&polyline=weight:6|color:blue|ke}}Evfke@jfnpBb}rmL&polyline=weight:6|color:blue|_~mlBzd_tMvuhKfysv@&polyline=weight:6|color:blue|ggd`Bb_tkOjdag@kg~c@</p>
+  <p>http://localhost:3000/api/staticmaps?width=1200&height=600&format=png&basemap=national-geographic&polyline=weight:6|color:red|kvcbFfdwi@fosv@fnt|@ntsWzqc}Ik_ZrpCrqrErubo@j`cXsgbz@s}iwBseqtG?_{jmBfddHc~_L&polyline=weight:6|color:green|ke}}Evfke@rmz_C~geoIo_eD~cb@cxlLzqxZw_CjdjVc|oQne|n@&polyline=weight:6|color:orange|cfn_Fzowe@vxldCnqwgBjbjYr__eFj{hK~jiFocm{@~|}l@&polyline=weight:6|color:blue|ke}}Evfke@jfnpBb}rmLvuhKfysv@jdag@kg~c@kkgiAgb}KcvqzAwkjsL</p>
 </details>
 
 ![Multiple Encoded Polylines Example](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/multipleEncodedPolylines.png)
