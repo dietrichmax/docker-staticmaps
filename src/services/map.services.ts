@@ -12,7 +12,7 @@ type FeatureArray<T> = T | T[] | undefined
  * @param item - A feature or array of features
  * @returns An array of features (possibly empty)
  */
-function asArray<T>(item: FeatureArray<T>): T[] {
+export function asArray<T>(item: FeatureArray<T>): T[] {
   if (!item) return []
   return Array.isArray(item) ? item : [item]
 }
@@ -23,7 +23,7 @@ function asArray<T>(item: FeatureArray<T>): T[] {
  * @param map - StaticMaps instance
  * @param markers - Array of marker configs
  */
-function addMarkers(map: StaticMaps, markers: any[]): void {
+export function addMarkers(map: StaticMaps, markers: any[]): void {
   markers.forEach((marker, i) => {
     const {
       coords = [],
@@ -64,7 +64,11 @@ function addMarkers(map: StaticMaps, markers: any[]): void {
  * @param items - Array of line or polygon configs
  * @param isPolygon - True to call addPolygon, false to call addLine
  */
-function addPolylines(map: StaticMaps, items: any[], isPolygon = false): void {
+export function addPolylines(
+  map: StaticMaps,
+  items: any[],
+  isPolygon = false
+): void {
   items.forEach((item, i) => {
     const { coords = [], color, weight, fill } = item
     if (coords.length < 2) {
@@ -86,7 +90,7 @@ function addPolylines(map: StaticMaps, items: any[], isPolygon = false): void {
  * @param map - StaticMaps instance
  * @param circles - Array of circle configs
  */
-function addCircles(map: StaticMaps, circles: any[]): void {
+export function addCircles(map: StaticMaps, circles: any[]): void {
   circles.forEach((circ, i) => {
     const { coords = [], radius, color, width, fill } = circ
     const coord = coords[0]
@@ -105,7 +109,7 @@ function addCircles(map: StaticMaps, circles: any[]): void {
  * @param map - StaticMaps instance
  * @param texts - Array of text configs
  */
-function addTexts(map: StaticMaps, texts: any[]): void {
+export function addTexts(map: StaticMaps, texts: any[]): void {
   texts.forEach((txt, i) => {
     const {
       coords = [],
@@ -181,7 +185,7 @@ export async function generateMap(options: any): Promise<Buffer> {
   let buffer = await map.image.buffer(`image/${options.format}`)
 
   // If attribution is enabled, overlay the SVG
-  if (options.attribution?.show && options.attribution.text) {
+  if (options.attribution?.show && map.image) {
     logger.debug("Adding attribution overlay", options.attribution)
     const svg = createAttributionSVG(
       options.attribution.text,

@@ -43,4 +43,38 @@ describe("logger", () => {
     loggerNew.error("error message")
     expect(console.log).toHaveBeenCalledTimes(2)
   })
+
+  test("logs meta object as JSON string", () => {
+    logger.info("test message", { user: "alice", action: "login" })
+    expect(console.log).toHaveBeenCalledWith(
+      expect.stringContaining(`{"user":"alice","action":"login"}`)
+    )
+  })
+
+  describe("currentLogLevel initialization", () => {
+    afterEach(() => {
+      jest.resetModules() // clear module cache after each test
+    })
+
+    test("uses env LOG_LEVEL if valid", () => {
+      jest.resetModules()
+      process.env.LOG_LEVEL = "DEBUG"
+      const { currentLogLevel } = require("../../src/utils/logger")
+      expect(currentLogLevel).toBe("DEBUG")
+    })
+
+    test("falls back to INFO if env LOG_LEVEL invalid", () => {
+      jest.resetModules()
+      process.env.LOG_LEVEL = "INVALID_LEVEL"
+      const { currentLogLevel } = require("../../src/utils/logger")
+      expect(currentLogLevel).toBe("INFO")
+    })
+
+    test("falls back to INFO if env LOG_LEVEL undefined", () => {
+      jest.resetModules()
+      delete process.env.LOG_LEVEL
+      const { currentLogLevel } = require("../../src/utils/logger")
+      expect(currentLogLevel).toBe("INFO")
+    })
+  })
 })

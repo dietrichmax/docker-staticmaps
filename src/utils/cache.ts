@@ -81,7 +81,7 @@ export function createCacheKeyFromRequest(req: MapRequest): string {
 /**
  * Internal cache instance used for storing tile buffers.
  * Exported for testing purposes only.
- * 
+ *
  * @internal
  */
 export const _tileCache = tileCache

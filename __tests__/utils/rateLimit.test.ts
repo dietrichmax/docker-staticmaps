@@ -93,4 +93,25 @@ describe("rateLimiter", () => {
       error: "Too many requests, please try again later.",
     })
   })
+
+  it("logs 0 requests if memoryStore.get returns undefined", async () => {
+    const req: any = { ip: "2.3.4.5" }
+    const status = jest.fn().mockReturnThis()
+    const json = jest.fn()
+    const res: any = { status, json }
+
+    jest.spyOn(memoryStore, "get").mockResolvedValue(undefined)
+    const warnSpy = jest.spyOn(logger, "warn").mockImplementation(() => {})
+
+    await rateLimiterConfig.handler(req, res)
+
+    expect(memoryStore.get).toHaveBeenCalledWith("2.3.4.5")
+    expect(warnSpy).toHaveBeenCalledWith(
+      "Too many requests; IP: 2.3.4.5, Requests: 0"
+    )
+    expect(status).toHaveBeenCalledWith(429)
+    expect(json).toHaveBeenCalledWith({
+      error: "Too many requests, please try again later.",
+    })
+  })
 })

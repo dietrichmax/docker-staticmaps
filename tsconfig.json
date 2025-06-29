@@ -2,6 +2,7 @@
   "compilerOptions": {
     "module": "ESNext", // Module code generation (CommonJS, ESNext, etc.)
     "target": "ESNext", // Defines the ECMAScript target version (e.g., ES5, ES6/ES2015, etc.)
+    "types": ["node", "jest"],
     "esModuleInterop": true, // Allows default import from modules without default export
     "allowJs": true,
     "strict": true, // Enables strict type-checking options

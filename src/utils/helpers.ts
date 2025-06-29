@@ -1,5 +1,4 @@
-import { createCanvas } from 'canvas'
-
+import { createCanvas } from "canvas"
 
 /**
  * Truncates a string to the specified max length and adds ellipsis if truncated.
@@ -41,9 +40,13 @@ export function isDev() {
  * @param {string} [fontFamily='Arial'] - The font family to use.
  * @returns {number} - The measured width of the text in pixels.
  */
-export function measureTextWidth(text: string, fontSize: number, fontFamily = 'Arial'): number {
+export function measureTextWidth(
+  text: string,
+  fontSize: number,
+  fontFamily = "Arial"
+): number {
   const canvas = createCanvas(1, 1)
-  const ctx = canvas.getContext('2d')
+  const ctx = canvas.getContext("2d")
   ctx.font = `${fontSize}px ${fontFamily}`
   return ctx.measureText(text).width
 }

@@ -105,16 +105,18 @@ services:
       - RATE_LIMIT_MAX=60
 ```
 
+A Healthcheck endpoint is available at `/health`.
+
 ## 🧑‍💻 API Reference
 
 Request static maps from the `/api/staticmaps` endpoint using the following parameters:
 
 ### Required Parameters
 
-| Parameter | Default    | Description                                           |
-| --------- | ---------- | ------------------------------------------------------|
-| `center`  | (required) | Center of map (`lon,lat`, e.g. `-119.49280,37.81084`) |
-| `zoom`    | (required) | Zoom level (`1` to `18`).                             |
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `center` | (required) | Center of map (`lon,lat`, e.g. `-119.49280,37.81084`) |
+| `zoom` | (required) | Zoom level (`1` to `18`). |
 
 ### Optional Parameters
 

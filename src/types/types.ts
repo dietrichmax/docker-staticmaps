@@ -14,6 +14,11 @@ export type Coordinate = [number, number]
  */
 export type Coordinates = Coordinate[]
 
+export type CoordInput =
+  | Array<Coordinate>
+  | Array<string>
+  | Array<{ lat: number; lon: number }>
+
 /**
  * Represents a basic feature or data object.
  */
@@ -38,8 +43,8 @@ export interface MapParamsOutput {
 export interface MapOptions {
   width: number // Output image width
   height: number // Output image height
-  zoom: number // Zoom level
-  center: { lat: number; lon: number } // Center Coordinate
+  zoom?: number // Zoom level
+  center?: { lat: number; lon: number } // Center Coordinate
   markers?: IconMarker[] // Array of icon markers
   lines?: Array<Array<Polyline>> // Array of polyline groups
   tileUrl?: string // Tile URL override

@@ -5,6 +5,7 @@ import {
   parseCoordinates,
   isEncodedPolyline,
 } from "../../src/services/params-parser.services"
+import * as mapService from "../../src/services/map.services"
 import { Request, Response } from "express"
 import StaticMaps from "../../src/staticmaps/staticmaps"
 import * as cache from "../../src/utils/cache"
@@ -73,6 +74,60 @@ describe("handleMapRequest", () => {
 
     expect(res.status).toHaveBeenCalledWith(500)
     expect(res.json).toHaveBeenCalledWith({ error: "Internal Server Error" })
+  })
+
+  it("renders and responds with image when parameters are valid", async () => {
+    jest.spyOn(cache, "getCachedTile").mockReturnValue(undefined)
+    jest.spyOn(cache, "createCacheKeyFromRequest").mockReturnValue("cache-key")
+    const setCacheSpy = jest.spyOn(cache, "setCachedTile").mockImplementation()
+
+    const fakeImage = Buffer.from("image-bytes")
+    jest.spyOn(mapService, "generateMap").mockResolvedValue(fakeImage)
+
+    req.query = {
+      center: "48.1,11.6",
+      width: "400",
+      height: "300",
+      format: "png",
+    }
+
+    await handleMapRequest(req as any, res as Response)
+
+    expect(mapService.generateMap).toHaveBeenCalled()
+    expect(setCacheSpy).toHaveBeenCalledWith("cache-key", fakeImage)
+
+    expect(res.set).toHaveBeenCalledWith({
+      "Content-Type": "image/png",
+      "Content-Length": fakeImage.length.toString(),
+    })
+    expect(res.end).toHaveBeenCalledWith(fakeImage)
+  })
+
+  it("parses parameters from body if method is POST", async () => {
+    jest.spyOn(cache, "getCachedTile").mockReturnValue(undefined)
+    jest.spyOn(cache, "createCacheKeyFromRequest").mockReturnValue("cache-key")
+    const setCacheSpy = jest.spyOn(cache, "setCachedTile").mockImplementation()
+
+    const fakeImage = Buffer.from("image-bytes")
+    jest.spyOn(mapService, "generateMap").mockResolvedValue(fakeImage)
+
+    req.method = "POST"
+    req.body = {
+      center: "48.1,11.6",
+      width: "400",
+      height: "300",
+      format: "png",
+    }
+
+    await handleMapRequest(req as any, res as Response)
+
+    expect(mapService.generateMap).toHaveBeenCalled()
+    expect(setCacheSpy).toHaveBeenCalledWith("cache-key", fakeImage)
+    expect(res.set).toHaveBeenCalledWith({
+      "Content-Type": "image/png",
+      "Content-Length": fakeImage.length.toString(),
+    })
+    expect(res.end).toHaveBeenCalledWith(fakeImage)
   })
 })
 

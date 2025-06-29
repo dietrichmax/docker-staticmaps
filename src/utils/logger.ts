@@ -8,8 +8,9 @@ const isValidLogLevel = (level: any): level is LogLevel => {
 }
 
 const envLogLevel = process.env.LOG_LEVEL
+
 // Set the current log level from the environment (defaults to "INFO")
-const currentLogLevel: LogLevel = isValidLogLevel(envLogLevel)
+export const currentLogLevel: LogLevel = isValidLogLevel(envLogLevel)
   ? envLogLevel
   : "INFO"
 

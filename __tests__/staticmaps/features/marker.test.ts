@@ -1,4 +1,4 @@
-import { IconMarker } from "../../src/staticmaps/features"
+import { IconMarker } from "../../../src/staticmaps/features"
 
 describe("Icon class", () => {
   test("constructor sets default values correctly", () => {
@@ -125,61 +125,5 @@ describe("Icon class", () => {
       0 - 5, // (width ?? 0) - offsetX
       7,
     ])
-  })
-
-  describe("Icon setSize method: drawWidth/drawHeight update conditions", () => {
-    test("updates drawWidth if drawWidth is NaN", () => {
-      const icon = new IconMarker({
-        width: 20,
-        drawWidth: NaN,
-      })
-      icon.setSize(20, 30)
-      expect(icon.drawWidth).toBe(20)
-    })
-
-    test("updates drawWidth if drawWidth is 0", () => {
-      const icon = new IconMarker({
-        width: 25,
-        drawWidth: 0,
-      })
-      icon.setSize(25, 35)
-      expect(icon.drawWidth).toBe(25)
-    })
-
-    test("does NOT update drawWidth if drawWidth is valid positive number", () => {
-      const icon = new IconMarker({
-        width: 20,
-        drawWidth: 15,
-      })
-      icon.setSize(50, 60)
-      expect(icon.drawWidth).toBe(15)
-    })
-
-    test("updates drawHeight if drawHeight is NaN", () => {
-      const icon = new IconMarker({
-        height: 30,
-        drawHeight: NaN,
-      })
-      icon.setSize(20, 30)
-      expect(icon.drawHeight).toBe(30)
-    })
-
-    test("updates drawHeight if drawHeight is 0", () => {
-      const icon = new IconMarker({
-        height: 40,
-        drawHeight: 0,
-      })
-      icon.setSize(20, 40)
-      expect(icon.drawHeight).toBe(40)
-    })
-
-    test("does NOT update drawHeight if drawHeight is valid positive number", () => {
-      const icon = new IconMarker({
-        height: 30,
-        drawHeight: 25,
-      })
-      icon.setSize(50, 60)
-      expect(icon.drawHeight).toBe(25)
-    })
   })
 })

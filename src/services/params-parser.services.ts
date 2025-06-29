@@ -8,6 +8,7 @@ import {
   Feature,
   MapParamsInput,
   MapParamsOutput,
+  CoordInput,
 } from "../types/types"
 import logger from "../utils/logger"
 
@@ -34,6 +35,65 @@ const NUMERIC_KEYS = new Set([
   "offsetX",
   "offsetY",
 ])
+
+// ——— Defaults —————————————————————————————————————————————
+const DEFAULTS = {
+  width: 800,
+  height: 800,
+  paddingX: 0,
+  paddingY: 0,
+  tileSize: 256,
+  tileRequestLimit: 2,
+  zoomRange: { min: 1, max: 17 },
+  reverseY: false,
+  format: "png",
+  quality: 100,
+  attribution: {
+    show: true,
+    text: "",
+  },
+}
+
+const SHAPE_DEFAULTS: Record<ShapeType, Feature> = {
+  polyline: {
+    weight: 5,
+    color: "blue",
+    fill: "",
+  },
+  polygon: {
+    weight: 3,
+    color: "#4874db",
+    fill: "",
+  },
+  circle: {
+    color: "#4874db",
+    width: 3, // usually for border width; you wrote "width" before
+    fill: "",
+    radius: 10,
+  },
+  markers: {
+    img: "",
+    width: 28,
+    height: 28,
+    offsetX: 14, // default offsetX should be half width (middle)
+    offsetY: 28, // default offsetY should be height (bottom)
+    color: "#d9534f",
+    resizeMode: "cover",
+    drawWidth: undefined,
+    drawHeight: undefined,
+  },
+  text: {
+    text: "Hello world!",
+    color: "#000000BB",
+    width: 1,
+    fill: "#000000",
+    size: 12,
+    font: "Arial",
+    anchor: "start",
+    offsetX: -12,
+    offsetY: 22,
+  },
+}
 
 /**
  * Extract map parameters from the provided input.
@@ -130,7 +190,7 @@ export function getMapParams(params: MapParamsInput): MapParamsOutput {
  * @param params - Parameters object that may contain shape data under the given key.
  * @returns An array of parsed shape objects with normalized coordinates.
  */
-function parseMultipleShapes(
+export function parseMultipleShapes(
   key: string,
   defaults: Record<string, any>,
   params: Record<string, any>
@@ -210,7 +270,7 @@ function parseMultipleShapes(
  * @param allowedKeys - Set of keys to extract (e.g., ["color", "weight", "radius"])
  * @returns Object with extracted parameters and remaining coordinates.
  */
-function extractParams(
+export function extractParams(
   items: string[],
   allowedKeys: string[]
 ): { extracted: Record<string, any>; coordinates: string[] } {
@@ -252,12 +312,6 @@ function extractParams(
 
   return { extracted, coordinates }
 }
-
-// ——— Type Aliases —————————————————————————————————————————————
-type CoordInput =
-  | Array<Coordinate>
-  | Array<string>
-  | Array<{ lat: number; lon: number }>
 
 /**
  * Detect if input strings look like an encoded polyline
@@ -301,14 +355,8 @@ export function parseCoordinates(input: CoordInput): Coordinate[] {
   // 2) Encoded polyline
   const strings = input as string[]
   if (isEncodedPolyline(strings)) {
-    // remove optional surrounding braces
     const raw = strings.join("|").replace(/^\{|\}$/g, "")
-    try {
-      return polyline.decode(raw).map(([lat, lon]) => [lon, lat] as Coordinate)
-    } catch (err: any) {
-      logger.error("Polyline decode failed:", err.message)
-      return []
-    }
+    return polyline.decode(raw).map(([lat, lon]) => [lon, lat] as Coordinate)
   }
 
   // 3) Comma‐separated "lat,lon" pairs
@@ -322,67 +370,8 @@ export function parseCoordinates(input: CoordInput): Coordinate[] {
     .filter((pt): pt is Coordinate => pt !== null)
 }
 
-// ——— Defaults —————————————————————————————————————————————
-const DEFAULTS = {
-  width: 800,
-  height: 800,
-  paddingX: 0,
-  paddingY: 0,
-  tileSize: 256,
-  tileRequestLimit: 2,
-  zoomRange: { min: 1, max: 17 },
-  reverseY: false,
-  format: "png",
-  quality: 100,
-  attribution: {
-    show: true,
-    text: "",
-  },
-}
-
-const SHAPE_DEFAULTS: Record<ShapeType, Feature> = {
-  polyline: {
-    weight: 5,
-    color: "blue",
-    fill: "",
-  },
-  polygon: {
-    weight: 3,
-    color: "#4874db",
-    fill: "",
-  },
-  circle: {
-    color: "#4874db",
-    width: 3, // usually for border width; you wrote "width" before
-    fill: "",
-    radius: 10,
-  },
-  markers: {
-    img: "",
-    width: 28,
-    height: 28,
-    offsetX: 14, // default offsetX should be half width (middle)
-    offsetY: 28, // default offsetY should be height (bottom)
-    color: "#d9534f",
-    resizeMode: "cover",
-    drawWidth: undefined,
-    drawHeight: undefined,
-  },
-  text: {
-    text: "Hello world!",
-    color: "#000000BB",
-    width: 1,
-    fill: "#000000",
-    size: 12,
-    font: "Arial",
-    anchor: "start",
-    offsetX: -12,
-    offsetY: 22,
-  },
-}
-
 // ——— Center Coordinate Parser —————————————————————————————
-function parseCenter(val: any): Coordinate | null {
+export function parseCenter(val: any): Coordinate | null {
   if (!val) return null
   if (typeof val === "string") {
     const [lat, lon] = val.split(",").map(Number)

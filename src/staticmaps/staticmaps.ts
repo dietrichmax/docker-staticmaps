@@ -587,7 +587,7 @@ class StaticMaps {
     } else {
       // Smooth only middle points of polylines
       const simplified = douglasPeucker(rawPixels, 2)
-      const smoothedPoints = chaikinSmooth(simplified, 2)
+      const smoothedPoints = chaikinSmooth(simplified as Coordinate[], 2)
 
       pointsToUse = [...smoothedPoints]
     }
@@ -783,7 +783,6 @@ class StaticMaps {
           isUrl = false
         }
 
-        //console.log(icon)
         try {
           // Load marker from remote URL
           if (isUrl) {

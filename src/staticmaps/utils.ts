@@ -1,5 +1,6 @@
 // utils.ts
 import { Coordinate } from "src/types/types"
+import logger from "../utils/logger"
 
 /**
  * Transform longitude to tile number.
@@ -10,9 +11,8 @@ import { Coordinate } from "src/types/types"
  */
 export function lonToX(lon: number, zoom: number): number {
   if (!(lon >= -180 && lon <= 180)) {
-    lon = ((lon + 180) % 360) - 180
+    lon = ((((lon + 180) % 360) + 360) % 360) - 180
   }
-
   return ((lon + 180) / 360) * Math.pow(2, zoom)
 }
 
@@ -24,9 +24,9 @@ export function lonToX(lon: number, zoom: number): number {
  * @returns The tile number corresponding to the given latitude at the specified zoom level.
  */
 export function latToY(lat: number, zoom: number): number {
-  if (!(lat >= -90 && lat <= 90)) {
-    lat = ((lat + 90) % 180) - 90
-  }
+  const MAX_LATITUDE = 85.05112878
+  if (lat > MAX_LATITUDE) lat = MAX_LATITUDE
+  if (lat < -MAX_LATITUDE) lat = -MAX_LATITUDE
 
   return (
     ((1 -
@@ -201,6 +201,8 @@ export function chaikinSmooth(
   coords: Coordinate[],
   iterations = 2
 ): Coordinate[] {
+  if (coords.length < 2) return coords // early return for empty or single point
+
   for (let i = 0; i < iterations; i++) {
     const newCoords: Coordinate[] = []
     for (let j = 0; j < coords.length - 1; j++) {
@@ -215,6 +217,14 @@ export function chaikinSmooth(
   return coords
 }
 
+/**
+ * Simplifies a series of coordinates using the Douglas-Peucker algorithm.
+ *
+ * @param {Array<Coordinate>} coords The input coordinates to simplify.
+ * @param {number} epsilon The maximum distance allowed between original and simplified points.
+ *
+ * @returns {Array<Coordinate>} The simplified set of coordinates.
+ */
 /**
  * Simplifies a series of coordinates using the Douglas-Peucker algorithm.
  *
