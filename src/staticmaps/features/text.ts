@@ -28,7 +28,7 @@ export default class Text {
       typeof options.width === "number"
         ? `${options.width}px`
         : (options.width ?? "1px")
-    this.fill = options.fill ?? "#000000"
+    this.fill = options.fill ?? this.color
     this.size = options.size ?? 12
     this.font = options.font ?? "Arial"
     this.anchor = options.anchor ?? "start"

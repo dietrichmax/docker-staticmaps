@@ -117,7 +117,6 @@ const SHAPE_DEFAULTS: Record<ShapeType, Feature> = {
     text: "Hello world!", // Default label text
     color: "#000000BB", // Text fill color with transparency
     width: 1, // Stroke width around text (if any)
-    fill: "#000000", // Fill color for text background or shape
     size: 12, // Font size in pixels
     font: "Arial", // Font family
     anchor: "start", // Text anchor position (start, middle, end)
