@@ -586,8 +586,6 @@ class StaticMaps {
     pointsToUse = rawPixels
   } else {
     if (rawPixels.length === 2) {
-      // Exactly two points -> smoothing
-      // Smooth only middle points of polylines with more than two points
       const simplified = douglasPeucker(rawPixels, 2)
       const smoothedPoints = chaikinSmooth(simplified as Coordinate[], 2)
 

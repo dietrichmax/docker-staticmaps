@@ -215,7 +215,7 @@ polyline=polylineStyle|polylineCoord1|polylineCoord2|...
   | `fill`               |           | Specifies the fill color of the polyline.                                                                                       |
   | `strokeDasharray`    | (none)    | Pattern of dashes and gaps, e.g., `5,5` see [stroke-dasharray](https://developer.mozilla.org/de/docs/Web/CSS/stroke-dasharray). |
 
-Note: Polylines with only two coordinates are rendered as geodesic line.
+Note: For each pair of coordinates in the input, a geodesic line is generated between them.
 
 <details>
   <summary>Regular Coordinates example with <code>no zoom</code>, <code>weight:6</code>, <code>color:0000ff</code></summary>
