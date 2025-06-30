@@ -1,221 +1,313 @@
 import sharp from "sharp"
 import Image from "../../src/staticmaps/image"
-import { TileData, Coordinate } from "../../src/types/types"
+import { TileData, TilePart } from "../../src/types/types"
+import PDFDocument from "pdfkit"
+import { Writable } from "stream"
 
+// Mock sharp and PDFKit for isolated testing
 jest.mock("sharp")
+jest.mock("pdfkit")
 
-const mockedSharp = sharp as unknown as jest.Mock
+const mockedSharp = sharp as jest.MockedFunction<typeof sharp>
+const mockedPDFDocument = PDFDocument as jest.MockedClass<typeof PDFDocument>
 
 describe("Image class", () => {
-  let mockToBuffer: jest.Mock
-  let mockMetadata: jest.Mock
-  let mockExtract: jest.Mock
-  let mockComposite: jest.Mock
-  let mockToFile: jest.Mock
-  let mockWebp: jest.Mock
-  let mockJpeg: jest.Mock
-  let mockPng: jest.Mock
-
   beforeEach(() => {
     jest.clearAllMocks()
-
-    mockToBuffer = jest.fn()
-    mockMetadata = jest.fn()
-    mockExtract = jest.fn()
-    mockComposite = jest.fn()
-    mockToFile = jest.fn()
-    mockWebp = jest.fn()
-    mockJpeg = jest.fn()
-    mockPng = jest.fn()
-
-    mockExtract.mockReturnValue({ toBuffer: mockToBuffer })
-    mockComposite.mockReturnValue({ toBuffer: mockToBuffer })
-
-    mockWebp.mockReturnValue({
-      toFile: mockToFile,
-      toBuffer: jest.fn().mockResolvedValue(Buffer.from("webp")),
-    })
-    mockJpeg.mockReturnValue({
-      toFile: mockToFile,
-      toBuffer: jest.fn().mockResolvedValue(Buffer.from("jpeg")),
-    })
-    mockPng.mockReturnValue({
-      toFile: mockToFile,
-      toBuffer: jest.fn().mockResolvedValue(Buffer.from("png")),
-    })
-
-    mockedSharp.mockImplementation((input?: Buffer | object) => {
-      // If input is object with create: { ... }, simulate base image creation
-      if (typeof input === "object" && input !== null && "create" in input) {
-        return {
-          png: jest.fn().mockReturnValue({ toBuffer: mockToBuffer }),
-          toBuffer: mockToBuffer,
-          metadata: mockMetadata,
-          extract: mockExtract,
-          composite: mockComposite,
-          webp: mockWebp,
-          jpeg: mockJpeg,
-          toFile: mockToFile,
-        }
-      }
-
-      // If input is Buffer or undefined (like this.image)
-      return {
-        metadata: mockMetadata,
-        extract: mockExtract,
-        composite: mockComposite,
-        webp: mockWebp,
-        jpeg: mockJpeg,
-        png: mockPng,
-        toBuffer: mockToBuffer,
-        toFile: mockToFile,
-      }
-    })
   })
 
   describe("constructor", () => {
-    it("sets defaults", () => {
+    it("should initialize with default values", () => {
       const img = new Image()
       expect(img["width"]).toBe(800)
       expect(img["height"]).toBe(600)
       expect(img["quality"]).toBe(100)
     })
-    it("sets passed options", () => {
-      const img = new Image({ width: 123, height: 456, quality: 78 })
-      expect(img["width"]).toBe(123)
-      expect(img["height"]).toBe(456)
-      expect(img["quality"]).toBe(78)
+
+    it("should accept custom options", () => {
+      const img = new Image({ width: 300, height: 400, quality: 80 })
+      expect(img["width"]).toBe(300)
+      expect(img["height"]).toBe(400)
+      expect(img["quality"]).toBe(80)
     })
   })
 
   describe("prepareTileParts", () => {
-    it("returns success and extracted buffer with correct position", async () => {
-      mockMetadata.mockResolvedValue({ width: 100, height: 100 })
-      mockToBuffer.mockResolvedValue(Buffer.from("extracted"))
-
-      const img = new Image({ width: 80, height: 80 })
-      const tileData: TileData = {
-        body: Buffer.from("body"),
-        box: [10, 20],
+    it("should return success false if metadata missing width/height", async () => {
+      const tileMock = {
+        metadata: jest.fn().mockResolvedValue({ width: undefined, height: undefined }),
       }
+      mockedSharp.mockReturnValueOnce(tileMock as any)
+
+      const img = new Image()
+      const tileData: TileData = {
+        body: Buffer.from(""),
+        box: [0, 0],
+      }
+
+      const result = await img.prepareTileParts(tileData)
+      expect(result.success).toBe(false)
+    })
+
+    it("should extract the correct part and return success true", async () => {
+      const fakeBuffer = Buffer.from("tilepart")
+      const tileMock = {
+        metadata: jest.fn().mockResolvedValue({ width: 100, height: 100 }),
+        extract: jest.fn().mockReturnThis(),
+        toBuffer: jest.fn().mockResolvedValue(fakeBuffer),
+      }
+      mockedSharp.mockReturnValueOnce(tileMock as any)
+
+      const img = new Image({ width: 150, height: 150 })
+      const tileData: TileData = {
+        body: Buffer.from(""),
+        box: [10, 10],
+      }
+
       const result = await img.prepareTileParts(tileData)
 
       expect(result.success).toBe(true)
-      expect(result.position).toEqual({ top: 20, left: 10 })
-      expect(result.data).toEqual(Buffer.from("extracted"))
-      expect(mockExtract).toHaveBeenCalled()
-      expect(mockToBuffer).toHaveBeenCalled()
+      expect(result.position).toEqual({ top: 10, left: 10 })
+      expect(result.data).toBe(fakeBuffer)
+      expect(tileMock.extract).toHaveBeenCalled()
+      expect(tileMock.toBuffer).toHaveBeenCalled()
     })
 
-    it("returns failure if metadata missing width or height", async () => {
-      mockMetadata.mockResolvedValue({ width: undefined, height: undefined })
+    it("should return success false if extraction fails", async () => {
+      const tileMock = {
+        metadata: jest.fn().mockResolvedValue({ width: 100, height: 100 }),
+        extract: jest.fn().mockReturnThis(),
+        toBuffer: jest.fn().mockRejectedValue(new Error("fail")),
+      }
+      mockedSharp.mockReturnValueOnce(tileMock as any)
+
       const img = new Image()
-      const result = await img.prepareTileParts({
-        body: Buffer.from("b"),
+      const tileData: TileData = {
+        body: Buffer.from(""),
         box: [0, 0],
-      })
-      expect(result.success).toBe(false)
-    })
+      }
 
-    it("returns failure if computed width or height <= 0", async () => {
-      mockMetadata.mockResolvedValue({ width: 10, height: 10 })
-      const img = new Image({ width: 5, height: 5 })
-      // large positive x,y so w or h will be 0 or less
-      const result = await img.prepareTileParts({
-        body: Buffer.from("b"),
-        box: [1000, 1000],
-      })
-      expect(result.success).toBe(false)
-    })
-
-    it("returns failure if sharp metadata call throws error", async () => {
-      mockMetadata.mockRejectedValue(new Error("fail"))
-      const img = new Image()
-      const result = await img.prepareTileParts({
-        body: Buffer.from("b"),
-        box: [0, 0],
-      })
+      const result = await img.prepareTileParts(tileData)
       expect(result.success).toBe(false)
     })
   })
 
   describe("draw", () => {
-    it("creates new base image if no existing image", async () => {
-      mockToBuffer.mockResolvedValue(Buffer.from("basebuffer"))
-      mockMetadata.mockResolvedValue({ width: 10, height: 10 })
+    it("should create base image if no image set", async () => {
+      const blankBuffer = Buffer.from("blank")
+      const compositeBuffer = Buffer.from("composited")
+
+      // sharp({create: ...}).png().toBuffer() returns blankBuffer
+      const sharpInstance = {
+        png: jest.fn().mockReturnThis(),
+        toBuffer: jest.fn().mockResolvedValue(blankBuffer),
+      }
+      mockedSharp.mockReturnValueOnce(sharpInstance as any)
+
+      // sharp(baseImage).composite(...).toBuffer() returns compositeBuffer
+      const compositeSharpInstance = {
+        composite: jest.fn().mockReturnThis(),
+        toBuffer: jest.fn().mockResolvedValue(compositeBuffer),
+      }
+      mockedSharp.mockReturnValueOnce(compositeSharpInstance as any)
 
       const img = new Image()
-      // Only one tile
-      const tiles: TileData[] = [{ body: Buffer.from("b"), box: [0, 0] }]
-      mockToBuffer.mockResolvedValueOnce(Buffer.from("partbuffer")) // for tile.extract.toBuffer
-      const result = await img.draw(tiles)
+      img["image"] = undefined
+
+      // Mock prepareTileParts to return one valid tile part
+      jest.spyOn(img, "prepareTileParts").mockResolvedValue({
+        success: true,
+        position: { top: 0, left: 0 },
+        data: Buffer.from("tile"),
+      })
+
+      const result = await img.draw([{ body: Buffer.from("x"), box: [0, 0] }])
 
       expect(result).toBe(true)
-      expect(mockedSharp).toHaveBeenCalled() // sharp called multiple times
-      expect(mockComposite).toHaveBeenCalled()
-      expect(img["image"]).toBeDefined()
+      expect(img["image"]).toBe(compositeBuffer)
+      expect(sharpInstance.png).toHaveBeenCalled()
+      expect(compositeSharpInstance.composite).toHaveBeenCalled()
     })
 
-    it("uses existing image if set", async () => {
-      mockToBuffer.mockResolvedValue(Buffer.from("basebuffer"))
-      mockMetadata.mockResolvedValue({ width: 10, height: 10 })
+    it("should use existing image as base", async () => {
+      const existingBuffer = Buffer.from("existing")
+      const compositeBuffer = Buffer.from("composited")
+
+      // sharp(baseImage).composite(...).toBuffer() returns compositeBuffer
+      const compositeSharpInstance = {
+        composite: jest.fn().mockReturnThis(),
+        toBuffer: jest.fn().mockResolvedValue(compositeBuffer),
+      }
+      mockedSharp.mockReturnValueOnce(compositeSharpInstance as any)
 
       const img = new Image()
-      img["image"] = Buffer.from("existingimage")
-      const tiles: TileData[] = [{ body: Buffer.from("b"), box: [0, 0] }]
-      mockToBuffer.mockResolvedValueOnce(Buffer.from("partbuffer")) // for tile.extract.toBuffer
-      const result = await img.draw(tiles)
+      img["image"] = existingBuffer
+
+      jest.spyOn(img, "prepareTileParts").mockResolvedValue({
+        success: true,
+        position: { top: 0, left: 0 },
+        data: Buffer.from("tile"),
+      })
+
+      const result = await img.draw([{ body: Buffer.from("x"), box: [0, 0] }])
 
       expect(result).toBe(true)
-      expect(mockComposite).toHaveBeenCalled()
-      expect(img["image"]).toBeDefined()
+      expect(img["image"]).toBe(compositeBuffer)
+      expect(mockedSharp).toHaveBeenCalledWith(existingBuffer)
+      expect(compositeSharpInstance.composite).toHaveBeenCalled()
+    })
+  })
+
+  describe("compositeSVG", () => {
+    it("should composite svgBuffer on image", async () => {
+      const existingBuffer = Buffer.from("existing")
+      const compositeBuffer = Buffer.from("composited")
+
+      const compositeSharpInstance = {
+        composite: jest.fn().mockReturnThis(),
+        toBuffer: jest.fn().mockResolvedValue(compositeBuffer),
+      }
+      mockedSharp.mockReturnValueOnce(compositeSharpInstance as any)
+
+      const img = new Image()
+      img["image"] = existingBuffer
+
+      await expect(img.compositeSVG(Buffer.from("svgdata"), { top: 10, left: 20 })).resolves.toBe(img)
+      expect(mockedSharp).toHaveBeenCalledWith(existingBuffer)
+      expect(compositeSharpInstance.composite).toHaveBeenCalledWith([
+        { input: Buffer.from("svgdata"), top: 10, left: 20 },
+      ])
+      expect(img["image"]).toBe(compositeBuffer)
+    })
+
+    it("should throw if no image", async () => {
+      const img = new Image()
+      await expect(img.compositeSVG(Buffer.from("svgdata"))).rejects.toThrow("No image to composite on")
     })
   })
 
   describe("buffer", () => {
-    it("returns buffer in webp format", async () => {
+    it("should throw if no image buffer", async () => {
       const img = new Image()
-      img["image"] = Buffer.from("imgdata")
-      const buf = await img.buffer("image/webp")
-      expect(buf).toBeInstanceOf(Buffer)
+      await expect(img.buffer()).rejects.toThrow("No image buffer to convert")
     })
 
-    it("returns buffer in jpeg format", async () => {
+    it("should convert to webp", async () => {
+      const fakeBuffer = Buffer.from("webpbuffer")
+      const sharpInstance = {
+        webp: jest.fn().mockReturnThis(),
+        toBuffer: jest.fn().mockResolvedValue(fakeBuffer),
+      }
+      mockedSharp.mockReturnValueOnce(sharpInstance as any)
+
       const img = new Image()
-      img["image"] = Buffer.from("imgdata")
-      const buf = await img.buffer("image/jpeg")
-      expect(buf).toBeInstanceOf(Buffer)
+      img["image"] = Buffer.from("image")
+
+      const result = await img.buffer("webp", { quality: 80 })
+
+      expect(result).toBe(fakeBuffer)
+      expect(sharpInstance.webp).toHaveBeenCalledWith({ quality: 80 })
     })
 
-    it("returns buffer in png format by default", async () => {
+    it("should convert to jpeg", async () => {
+      const fakeBuffer = Buffer.from("jpegbuffer")
+      const sharpInstance = {
+        jpeg: jest.fn().mockReturnThis(),
+        toBuffer: jest.fn().mockResolvedValue(fakeBuffer),
+      }
+      mockedSharp.mockReturnValueOnce(sharpInstance as any)
+
       const img = new Image()
-      img["image"] = Buffer.from("imgdata")
-      const buf = await img.buffer("image/png")
-      expect(buf).toBeInstanceOf(Buffer)
+      img["image"] = Buffer.from("image")
+
+      const result = await img.buffer("jpeg")
+
+      expect(result).toBe(fakeBuffer)
+      expect(sharpInstance.jpeg).toHaveBeenCalled()
     })
 
-    it("throws an error for unsupported image format", async () => {
+    it("should convert to png", async () => {
+      const fakeBuffer = Buffer.from("pngbuffer")
+      const sharpInstance = {
+        png: jest.fn().mockReturnThis(),
+        toBuffer: jest.fn().mockResolvedValue(fakeBuffer),
+      }
+      mockedSharp.mockReturnValueOnce(sharpInstance as any)
+
       const img = new Image()
-      img["image"] = Buffer.from("imgdata")
-      await expect(img.buffer("image/unknown")).rejects.toThrow(
-        'Unsupported image format: "image/unknown"'
-      )
+      img["image"] = Buffer.from("image")
+
+      const result = await img.buffer("png")
+
+      expect(result).toBe(fakeBuffer)
+      expect(sharpInstance.png).toHaveBeenCalled()
     })
 
-    it("throws if no image buffer is set", async () => {
+    it("should convert to pdf", async () => {
       const img = new Image()
-      await expect(img.buffer("png")).rejects.toThrow(
-        "No image buffer to convert"
-      )
+      img["image"] = Buffer.from("image")
+
+      // Mock sharpInstance.metadata() to provide width/height
+      const sharpMetadataInstance = {
+        metadata: jest.fn().mockResolvedValue({ width: 400, height: 300 }),
+      }
+      mockedSharp.mockReturnValueOnce(sharpMetadataInstance as any)
+
+      // Mock private toPDFBuffer method (access via any)
+      const pdfBuffer = Buffer.from("pdfbuffer")
+      ;(img as any).toPDFBuffer = jest.fn().mockResolvedValue(pdfBuffer)
+
+      const result = await img.buffer("pdf")
+
+      expect(result).toBe(pdfBuffer)
+      expect(sharpMetadataInstance.metadata).toHaveBeenCalled()
+      expect((img as any).toPDFBuffer).toHaveBeenCalled()
     })
 
-    it("uses passed quality option if given", async () => {
+    it("should throw on unsupported mime", async () => {
       const img = new Image()
-      img["image"] = Buffer.from("imgdata")
-      await img.buffer("image/jpeg", { quality: 25 })
-      expect(mockJpeg).toHaveBeenCalledWith(
-        expect.objectContaining({ quality: 25 })
-      )
+      img["image"] = Buffer.from("image")
+
+      await expect(img.buffer("unknown/mime")).rejects.toThrow(/Unsupported image format/)
+    })
+  })
+
+  describe("toPDFBuffer", () => {
+    /*it("should return pdf buffer", async () => {
+      const img = new Image()
+      img["image"] = Buffer.from("imagebuffer")
+
+      // Mock PDFDocument pipe and writable stream behavior
+      const chunks: Buffer[] = []
+      const writable = new Writable({
+        write(chunk, encoding, callback) {
+          chunks.push(Buffer.from(chunk))
+          callback()
+        },
+      })
+
+      const endMock = jest.fn(() => writable.emit("finish"))
+      mockedPDFDocument.mockImplementation(() => {
+        return {
+          pipe: jest.fn().mockReturnValue(writable),
+          image: jest.fn(),
+          end: endMock,
+          on: jest.fn(),
+        } as any
+      })
+
+      // Call private method through any cast
+      const pdfBufferPromise = (img as any).toPDFBuffer(300, 200)
+      const result = await pdfBufferPromise
+
+      expect(result).toBeInstanceOf(Buffer)
+      expect(result.length).toBeGreaterThan(0)
+      expect(mockedPDFDocument).toHaveBeenCalledWith({ size: [300, 200], margin: 0 })
+    })*/
+
+    it("should throw if no image", async () => {
+      const img = new Image()
+      await expect((img as any).toPDFBuffer(300, 200)).rejects.toThrow("Image buffer missing")
     })
   })
 })

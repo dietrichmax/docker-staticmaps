@@ -9,8 +9,7 @@ export default class Circle {
   color: string
   fill: string
   width: number
-  strokeDasharray?: number[] 
-
+  strokeDasharray?: number[]
 
   /**
    * Creates a new Circle instance.

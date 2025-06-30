@@ -486,7 +486,6 @@ export function parseCenter(val: any): Coordinate | null {
   return null
 }
 
-
 /**
  * Generates a tile URL and attribution based on the provided custom URL and basemap.
  *

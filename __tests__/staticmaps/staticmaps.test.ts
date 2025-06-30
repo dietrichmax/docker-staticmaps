@@ -103,7 +103,7 @@ describe("StaticMaps", () => {
       const map = new StaticMaps({
         width: 200,
         height: 200,
-      });
+      })
 
       const polylineOptions = {
         coords: [
@@ -115,16 +115,16 @@ describe("StaticMaps", () => {
         width: 2,
         type: "polyline" as const,
         extent: () => [10, 20, 30, 40] as [number, number, number, number],
-      };
+      }
 
-      map.addLine(polylineOptions);
+      map.addLine(polylineOptions)
 
-      expect(map.lines.length).toBe(1);
-      expect(map.lines[0]).toBeInstanceOf(Polyline);
+      expect(map.lines.length).toBe(1)
+      expect(map.lines[0]).toBeInstanceOf(Polyline)
 
-      const coords = map.lines[0].coords;
+      const coords = map.lines[0].coords
 
-      expect(coords.length).toBeGreaterThan(3); // Should now include interpolated points
+      expect(coords.length).toBeGreaterThan(3) // Should now include interpolated points
 
       // Optional: verify that the first and last points match original input (with tolerance)
       const firstCoord = coords[0]
@@ -141,12 +141,11 @@ describe("StaticMaps", () => {
           (lon !== 10 || lat !== 20) &&
           (lon !== 20 || lat !== 30) &&
           (lon !== 30 || lat !== 40)
-        );
-      });
+        )
+      })
 
-      expect(hasMidpoints).toBe(true);
-    });
-
+      expect(hasMidpoints).toBe(true)
+    })
   })
 
   describe("addPolygon", () => {
@@ -700,7 +699,7 @@ describe("StaticMaps", () => {
       }
 
       // Mock getTiles to simulate tile fetching success
-      map.getTiles = jest.fn(async (tiles) =>
+      map.tileManager.getTiles = jest.fn(async (tiles) =>
         tiles.map((tile: any) => ({ success: true, tile }))
       )
     })
@@ -728,7 +727,7 @@ describe("StaticMaps", () => {
 
       const result = await map.drawLayer(config)
 
-      expect(map.getTiles).toHaveBeenCalled()
+      expect(map.tileManager.getTiles).toHaveBeenCalled()
       expect(map.image.draw).toHaveBeenCalled()
 
       const drawnTiles = map.image.draw.mock.calls[0][0]

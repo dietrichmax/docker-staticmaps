@@ -34,7 +34,13 @@ export function addPolylines(
       return
     }
     logger.debug(`Adding ${isPolygon ? "polygon" : "polyline"} [${i}]`, item)
-    const shape = new Polyline({ coords, color, width: weight, fill, strokeDasharray })
+    const shape = new Polyline({
+      coords,
+      color,
+      width: weight,
+      fill,
+      strokeDasharray,
+    })
     isPolygon ? map.addPolygon(shape) : map.addLine(shape)
   })
 }

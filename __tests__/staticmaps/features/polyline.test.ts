@@ -7,34 +7,32 @@ describe("Polyline class", () => {
     jest.restoreAllMocks()
   })
 
-test("constructor sets coords, color, fill, width with defaults", () => {
-  const coords: Coordinate[] = [
-    [1, 2],
-    [3, 4],
-    [5, 6],
-  ];
+  test("constructor sets coords, color, fill, width with defaults", () => {
+    const coords: Coordinate[] = [
+      [1, 2],
+      [3, 4],
+      [5, 6],
+    ]
 
-  const poly = new Polyline({ coords });
+    const poly = new Polyline({ coords })
 
-  // Polyline constructor swaps x/y in output?
-  const inputStart = coords[0];
-  const polyStart = poly.coords[0];
-  expect(polyStart[0]).toBeCloseTo(inputStart[1], 9); // poly x ~ input y
-  expect(polyStart[1]).toBeCloseTo(inputStart[0], 9); // poly y ~ input x
+    // Polyline constructor swaps x/y in output?
+    const inputStart = coords[0]
+    const polyStart = poly.coords[0]
+    expect(polyStart[0]).toBeCloseTo(inputStart[1], 9) // poly x ~ input y
+    expect(polyStart[1]).toBeCloseTo(inputStart[0], 9) // poly y ~ input x
 
-  const inputEnd = coords[coords.length - 1];
-  const polyEnd = poly.coords[poly.coords.length - 1];
-  expect(polyEnd[0]).toBeCloseTo(inputEnd[1], 9);
-  expect(polyEnd[1]).toBeCloseTo(inputEnd[0], 9);
+    const inputEnd = coords[coords.length - 1]
+    const polyEnd = poly.coords[poly.coords.length - 1]
+    expect(polyEnd[0]).toBeCloseTo(inputEnd[1], 9)
+    expect(polyEnd[1]).toBeCloseTo(inputEnd[0], 9)
 
-  expect(poly.coords.length).toBeGreaterThan(3);  // more points due to interpolation
-  expect(poly.color).toBe("#000000BB");
-  expect(poly.fill).toBeUndefined();
-  expect(poly.width).toBe(3);
-  expect(poly.type).toBe("polyline");
-});
-
-
+    expect(poly.coords.length).toBeGreaterThan(3) // more points due to interpolation
+    expect(poly.color).toBe("#000000BB")
+    expect(poly.fill).toBeUndefined()
+    expect(poly.width).toBe(3)
+    expect(poly.type).toBe("polyline")
+  })
 
   test("constructor uses provided color, fill, width", () => {
     const coords: Coordinate[] = [
@@ -96,8 +94,8 @@ test("constructor sets coords, color, fill, width with defaults", () => {
 
     // It should call createGeodesicLine once
     expect(spy).toHaveBeenCalledTimes(1)
-    const swappedCoords = geodesicCoords.map(([lat, lon]) => [lon, lat]);
-    expect(poly.coords).toStrictEqual(swappedCoords);
+    const swappedCoords = geodesicCoords.map(([lat, lon]) => [lon, lat])
+    expect(poly.coords).toStrictEqual(swappedCoords)
   })
 
   /*test("extent calculates bounding box correctly", () => {

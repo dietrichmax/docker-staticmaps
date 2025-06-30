@@ -35,7 +35,7 @@ describe("generateParams", () => {
 
       expect(logger.debug).toHaveBeenCalled()
       expect(result.missingParams).toHaveLength(0)
-      expect(result.options.center).toEqual([10,50])
+      expect(result.options.center).toEqual([10, 50])
       expect(result.options.width).toBe(500)
       expect(result.options.height).toBe(400)
       expect(result.options.tileUrl).toBe(getTileUrl(null, null).url)
@@ -234,7 +234,6 @@ describe("generateParams", () => {
     it("returns null for missing lat/lon object keys", () => {
       expect(parseCenter({ lat: 48.1 })).toBeNull()
     })
-    
   })
 
   describe("getTileUrl", () => {

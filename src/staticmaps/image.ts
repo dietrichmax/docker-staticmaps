@@ -68,8 +68,10 @@ export default class Image {
    * @param tiles - Array of tile data to be drawn.
    */
   async draw(tiles: TileData[]): Promise<boolean> {
+    // Prepare base image: use this.image if available; otherwise create a transparent blank image
+    let baseImage: Buffer
     if (!this.image) {
-      const baselayer = sharp({
+      baseImage = await sharp({
         create: {
           width: this.width,
           height: this.height,
@@ -77,11 +79,13 @@ export default class Image {
           background: { r: 0, g: 0, b: 0, alpha: 0 },
         },
       })
-      this.tempBuffer = await baselayer.png().toBuffer()
+        .png()
+        .toBuffer()
     } else {
-      this.tempBuffer = this.image
+      baseImage = this.image
     }
 
+    // Prepare all tile parts asynchronously
     const preparedTiles = (
       await Promise.all(tiles.map((tile) => this.prepareTileParts(tile)))
     ).filter(
@@ -93,7 +97,8 @@ export default class Image {
       } => v.success && v.data !== undefined
     )
 
-    this.tempBuffer = await sharp(this.tempBuffer)
+    // Composite all prepared tiles on the base image
+    this.image = await sharp(baseImage)
       .composite(
         preparedTiles.map(({ position, data }) => ({
           input: data,
@@ -102,7 +107,6 @@ export default class Image {
       )
       .toBuffer()
 
-    this.image = this.tempBuffer
     return true
   }
 

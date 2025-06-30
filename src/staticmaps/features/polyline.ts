@@ -13,7 +13,7 @@ export default class Polyline {
   color: string
   fill?: string
   width: number
-  strokeDasharray?: number[] 
+  strokeDasharray?: number[]
 
   /**
    * Indicates whether this shape is a `"polyline"` or a `"polygon"`.

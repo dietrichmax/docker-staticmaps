@@ -208,12 +208,12 @@ polyline=polylineStyle|polylineCoord1|polylineCoord2|...
 
 - **polylineStyle**: Customize the polyline with:
 
-  | Parameter            | Default   | Description                                                                                                                     |
-  | -------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------- |
-  | `weight`             | `6`       | Sets the stroke width of the polyline.                                                                                          |
-  | `color`              | `#0000ff` | Defines the stroke color of the polyline.                                                                                       |
-  | `fill`               |           | Specifies the fill color of the polyline.                                                                                       |
-  | `strokeDasharray`    | (none)    | Pattern of dashes and gaps, e.g., `5,5` see [stroke-dasharray](https://developer.mozilla.org/de/docs/Web/CSS/stroke-dasharray). |
+  | Parameter | Default | Description |
+  | --- | --- | --- |
+  | `weight` | `6` | Sets the stroke width of the polyline. |
+  | `color` | `#0000ff` | Defines the stroke color of the polyline. |
+  | `fill` |  | Specifies the fill color of the polyline. |
+  | `strokeDasharray` | (none) | Pattern of dashes and gaps, e.g., `5,5` see [stroke-dasharray](https://developer.mozilla.org/de/docs/Web/CSS/stroke-dasharray). |
 
 Note: For each pair of coordinates in the input, a geodesic line is generated between them.
 
@@ -244,12 +244,12 @@ polygon=polygonStyle|polygonCoord1|polygonCoord2|...
 - **polygonCoord**: List of coordinates in `lat, lon` format, separated by `|`. The first and last coordinates should be the same to close the polygon.
 - **polygonStyle**: Customize the polygon with:
 
-  | Parameter            | Default   | Description                                                                                                                     |
-  | -------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------- |
-  | `color`              | `#4874db` | Defines the stroke color of the polygon.                                                                                        |
-  | `weight`             | `5`       | Sets the stroke width of the polygon.                                                                                           |
-  | `fill`               |           | Specifies the fill color of the polygon.                                                                                        |
-  | `strokeDasharray`    | (none)    | Pattern of dashes and gaps, e.g., `5,5` see [stroke-dasharray](https://developer.mozilla.org/de/docs/Web/CSS/stroke-dasharray). |
+  | Parameter | Default | Description |
+  | --- | --- | --- |
+  | `color` | `#4874db` | Defines the stroke color of the polygon. |
+  | `weight` | `5` | Sets the stroke width of the polygon. |
+  | `fill` |  | Specifies the fill color of the polygon. |
+  | `strokeDasharray` | (none) | Pattern of dashes and gaps, e.g., `5,5` see [stroke-dasharray](https://developer.mozilla.org/de/docs/Web/CSS/stroke-dasharray). |
 
 <details>
   <summary><b>Example:</b> Polygon with color <code>4874db</code>, weight <code>7</code>, and fill <code>eb7a34</code></summary>
