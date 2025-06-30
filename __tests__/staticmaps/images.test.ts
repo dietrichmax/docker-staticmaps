@@ -35,7 +35,9 @@ describe("Image class", () => {
   describe("prepareTileParts", () => {
     it("should return success false if metadata missing width/height", async () => {
       const tileMock = {
-        metadata: jest.fn().mockResolvedValue({ width: undefined, height: undefined }),
+        metadata: jest
+          .fn()
+          .mockResolvedValue({ width: undefined, height: undefined }),
       }
       mockedSharp.mockReturnValueOnce(tileMock as any)
 
@@ -172,7 +174,9 @@ describe("Image class", () => {
       const img = new Image()
       img["image"] = existingBuffer
 
-      await expect(img.compositeSVG(Buffer.from("svgdata"), { top: 10, left: 20 })).resolves.toBe(img)
+      await expect(
+        img.compositeSVG(Buffer.from("svgdata"), { top: 10, left: 20 })
+      ).resolves.toBe(img)
       expect(mockedSharp).toHaveBeenCalledWith(existingBuffer)
       expect(compositeSharpInstance.composite).toHaveBeenCalledWith([
         { input: Buffer.from("svgdata"), top: 10, left: 20 },
@@ -182,7 +186,9 @@ describe("Image class", () => {
 
     it("should throw if no image", async () => {
       const img = new Image()
-      await expect(img.compositeSVG(Buffer.from("svgdata"))).rejects.toThrow("No image to composite on")
+      await expect(img.compositeSVG(Buffer.from("svgdata"))).rejects.toThrow(
+        "No image to composite on"
+      )
     })
   })
 
@@ -268,7 +274,9 @@ describe("Image class", () => {
       const img = new Image()
       img["image"] = Buffer.from("image")
 
-      await expect(img.buffer("unknown/mime")).rejects.toThrow(/Unsupported image format/)
+      await expect(img.buffer("unknown/mime")).rejects.toThrow(
+        /Unsupported image format/
+      )
     })
   })
 
@@ -307,7 +315,9 @@ describe("Image class", () => {
 
     it("should throw if no image", async () => {
       const img = new Image()
-      await expect((img as any).toPDFBuffer(300, 200)).rejects.toThrow("Image buffer missing")
+      await expect((img as any).toPDFBuffer(300, 200)).rejects.toThrow(
+        "Image buffer missing"
+      )
     })
   })
 })

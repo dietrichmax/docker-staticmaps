@@ -183,7 +183,13 @@ class StaticMaps {
    * @returns {Promise<string>} - Promise that resolves to the SVG string representing the rendered map.
    */
   async render(center?: Coordinate, zoom?: number): Promise<string> {
-    if (!this.lines && !this.markers && !this.circles && !(center && zoom)) {
+    if (
+      !center &&
+      this.markers.length === 0 &&
+      this.lines.length === 0 &&
+      this.circles.length === 0 &&
+      this.text.length === 0
+    ) {
       throw new Error(
         "Cannot render empty map: Add center || lines || markers || circles."
       )
@@ -227,6 +233,19 @@ class StaticMaps {
     return this.drawFeatures()
   }
 
+  /**
+   * Calculates the bounding extent [minLon, minLat, maxLon, maxLat] that covers
+   * all map features including bounds, lines, circles, markers, and optionally the center.
+   * 
+   * When a zoom level is provided, marker extents are expanded in geographic coordinates
+   * based on their pixel extents at that zoom, accounting for marker icon sizes.
+   *
+   * @param {number} [zoom] - Optional zoom level to calculate marker extents in geographic coordinates.
+   *                          If omitted, markers are treated as points without extent.
+   * @returns {number[]} Bounding box array with [minLongitude, minLatitude, maxLongitude, maxLatitude].
+   *                     Coordinates are in EPSG:4326 geographic degrees.
+   * @throws {Error} Throws if any marker has undefined coordinates.
+   */
   determineExtent(zoom?: number): number[] {
     const extents: number[][] = []
 
@@ -278,24 +297,55 @@ class StaticMaps {
   }
 
   /**
-   * Calculates the best zoom level for a given extent.
+   * Calculates the optimal zoom level to fit all map features within the map view,
+   * respecting the configured width, height, and padding.
    *
-   * @returns {number} - The optimal zoom level.
+   * The method:
+   * - Determines the bounding extent of all features.
+   * - Iterates from the maximum zoom level down to the minimum zoom level.
+   * - For each zoom, calculates if the extent fits within the available map area.
+   * - Returns the highest zoom level where the extent fits.
+   * - If no features exist or extent is invalid, returns the minimum zoom.
+   *
+   * @returns {number} The best zoom level that fits all features within the view,
+   *                   or the minimum zoom if no features or no zoom fits.
    */
   calculateZoom(): number {
-    for (let z = this.zoomRange.max; z >= this.zoomRange.min; z--) {
-      const extent = this.determineExtent(z)
-      const width =
-        (lonToX(extent[2], z) - lonToX(extent[0], z)) * this.tileSize
-      if (width > this.width - this.padding[0] * 2) continue
+    const { min: minZoom = 1, max: maxZoom = 20 } = this.zoomRange || {}
 
-      const height =
-        (latToY(extent[1], z) - latToY(extent[3], z)) * this.tileSize
-      if (height > this.height - this.padding[1] * 2) continue
+    // Determine extent once, without zoom or at min zoom
+    const extent = this.determineExtent()
+
+    // Validate extent (must be 4 numbers and valid box)
+    if (
+      !extent ||
+      extent.length !== 4 ||
+      extent[0] === Infinity ||
+      extent[1] === Infinity ||
+      extent[2] === -Infinity ||
+      extent[3] === -Infinity ||
+      extent[0] > extent[2] ||
+      extent[1] > extent[3]
+    ) {
+      // No valid extent, so no features to zoom on => return min zoom
+      return minZoom
+    }
+
+    for (let z = maxZoom; z >= minZoom; z--) {
+      const extentZ = this.determineExtent(z)
+      const widthPx =
+        (lonToX(extentZ[2], z) - lonToX(extentZ[0], z)) * this.tileSize
+      if (widthPx > this.width - this.padding[0] * 2) continue
+
+      const heightPx =
+        (latToY(extentZ[1], z) - latToY(extentZ[3], z)) * this.tileSize
+      if (heightPx > this.height - this.padding[1] * 2) continue
 
       return z
     }
-    return this.zoomRange.min
+
+    // No zoom level fits, return min zoom as fallback
+    return minZoom
   }
 
   /**
@@ -420,6 +470,9 @@ class StaticMaps {
    * @returns {string} - SVG string representing the circle.
    */
   circleToSVG(circle: Circle): string {
+    if (!Array.isArray(circle.coord) || circle.coord.length !== 2) {
+      throw new Error("Invalid circle: missing or malformed coordinates.")
+    }
     const lat = circle.coord[1]
     const r = meterToPixel(circle.radius, this.zoom, lat)
     const cx = this.xToPx(lonToX(circle.coord[0], this.zoom))
