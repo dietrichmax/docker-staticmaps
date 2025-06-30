@@ -599,6 +599,11 @@ class StaticMaps {
         .map(([x, y]) => `L${x},${y}`)
         .join(" ")
 
+    // Compose stroke-dasharray attribute if provided
+    const dashArrayAttr = Array.isArray(line.strokeDasharray) && line.strokeDasharray.length > 0
+      ? `stroke-dasharray="${line.strokeDasharray.join(",")}"`
+      : ""
+
     return `
     <svg xmlns="http://www.w3.org/2000/svg">
       <path
@@ -609,6 +614,7 @@ class StaticMaps {
         stroke-linejoin="round"
         stroke-linecap="round"
         shape-rendering="geometricPrecision"
+        ${dashArrayAttr}
       />
     </svg>
   `

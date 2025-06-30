@@ -282,3 +282,30 @@ export function douglasPeucker(
   if (coords.length < 3) return coords
   return simplify(coords, 0, coords.length - 1)
 }
+
+/**
+ * Validates and normalizes a strokeDasharray option.
+ *
+ * Ensures the value is an array of non-negative numbers.
+ * Throws an error if the validation fails.
+ *
+ * @param {any} strokeDasharray - The strokeDasharray value to validate.
+ * @returns {number[]} The validated strokeDasharray array.
+ * @throws {Error} If strokeDasharray is not an array of non-negative numbers.
+ */
+export function normalizeStrokeDasharray(strokeDasharray: any): number[] {
+  if (strokeDasharray === undefined) {
+    return []
+  }
+  if (
+    Array.isArray(strokeDasharray) &&
+    strokeDasharray.every(
+      (n) => typeof n === "number" && n >= 0 && Number.isFinite(n)
+    )
+  ) {
+    return strokeDasharray
+  }
+  throw new Error(
+    "Invalid strokeDasharray: must be an array of non-negative finite numbers"
+  )
+}

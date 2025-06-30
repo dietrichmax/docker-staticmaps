@@ -1,7 +1,7 @@
 import { Coordinate } from "../../types/types"
 
 /**
- * Represents a circle with a center coordinate, radius, color, fill, and line width.
+ * Represents a circle shape with styling and geometry.
  */
 export default class Circle {
   coord: Coordinate
@@ -9,17 +9,20 @@ export default class Circle {
   color: string
   fill: string
   width: number
+  strokeDasharray?: number[] 
+
 
   /**
-   * Creates a new Circle instance with the provided options.
+   * Creates a new Circle instance.
    *
-   * @param options - An object containing the circle's properties.
-   * @param options.coord - The center coordinate of the circle as [longitude, latitude].
-   * @param options.radius - The radius of the circle in meters.
-   * @param options.color - The color of the circle's outline (default: "#000000BB").
-   * @param options.fill - The fill color of the circle (default: "#AA0000BB").
-   * @param options.width - The width of the circle's outline in pixels (default: 3).
-   * @method extent - asdasd.
+   * @param {Object} options - Configuration options for the circle.
+   * @param {Coordinate} options.coord - Center coordinate of the circle as [longitude, latitude].
+   * @param {number} options.radius - Radius of the circle in meters.
+   * @param {string} [options.color="#000000BB"] - Stroke color of the circle.
+   * @param {string} [options.fill=options.color] - Fill color of the circle.
+   * @param {number} [options.width=3] - Stroke width of the circle outline in pixels.
+   *
+   * @throws {Error} If coord is invalid or radius is not a valid number.
    */
   constructor(options: {
     coord: Coordinate
@@ -27,6 +30,7 @@ export default class Circle {
     color?: string
     fill?: string
     width?: number
+    strokeDasharray?: number[]
   }) {
     this.coord = options.coord
     this.radius = Number(options.radius)
@@ -43,12 +47,9 @@ export default class Circle {
   }
 
   /**
-   * Calculates the bounding box coordinates for the circle.
+   * Calculates the bounding box of the circle.
    *
-   * The bounding box is represented as a tuple in the format:
-   * (min_lon, min_lat, max_lon, max_lat).
-   *
-   * @returns A tuple representing the bounding box: [minLon, minLat, maxLon, maxLat].
+   * @returns {[number, number, number, number]} Bounding box as [minLon, minLat, maxLon, maxLat].
    */
   extent(): [number, number, number, number] {
     const [lon, lat] = this.coord
