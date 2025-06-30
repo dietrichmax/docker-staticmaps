@@ -86,13 +86,7 @@ describe("StaticMaps", () => {
       zoomRange: { min: 1, max: 3 },
       // other options
     })
-
-    // Add some features with large extents or none at all
-    // Call calculateZoom, expect 1
-    console.log("Map extents:", map.determineExtent())
-    console.log("Zoom range:", map.zoomRange)
     const zoom = map.calculateZoom()
-    console.log("Calculated zoom:", zoom)
     expect(zoom).toBe(1)
   })
 
