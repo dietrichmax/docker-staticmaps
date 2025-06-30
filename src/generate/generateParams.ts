@@ -90,17 +90,20 @@ const SHAPE_DEFAULTS: Record<ShapeType, Feature> = {
     weight: 5, // Line thickness
     color: "blue", // Stroke color
     fill: "", // No fill for lines
+    strokeDasharray: [], // Default: solid line (empty dash array)
   },
   polygon: {
     weight: 3, // Border thickness
     color: "#4874db", // Border color
     fill: "", // No fill by default
+    strokeDasharray: [], // Default: solid line (empty dash array)
   },
   circle: {
     color: "#4874db", // Border color
     width: 3, // Border width (stroke width)
     fill: "", // No fill by default
     radius: 10, // Radius in pixels
+    strokeDasharray: [], // Default: solid line (empty dash array)
   },
   markers: {
     img: "", // Marker image URL or base64 data
@@ -318,11 +321,12 @@ export function parseMultipleShapes(
  * The function scans each string in `items` for keys specified in `allowedKeys`.
  * If a string starts with a key followed by ":", its value is decoded and added to
  * the `extracted` object. Values for known color keys are validated and normalized,
- * numeric keys are parsed as numbers, and others are stored as strings.
+ * numeric keys are parsed as numbers, and the special key `strokeDasharray` is parsed
+ * as an array of numbers from a comma-separated string.
  * Strings that don't match any allowed key prefix are collected as coordinate strings.
  *
  * @param {string[]} items - Array of string items, e.g. ["color:red", "weight:5", "12.34,56.78"]
- * @param {string[]} allowedKeys - List of keys to extract, e.g. ["color", "weight", "radius"]
+ * @param {string[]} allowedKeys - List of keys to extract, e.g. ["color", "weight", "radius", "strokeDasharray"]
  * @returns {{ extracted: Record<string, any>, coordinates: string[] }} An object containing
  *          `extracted` key-value pairs for recognized parameters, and `coordinates` with
  *          remaining strings treated as coordinate values.
@@ -337,16 +341,19 @@ export function extractParams(
   const allowedKeySet = new Set(allowedKeys)
 
   for (const item of items) {
-    let foundKey = false
+    let matched = false
 
     for (const key of allowedKeySet) {
       const prefix = `${key}:`
-
       if (item.startsWith(prefix)) {
         const rawValue = decodeURIComponent(item.slice(prefix.length))
-        logger.debug(`Extracted param "${key}": ${rawValue}`)
 
-        if (COLOR_KEYS.has(key)) {
+        if (key === "strokeDasharray") {
+          extracted[key] = rawValue
+            .split(",")
+            .map((v) => Number(v.trim()))
+            .filter((n) => !isNaN(n))
+        } else if (COLOR_KEYS.has(key)) {
           extracted[key] = ALLOWED_COLORS.has(rawValue.toLowerCase())
             ? rawValue.toLowerCase()
             : `#${rawValue}`
@@ -357,12 +364,12 @@ export function extractParams(
           extracted[key] = rawValue
         }
 
-        foundKey = true
+        matched = true
         break
       }
     }
 
-    if (!foundKey) {
+    if (!matched) {
       coordinates.push(item)
     }
   }

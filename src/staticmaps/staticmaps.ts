@@ -581,16 +581,21 @@ class StaticMaps {
 
     let pointsToUse: Coordinate[]
 
-    if (line.type === "polygon") {
-      // No smoothing for polygons!
-      pointsToUse = rawPixels
-    } else {
-      // Smooth only middle points of polylines
+  if (line.type === "polygon") {
+    // No smoothing for polygons!
+    pointsToUse = rawPixels
+  } else {
+    if (rawPixels.length === 2) {
+      // Exactly two points -> smoothing
+      // Smooth only middle points of polylines with more than two points
       const simplified = douglasPeucker(rawPixels, 2)
       const smoothedPoints = chaikinSmooth(simplified as Coordinate[], 2)
 
       pointsToUse = [...smoothedPoints]
+    } else {
+      pointsToUse = rawPixels
     }
+  }
 
     const d =
       `M${pointsToUse[0][0]},${pointsToUse[0][1]} ` +
@@ -598,6 +603,11 @@ class StaticMaps {
         .slice(1)
         .map(([x, y]) => `L${x},${y}`)
         .join(" ")
+
+    // Compose stroke-dasharray attribute if provided
+    const dashArrayAttr = Array.isArray(line.strokeDasharray) && line.strokeDasharray.length > 0
+      ? `stroke-dasharray="${line.strokeDasharray.join(",")}"`
+      : ""
 
     return `
     <svg xmlns="http://www.w3.org/2000/svg">
@@ -609,6 +619,7 @@ class StaticMaps {
         stroke-linejoin="round"
         stroke-linecap="round"
         shape-rendering="geometricPrecision"
+        ${dashArrayAttr}
       />
     </svg>
   `

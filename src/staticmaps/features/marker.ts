@@ -1,7 +1,7 @@
 import { IconOptions, Coordinate } from "../../types/types"
 
 /**
- * Class to handle icon operations.
+ * Represents an icon to be rendered at a specific coordinate with optional image and sizing settings.
  */
 export default class Icon {
   coord?: Coordinate
@@ -17,6 +17,21 @@ export default class Icon {
   offset: Coordinate
   imgData?: string
 
+  /**
+   * Creates a new Icon instance.
+   *
+   * @param {IconOptions} [options={}] - Configuration options for the icon.
+   * @param {Coordinate} [options.coord] - Geographic coordinate ([lon, lat]) where the icon will be placed.
+   * @param {string} [options.img] - URL or path to the image used for the icon.
+   * @param {number} [options.height] - Natural image height in pixels.
+   * @param {number} [options.width] - Natural image width in pixels.
+   * @param {string} [options.color="#d9534f"] - Fallback color used for the icon.
+   * @param {number} [options.drawWidth] - Rendered width in pixels.
+   * @param {number} [options.drawHeight] - Rendered height in pixels.
+   * @param {string} [options.resizeMode="cover"] - Resize mode for image rendering, e.g., "cover" or "contain".
+   * @param {number} [options.offsetX] - Horizontal offset from the icon anchor.
+   * @param {number} [options.offsetY] - Vertical offset from the icon anchor.
+   */
   constructor(options: IconOptions = {}) {
     this.coord = options.coord
     this.img = options.img
@@ -55,6 +70,12 @@ export default class Icon {
     this.offset = [this.offsetX, this.offsetY]
   }
 
+  /**
+   * Updates the intrinsic size of the icon and adjusts draw dimensions if necessary.
+   *
+   * @param {number} width - New intrinsic width of the icon.
+   * @param {number} height - New intrinsic height of the icon.
+   */
   setSize(width: number, height: number): void {
     this.width = Number(width)
     this.height = Number(height)
@@ -69,10 +90,20 @@ export default class Icon {
     }
   }
 
+  /**
+   * Sets the image data to be used for rendering (e.g., base64 encoded image).
+   *
+   * @param {string} img - Image data as a base64 string or binary string.
+   */
   set(img: string): void {
     this.imgData = img
   }
 
+  /**
+   * Calculates the bounding box of the polyline or polygon.
+   *
+   * @returns {[number, number, number, number]} Bounding box as [minLon, minLat, maxLon, maxLat].
+   */
   extentPx(): [number, number, number, number] {
     return [
       this.offset[0],

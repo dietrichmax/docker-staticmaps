@@ -81,8 +81,8 @@ describe("Polyline class", () => {
 
     const poly = new Polyline({ coords })
 
-    // It should call createGeodesicLine twice: first ignored, second returns geodesicCoords
-    expect(spy).toHaveBeenCalledTimes(2)
+    // It should call createGeodesicLine once
+    expect(spy).toHaveBeenCalledTimes(1)
     expect(poly.coords).toBe(geodesicCoords)
   })
 

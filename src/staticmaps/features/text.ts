@@ -1,7 +1,8 @@
 import { TextOptions, Coordinate } from "../../types/types"
 
 /**
- * Class to handle Text operations.
+ * Represents a text label to be rendered at a specific geographic coordinate.
+ * Includes support for styling such as font size, color, anchor alignment, and pixel offsets.
  */
 export default class Text {
   coord?: Coordinate
@@ -17,8 +18,19 @@ export default class Text {
   public readonly offset: Coordinate
 
   /**
-   * Constructor for the Text class.
-   * @param options - Options for the text including coordinate, text content, color, width, fill, size, font, anchor, and offsets.
+   * Creates a new Text instance.
+   *
+   * @param {TextOptions} [options={}] - Configuration options for the text label.
+   * @param {Coordinate} [options.coord] - Geographic coordinate ([lon, lat]) for the label.
+   * @param {string} [options.text] - Text content to render.
+   * @param {string} [options.color="#000000BB"] - Stroke (outline) color for the text.
+   * @param {string|number} [options.width="1px"] - Stroke width as a string or number. If a number, it will be converted to a string in "px".
+   * @param {string} [options.fill] - Fill color for the text (defaults to `color` if not set).
+   * @param {number} [options.size=12] - Font size in pixels.
+   * @param {string} [options.font="Arial"] - Font family name.
+   * @param {"start"|"middle"|"end"} [options.anchor="start"] - Text alignment relative to the coordinate.
+   * @param {number} [options.offsetX=0] - Horizontal offset in pixels from the anchor point.
+   * @param {number} [options.offsetY=0] - Vertical offset in pixels from the anchor point.
    */
   constructor(options: TextOptions = {}) {
     this.coord = options.coord

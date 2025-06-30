@@ -86,6 +86,7 @@ export interface PolylineOptions {
   color?: string // Line color (default: "#000000BB")
   fill?: string // Fill color (optional)
   width?: number // Line width in pixels (default: 3)
+  strokeDasharray?: number[] // Optional dash pattern for the line
 }
 
 /**
@@ -96,6 +97,7 @@ export interface MultiPolygonOptions {
   color?: string // Stroke color
   fill?: string // Whether to fill the polygon
   width?: number // Border width
+  strokeDasharray?: number[] // Optional dash pattern for the line
 }
 
 /**
