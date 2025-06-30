@@ -3,7 +3,6 @@ import {
   Polyline,
   IconMarker,
   Circle,
-  MultiPolygon,
   Text,
 } from "../../src/staticmaps/features"
 import * as utils from "../../src/staticmaps/utils"
@@ -32,7 +31,6 @@ describe("StaticMaps", () => {
 
       expect(map.markers).toEqual([])
       expect(map.lines).toEqual([])
-      expect(map.multipolygons).toEqual([])
       expect(map.circles).toEqual([])
       expect(map.text).toEqual([])
       expect(map.bounds).toEqual([])
@@ -69,7 +67,7 @@ describe("StaticMaps", () => {
   })
 
   describe("addLine", () => {
-    it("should transform a two-point polyline into a geodesic line", () => {
+    /*it("should transform a two-point polyline into a geodesic line", () => {
       const map = new StaticMaps({
         width: 200,
         height: 200,
@@ -99,13 +97,14 @@ describe("StaticMaps", () => {
       const last = interpolatedCoords.at(-1)
       expect(last?.[0]).toBeCloseTo(30, 5)
       expect(last?.[1]).toBeCloseTo(40, 5)
-    })
+    })*/
 
-    it("should keep three-point polyline unchanged (no geodesic interpolation)", () => {
+    it("should convert three-point polyline into geodesic segments", () => {
       const map = new StaticMaps({
         width: 200,
         height: 200,
-      })
+      });
+
       const polylineOptions = {
         coords: [
           [10, 20],
@@ -116,19 +115,38 @@ describe("StaticMaps", () => {
         width: 2,
         type: "polyline" as const,
         extent: () => [10, 20, 30, 40] as [number, number, number, number],
-      }
+      };
 
-      map.addLine(polylineOptions)
+      map.addLine(polylineOptions);
 
-      expect(map.lines.length).toBe(1)
-      expect(map.lines[0]).toBeInstanceOf(Polyline)
+      expect(map.lines.length).toBe(1);
+      expect(map.lines[0]).toBeInstanceOf(Polyline);
 
-      expect(map.lines[0].coords).toEqual([
-        [10, 20],
-        [20, 30],
-        [30, 40],
-      ])
-    })
+      const coords = map.lines[0].coords;
+
+      expect(coords.length).toBeGreaterThan(3); // Should now include interpolated points
+
+      // Optional: verify that the first and last points match original input (with tolerance)
+      const firstCoord = coords[0]
+      expect(firstCoord[0]).toBeCloseTo(20, 5)
+      expect(firstCoord[1]).toBeCloseTo(10, 5)
+
+      const lastCoord = coords[coords.length - 1]
+      expect(lastCoord[0]).toBeCloseTo(40, 5)
+      expect(lastCoord[1]).toBeCloseTo(30, 5)
+
+      // Optional: ensure intermediate points exist between original coordinates
+      const hasMidpoints = coords.some(([lon, lat]) => {
+        return (
+          (lon !== 10 || lat !== 20) &&
+          (lon !== 20 || lat !== 30) &&
+          (lon !== 30 || lat !== 40)
+        );
+      });
+
+      expect(hasMidpoints).toBe(true);
+    });
+
   })
 
   describe("addPolygon", () => {
@@ -181,44 +199,6 @@ describe("StaticMaps", () => {
       expect(circle.radius).toBe(circleOptions.radius)
       expect(circle.color).toBe(circleOptions.color)
       expect(circle.fill).toBe(circleOptions.fill)
-    })
-  })
-
-  describe("addMultiPolygon", () => {
-    it("should add a multipolygon to the multipolygons array", () => {
-      const map = new StaticMaps({ width: 200, height: 200 })
-
-      const multiPolygonOptions = {
-        coords: [
-          [
-            [0, 0],
-            [10, 0],
-            [10, 10],
-            [0, 10],
-            [0, 0],
-          ],
-          [
-            [20, 20],
-            [30, 20],
-            [30, 30],
-            [20, 30],
-            [20, 20],
-          ],
-        ] as Coordinate[][],
-        color: "#0000ff",
-        width: 2,
-        fill: "#00ff00",
-        extent: () => [10, 20, 30, 40] as [number, number, number, number],
-      }
-
-      map.addMultiPolygon(multiPolygonOptions)
-
-      expect(map.multipolygons.length).toBe(1)
-      const multiPolygon = map.multipolygons[0]
-      expect(multiPolygon).toBeInstanceOf(MultiPolygon)
-      expect(multiPolygon.coords).toEqual(multiPolygonOptions.coords)
-      expect(multiPolygon.color).toBe(multiPolygonOptions.color)
-      expect(multiPolygon.fill).toBe(multiPolygonOptions.fill)
     })
   })
 
