@@ -90,17 +90,6 @@ export interface PolylineOptions {
 }
 
 /**
- * Options for rendering multipolygons.
- */
-export interface MultiPolygonOptions {
-  coords: number[][][] // Polygon Coordinate: [ [ [lon, lat], ... ], ... ]
-  color?: string // Stroke color
-  fill?: string // Whether to fill the polygon
-  width?: number // Border width
-  strokeDasharray?: number[] // Optional dash pattern for the line
-}
-
-/**
  * Configuration options for icons (markers).
  */
 export interface IconOptions {

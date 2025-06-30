@@ -3,7 +3,6 @@ import {
   Image,
   IconMarker,
   Polyline,
-  MultiPolygon,
   Circle,
   Text,
   Bound,
@@ -49,7 +48,6 @@ class StaticMaps {
   zoomRange: { min: number; max: number }
   markers: IconMarker[]
   lines: Polyline[]
-  multipolygons: MultiPolygon[]
   circles: Circle[]
   text: Text[]
   bounds: Bound[]
@@ -105,7 +103,6 @@ class StaticMaps {
     // Features
     this.markers = []
     this.lines = []
-    this.multipolygons = []
     this.circles = []
     this.text = []
     this.bounds = []
@@ -154,16 +151,6 @@ class StaticMaps {
   }
 
   /**
-   * Adds a multipolygon to the map.
-   *
-   * @param {MultiPolygon} options - Options object for creating the multipolygon.
-   * @returns {void}
-   */
-  addMultiPolygon(options: MultiPolygon): void {
-    this.multipolygons.push(new MultiPolygon(options))
-  }
-
-  /**
    * Adds a circle to the map.
    *
    * @param {Circle} options - Options object for creating the circle.
@@ -204,7 +191,6 @@ class StaticMaps {
     if (
       !this.lines &&
       !this.markers &&
-      !this.multipolygons &&
       !this.circles &&
       !(center && zoom)
     ) {
@@ -272,12 +258,6 @@ class StaticMaps {
     if (this.lines.length) {
       this.lines.forEach((line) => {
         extents.push(line.extent())
-      })
-    }
-
-    if (this.multipolygons.length) {
-      this.multipolygons.forEach((multipolygon) => {
-        extents.push(multipolygon.extent())
       })
     }
 
@@ -528,44 +508,6 @@ class StaticMaps {
   }
 
   /**
-   * Renders a MultiPolygon to SVG.
-   *
-   * @param {MultiPolygon} multipolygon - Configuration object for rendering the MultiPolygon.
-   * @returns {string} - SVG markup for the rendered MultiPolygon.
-   */
-  multiPolygonToSVG(multipolygon: any): string {
-    const shapeArrays = multipolygon.coords.map((shape: any) =>
-      shape.map((coord: Coordinate) => [
-        this.xToPx(lonToX(coord[0], this.zoom)),
-        this.yToPx(latToY(coord[1], this.zoom)),
-      ])
-    )
-
-    const pathArrays = shapeArrays.map((points: any) => {
-      const startPoint = points.shift() // Get the first point to start the path
-
-      if (!startPoint) {
-        throw Error("No start point for multiPolygon")
-      }
-
-      const pathParts = [
-        `M ${startPoint[0]} ${startPoint[1]}`, // Move to the first point
-        ...points.map((p: Coordinate) => `L ${p[0]} ${p[1]}`), // Line to the remaining points
-        "Z", // Close the path
-      ]
-
-      return pathParts.join(" ")
-    })
-
-    return `<path
-      d="${pathArrays.join(" ")}"
-      style="fill-rule: inherit;"
-      stroke="${multipolygon.color}"
-      fill="${multipolygon.fill ? multipolygon.fill : "none"}"
-      stroke-width="${multipolygon.width}"/>`
-  }
-
-  /**
    * Draws a line on the map using SVG.
    *
    * @param {Line} line - Object containing line properties and coordinates.
@@ -717,7 +659,7 @@ class StaticMaps {
   /**
    * Draws all features to the basemap.
    *
-   * This method draws lines, multipolygons, markers, text, and circles to the basemap in sequence.
+   * This method draws lines, markers, text, and circles to the basemap in sequence.
    */
   async drawFeatures(): Promise<string> {
     // Collect the parts that will make up the final SVG
@@ -726,11 +668,6 @@ class StaticMaps {
     // Draw each feature and append to the SVG content
     if (this.lines) {
       svgContent += await this.drawSVG(this.lines, (c) => this.lineToSVG(c))
-    }
-    if (this.multipolygons) {
-      svgContent += await this.drawSVG(this.multipolygons, (c) =>
-        this.multiPolygonToSVG(c)
-      )
     }
     if (this.text) {
       svgContent += await this.drawSVG(this.text, (c) => this.textToSVG(c))
