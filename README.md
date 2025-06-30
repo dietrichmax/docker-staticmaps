@@ -219,14 +219,14 @@ Note: Polylines with only two coordinates are rendered as geodesic line.
 
 <details>
   <summary>Regular Coordinates example with <code>no zoom</code>, <code>weight:6</code>, <code>color:0000ff</code></summary>
-  <p>http://localhost:3000/api/staticmaps?width=1200&height=800&zoom=4&format=png&basemap=national-geographic&polyline=weight:6|color:red|37.2159,-7.0050|28.0997,-17.1092|24.0617,-74.4767|24.2000,-74.5000|23.1167,-82.3833|19.0000,-72.7000</p>
+  <p>http://localhost:3000/api/staticmaps?width=1200&height=800&format=png&basemap=national-geographic&polyline=weight:6|color:red|37.2159,-7.0050|28.0997,-17.1092|24.0617,-74.4767|24.2000,-74.5000|23.1167,-82.3833|19.0000,-72.7000</p>
 </details>
 
 ![Regular Coordinates Example](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/polylinepath.png)
 
 <details>
   <summary>Multiple Encoded Polylines</summary>
-  <p>http://localhost:3000/api/staticmaps?width=1200&height=800&zoom=4&format=png&basemap=national-geographic&polyline=weight:6|color:red|kvcbFfdwi@fosv@fnt|@ntsWzqc}Ik_ZrpCrqrErubo@j`cXsgbz@&polyline=weight:6|color:red|strokeDasharray:10,15|_}}rB~evzLs}iwBseqtG?_{jmBfddHc~_L</p>
+  <p>http://localhost:3000/api/staticmaps?width=1200&height=800&format=png&basemap=national-geographic&polyline=weight:6|color:red|kvcbFfdwi@fosv@fnt|@ntsWzqc}Ik_ZrpCrqrErubo@j`cXsgbz@&polyline=weight:6|color:red|strokeDasharray:10,15|_}}rB~evzLs}iwBseqtG?_{jmBfddHc~_L</p>
 </details>
 
 ![Multiple Encoded Polylines Example](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/multipleEncodedPolylines.png)

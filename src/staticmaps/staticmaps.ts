@@ -581,16 +581,21 @@ class StaticMaps {
 
     let pointsToUse: Coordinate[]
 
-    if (line.type === "polygon") {
-      // No smoothing for polygons!
-      pointsToUse = rawPixels
-    } else {
-      // Smooth only middle points of polylines
+  if (line.type === "polygon") {
+    // No smoothing for polygons!
+    pointsToUse = rawPixels
+  } else {
+    if (rawPixels.length === 2) {
+      // Exactly two points -> smoothing
+      // Smooth only middle points of polylines with more than two points
       const simplified = douglasPeucker(rawPixels, 2)
       const smoothedPoints = chaikinSmooth(simplified as Coordinate[], 2)
 
       pointsToUse = [...smoothedPoints]
+    } else {
+      pointsToUse = rawPixels
     }
+  }
 
     const d =
       `M${pointsToUse[0][0]},${pointsToUse[0][1]} ` +
