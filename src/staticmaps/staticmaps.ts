@@ -236,7 +236,7 @@ class StaticMaps {
   /**
    * Calculates the bounding extent [minLon, minLat, maxLon, maxLat] that covers
    * all map features including bounds, lines, circles, markers, and optionally the center.
-   * 
+   *
    * When a zoom level is provided, marker extents are expanded in geographic coordinates
    * based on their pixel extents at that zoom, accounting for marker icon sizes.
    *

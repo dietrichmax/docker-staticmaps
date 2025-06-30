@@ -3,6 +3,7 @@ import {
   normalizeIp,
   isDev,
   measureTextWidth,
+  formatBytes,
 } from "../../src/utils/helpers"
 
 describe("truncate", () => {
@@ -71,5 +72,39 @@ describe("measureTextWidth", () => {
     const small = measureTextWidth("Test", 10)
     const large = measureTextWidth("Test", 30)
     expect(large).toBeGreaterThan(small)
+  })
+})
+
+describe("formatBytes", () => {
+  it("returns '0 Bytes' for 0", () => {
+    expect(formatBytes(0)).toBe("0 Bytes")
+  })
+
+  it("formats bytes less than 1 KB correctly", () => {
+    expect(formatBytes(512)).toBe("512 Bytes")
+  })
+
+  it("formats values in KB correctly", () => {
+    expect(formatBytes(1024)).toBe("1 KB")
+    expect(formatBytes(1234)).toBe("1.21 KB")
+  })
+
+  it("formats values in MB correctly", () => {
+    expect(formatBytes(1048576)).toBe("1 MB")
+    expect(formatBytes(1572864)).toBe("1.5 MB")
+  })
+
+  it("formats values in GB correctly", () => {
+    expect(formatBytes(1073741824)).toBe("1 GB")
+    expect(formatBytes(1610612736)).toBe("1.5 GB")
+  })
+
+  it("formats values in TB correctly", () => {
+    expect(formatBytes(1099511627776)).toBe("1 TB")
+    expect(formatBytes(1649267441664)).toBe("1.5 TB")
+  })
+
+  it("rounds values to 2 decimal places", () => {
+    expect(formatBytes(123456789)).toBe("117.74 MB")
   })
 })

@@ -80,13 +80,12 @@ export default class Icon {
     this.width = Number(width)
     this.height = Number(height)
 
-    // Only update drawWidth if current drawWidth is NaN or 0
     if (!Number.isFinite(this.drawWidth) || this.drawWidth === 0) {
-      this.drawWidth = this.width ?? 0
+      this.drawWidth = Number.isFinite(this.width) ? this.width : 0
     }
 
     if (!Number.isFinite(this.drawHeight) || this.drawHeight === 0) {
-      this.drawHeight = this.height ?? 0
+      this.drawHeight = Number.isFinite(this.height) ? this.height : 0
     }
   }
 

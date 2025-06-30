@@ -54,36 +54,6 @@ describe("Icon class", () => {
     expect(icon.offset).toEqual([10, 40])
   })
 
-  test("setSize updates width and height and drawWidth/drawHeight if NaN", () => {
-    const icon = new IconMarker({
-      width: 10,
-      height: 15,
-      drawWidth: NaN,
-      drawHeight: NaN,
-    })
-
-    icon.setSize(10, 15)
-    expect(icon.width).toBe(10)
-    expect(icon.height).toBe(15)
-    expect(icon.drawWidth).toBe(10)
-    expect(icon.drawHeight).toBe(15)
-  })
-
-  test("setSize updates width and height but does not overwrite drawWidth/drawHeight if not NaN", () => {
-    const icon = new IconMarker({
-      width: 10,
-      height: 15,
-      drawWidth: 12,
-      drawHeight: 18,
-    })
-
-    icon.setSize(50, 60)
-    expect(icon.width).toBe(50)
-    expect(icon.height).toBe(60)
-    expect(icon.drawWidth).toBe(12)
-    expect(icon.drawHeight).toBe(18)
-  })
-
   test("set sets imgData", () => {
     const icon = new IconMarker()
     icon.set("someImageData")
@@ -125,5 +95,57 @@ describe("Icon class", () => {
       0 - 5, // (width ?? 0) - offsetX
       7,
     ])
+  })
+})
+
+describe("Marker.setSize", () => {
+  let marker: IconMarker
+
+  beforeEach(() => {
+    marker = new IconMarker()
+    marker.width = 0
+    marker.height = 0
+    marker.drawWidth = NaN
+    marker.drawHeight = NaN
+  })
+
+  it("sets width and height as numbers", () => {
+    marker.setSize(100, 50)
+    expect(marker.width).toBe(100)
+    expect(marker.height).toBe(50)
+  })
+
+  it("updates drawWidth and drawHeight if they are NaN", () => {
+    marker.drawWidth = NaN
+    marker.drawHeight = NaN
+    marker.setSize(120, 80)
+    expect(marker.drawWidth).toBe(120)
+    expect(marker.drawHeight).toBe(80)
+  })
+
+  it("updates drawWidth and drawHeight if they are zero", () => {
+    marker.drawWidth = 0
+    marker.drawHeight = 0
+    marker.setSize(90, 60)
+    expect(marker.drawWidth).toBe(90)
+    expect(marker.drawHeight).toBe(60)
+  })
+
+  it("does not update drawWidth or drawHeight if they are finite and non-zero", () => {
+    marker.drawWidth = 200
+    marker.drawHeight = 100
+    marker.setSize(150, 75)
+    expect(marker.drawWidth).toBe(200)
+    expect(marker.drawHeight).toBe(100)
+  })
+
+  it("handles undefined width or height gracefully", () => {
+    // @ts-ignore testing fallback behavior if width or height is undefined
+    marker.setSize(undefined, undefined)
+    expect(marker.width).toBeNaN()
+    expect(marker.height).toBeNaN()
+    // drawWidth and drawHeight fallback to 0 due to ?? 0
+    expect(marker.drawWidth).toBe(0)
+    expect(marker.drawHeight).toBe(0)
   })
 })
