@@ -67,6 +67,14 @@ export interface MapOptions {
   polyline?: Record<string, unknown>[]
   polygon?: Record<string, unknown>[]
   text?: Record<string, unknown>[]
+  scaleBar?: {
+    enabled: boolean
+    units?: "metric" | "imperial"
+    position?: "bottom-left"
+    color?: string
+    background?: string
+    fontSize?: number
+  }
 }
 
 /**

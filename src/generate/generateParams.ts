@@ -12,6 +12,7 @@ import {
   MapOptions,
 } from "../types/types"
 import logger from "../utils/logger"
+import { scale } from "pdfkit"
 
 // --- Helpers ---
 
@@ -80,6 +81,9 @@ const DEFAULTS = {
     /** Text content for attribution */
     text: "",
   },
+  scaleBar: {
+    enabled: true
+  }
 }
 
 /**
@@ -177,6 +181,18 @@ export function getMapParams(params: MapParamsInput): MapParamsOutput {
   const rawAttribution = params.attribution
   const attribution = parseAttributionParam(rawAttribution, basemapAttribution)
 
+  const scaleBar =
+    typeof params.scaleBar === "object" && params.scaleBar !== null
+      ? {
+          enabled: params.scaleBar.enabled === true || params.scaleBar.enabled === "true",
+          units: params.scaleBar.units === "imperial" ? "imperial" : "metric",
+          position: params.scaleBar.position || "bottom-right",
+          color: params.scaleBar.color || "#000000",
+          background: params.scaleBar.background || "#ffffff",
+          fontSize: parseInt(params.scaleBar.fontSize || "12", 10),
+        }
+      : undefined
+
   const options: MapOptions = {
     ...DEFAULTS,
     ...(params.width && { width: parseInt(params.width, 10) }),
@@ -208,6 +224,8 @@ export function getMapParams(params: MapParamsInput): MapParamsOutput {
     ...(typeof attribution?.show !== "undefined" || attribution?.text
       ? { attribution }
       : {}),
+
+      ...(scaleBar ? { scaleBar } : {}),
 
     tileUrl,
     center,
