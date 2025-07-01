@@ -1,17 +1,5 @@
-import sharp from "sharp"
 import { Image, IconMarker, Polyline, Circle, Text, Bound } from "./features"
-import {
-  workOnQueue,
-  lonToX,
-  latToY,
-  yToLat,
-  xToLon,
-  meterToPixel,
-  chunk,
-  tileXYToQuadKey,
-  douglasPeucker,
-  chaikinSmooth,
-} from "./utils"
+import { lonToX, latToY, yToLat, xToLon } from "./utils"
 import logger from "../utils/logger"
 import {
   MapOptions,
@@ -19,8 +7,15 @@ import {
   Coordinate,
 } from "src/types/types"
 import { TileManager, TileServerConfig } from "./tilemanager"
-
-const RENDER_CHUNK_SIZE = 1000
+import {
+  lineToSVG,
+  textToSVG,
+  circleToSVG,
+  drawSVG,
+  drawLayer,
+  drawMarkers,
+  loadMarkers,
+} from "./renderer"
 
 class StaticMaps {
   options: MapOptions
@@ -381,63 +376,20 @@ class StaticMaps {
    * @returns {Promise<Array<Object>>} - Promise resolving to an array of drawn tiles.
    */
   async drawLayer(config: any) {
-    if (!config || !config.tileUrl) {
-      // Early return if we shouldn't draw a base layer
-      logger.debug("1")
-      return this.image.draw([])
-    }
-    const xMin = Math.floor(this.centerX - (0.5 * this.width) / this.tileSize)
-    const yMin = Math.floor(this.centerY - (0.5 * this.height) / this.tileSize)
-    const xMax = Math.ceil(this.centerX + (0.5 * this.width) / this.tileSize)
-    const yMax = Math.ceil(this.centerY + (0.5 * this.height) / this.tileSize)
-
-    const result = []
-
-    for (let x = xMin; x < xMax; x++) {
-      for (let y = yMin; y < yMax; y++) {
-        // # x and y may have crossed the date line
-        const maxTile = 2 ** this.zoom
-        const tileX = (x + maxTile) % maxTile
-        let tileY = (y + maxTile) % maxTile
-        if (this.reverseY) tileY = (1 << this.zoom) - tileY - 1
-
-        let tileUrl
-        if (config.tileUrl.includes("{quadkey}")) {
-          const quadKey = tileXYToQuadKey(tileX, tileY, this.zoom)
-          tileUrl = config.tileUrl.replace("{quadkey}", quadKey)
-        } else {
-          tileUrl = config.tileUrl
-            .replace("{z}", this.zoom)
-            .replace("{x}", tileX)
-            .replace("{y}", tileY)
-        }
-
-        if (config.tileSubdomains.length > 0) {
-          // replace subdomain with random domain from tileSubdomains array
-          tileUrl = tileUrl.replace(
-            "{s}",
-            config.tileSubdomains[
-              Math.floor(Math.random() * config.tileSubdomains.length)
-            ]
-          )
-        }
-
-        result.push({
-          url: tileUrl,
-          box: [
-            this.xToPx(x),
-            this.yToPx(y),
-            this.xToPx(x + 1),
-            this.yToPx(y + 1),
-          ],
-        })
-      }
-    }
-
-    const tiles = await this.tileManager.getTiles(result)
-    return this.image.draw(
-      tiles.filter((v: any) => v.success).map((v: any) => v.tile)
-    )
+    return drawLayer({
+      centerX: this.centerX,
+      centerY: this.centerY,
+      width: this.width,
+      height: this.height,
+      tileSize: this.tileSize,
+      zoom: this.zoom,
+      reverseY: this.reverseY,
+      xToPx: this.xToPx.bind(this),
+      yToPx: this.yToPx.bind(this),
+      tileManager: this.tileManager,
+      image: this.image,
+      config,
+    })
   }
 
   /**
@@ -451,18 +403,7 @@ class StaticMaps {
     features: any[],
     svgFunction: (feature: any) => string
   ): Promise<void> {
-    if (!features.length) return
-
-    const baseImage = sharp(this.image.image)
-    const { width, height } = await baseImage.metadata()
-
-    const chunks = chunk(features, RENDER_CHUNK_SIZE).map((chunk) => {
-      const svgContent = chunk.map(svgFunction).join("\n")
-      const svg = `<svg width="${width}px" height="${height}px" version="1.1" xmlns="http://www.w3.org/2000/svg">${svgContent}</svg>`
-      return { input: Buffer.from(svg), top: 0, left: 0 }
-    })
-
-    this.image.image = await baseImage.composite(chunks).toBuffer()
+    this.image.image = await drawSVG(this.image.image, features, svgFunction)
   }
 
   /**
@@ -472,15 +413,12 @@ class StaticMaps {
    * @returns {string} - SVG string representing the circle.
    */
   circleToSVG(circle: Circle): string {
-    if (!Array.isArray(circle.coord) || circle.coord.length !== 2) {
-      throw new Error("Invalid circle: missing or malformed coordinates.")
-    }
-    const lat = circle.coord[1]
-    const r = meterToPixel(circle.radius, this.zoom, lat)
-    const cx = this.xToPx(lonToX(circle.coord[0], this.zoom))
-    const cy = this.yToPx(latToY(lat, this.zoom))
-
-    return `<circle cx="${cx}" cy="${cy}" r="${r}" fill-rule="inherit" stroke="${circle.color}" fill="${circle.fill}" stroke-width="${circle.width}" />`
+    return circleToSVG({
+      circle,
+      zoom: this.zoom,
+      xToPx: this.xToPx.bind(this),
+      yToPx: this.yToPx.bind(this),
+    })
   }
 
   /**
@@ -490,21 +428,12 @@ class StaticMaps {
    * @returns {string} - SVG markup for the rendered text.
    */
   textToSVG(text: Text): string {
-    if (!text.coord) throw Error("No text coords given")
-
-    const x = this.xToPx(lonToX(text.coord[0], this.zoom)) - text.offset[0]
-    const y = this.yToPx(latToY(text.coord[1], this.zoom)) - text.offset[1]
-
-    return `<text
-      x="${x}" y="${y}"
-      fill-rule="inherit"
-      font-family="${text.font}"
-      font-size="${text.size}pt"
-      stroke="${text.color}"
-      fill="${text.fill ?? "none"}"
-      stroke-width="${text.width}"
-      text-anchor="${text.anchor}"
-    >${text.text}</text>`
+    return textToSVG({
+      text,
+      zoom: this.zoom,
+      xToPx: this.xToPx.bind(this),
+      yToPx: this.yToPx.bind(this),
+    })
   }
 
   /**
@@ -513,109 +442,27 @@ class StaticMaps {
    * @param {Line} line - Object containing line properties and coordinates.
    * @returns {string} - SVG string for the line.
    */
-  lineToSVG(line: any): string {
-    const pixels = line.coords.map(([lon, lat]: Coordinate) => [
-      this.xToPx(lonToX(lon, this.zoom)),
-      this.yToPx(latToY(lat, this.zoom)),
-    ])
-
-    if (pixels.length < 2) return ""
-
-    const points =
-      line.type === "polygon"
-        ? pixels
-        : pixels.length === 2
-          ? chaikinSmooth(douglasPeucker(pixels, 2), 2)
-          : pixels
-
-    const d =
-      `M${points[0][0]},${points[0][1]} ` +
-      points
-        .slice(1)
-        .map(([x, y]: [number, number]) => `L${x},${y}`)
-        .join(" ")
-    const dashArray =
-      Array.isArray(line.strokeDasharray) && line.strokeDasharray.length > 0
-        ? `stroke-dasharray="${line.strokeDasharray.join(",")}"`
-        : ""
-
-    return `
-    <svg xmlns="http://www.w3.org/2000/svg">
-      <path
-        d="${d}${line.type === "polygon" ? " Z" : ""}"
-        fill="${line.fill || "none"}"
-        stroke="${line.color}"
-        stroke-width="${line.width}"
-        stroke-linejoin="round"
-        stroke-linecap="round"
-        shape-rendering="geometricPrecision"
-        ${dashArray}
-      />
-    </svg>`
+  lineToSVG(line: Polyline): string {
+    return lineToSVG({
+      line,
+      zoom: this.zoom,
+      xToPx: this.xToPx.bind(this),
+      yToPx: this.yToPx.bind(this),
+    })
   }
 
+  /**
+   * Draws all markers onto the current image.
+   *
+   * @returns {Promise<void>} A promise that resolves once all markers have been drawn.
+   */
   async drawMarkers(): Promise<void> {
-    const queue: Array<() => Promise<void>> = []
-
-    this.markers.forEach((marker) => {
-      queue.push(async () => {
-        if (!marker.coord) throw new Error("No marker coord")
-
-        const top = Math.round(marker.coord[1])
-        const left = Math.round(marker.coord[0])
-
-        if (top < 0 || left < 0 || top > this.height || left > this.width)
-          return
-
-        const markerInstance = await sharp(marker.imgData)
-
-        if (marker.width == null || marker.height == null) {
-          const metadata = await markerInstance.metadata()
-          if (
-            Number.isFinite(metadata.width) &&
-            Number.isFinite(metadata.height)
-          ) {
-            marker.setSize(metadata.width!, metadata.height!)
-          } else {
-            throw new Error(
-              `Cannot detect image size of marker ${marker.img}. Please define manually!`
-            )
-          }
-        }
-
-        if (
-          marker.drawWidth !== marker.width ||
-          marker.drawHeight !== marker.height
-        ) {
-          const validFitModes = new Set<keyof sharp.FitEnum>([
-            "cover",
-            "contain",
-            "fill",
-            "inside",
-            "outside",
-          ])
-          const fitMode: keyof sharp.FitEnum = validFitModes.has(
-            marker.resizeMode as keyof sharp.FitEnum
-          )
-            ? (marker.resizeMode as keyof sharp.FitEnum)
-            : "cover"
-
-          const resizeData: sharp.ResizeOptions = { fit: fitMode }
-          if (marker.drawWidth !== marker.width)
-            resizeData.width = marker.drawWidth
-          if (marker.drawHeight !== marker.height)
-            resizeData.height = marker.drawHeight
-
-          await markerInstance.resize(resizeData)
-        }
-
-        this.image.image = await sharp(this.image.image)
-          .composite([{ input: await markerInstance.toBuffer(), top, left }])
-          .toBuffer()
-      })
-    })
-
-    await workOnQueue(queue)
+    this.image.image = await drawMarkers(
+      this.image.image,
+      this.markers,
+      this.width,
+      this.height
+    )
   }
 
   /**
@@ -645,75 +492,18 @@ class StaticMaps {
     return svgContent
   }
 
+  /**
+   * Loads marker icons and updates marker objects.
+   *
+   * @returns {Promise<boolean>} Resolves to true when markers are loaded successfully.
+   */
   async loadMarker(): Promise<boolean> {
-    if (this.markers.length === 0) {
-      return true
-    }
-
-    type Icon = {
-      file: string
-      height: number
-      width: number
-      color: string
-      data?: Buffer
-    }
-
-    const icons: Icon[] = this.markers.map((m) => ({
-      file: m.img || "",
-      height: m.height ?? 20,
-      width: m.width ?? 20,
-      color: m.color || "#d9534f",
-    }))
-
-    // Helper to check if a string is a valid URL
-    const isValidUrl = (str: string): boolean => {
-      try {
-        new URL(str)
-        return true
-      } catch {
-        return false
-      }
-    }
-
-    // Load each icon (either from remote URL or generate SVG)
-    await Promise.all(
-      icons.map(async (icon) => {
-        if (isValidUrl(icon.file)) {
-          const response = await fetch(icon.file, { method: "GET" })
-          if (!response.ok)
-            throw new Error(`Failed to fetch image from ${icon.file}`)
-          const arrayBuffer = await response.arrayBuffer()
-          icon.data = await sharp(Buffer.from(arrayBuffer))
-            .resize(icon.width, icon.height)
-            .toBuffer()
-        } else {
-          const svgString = `
-          <svg xmlns="http://www.w3.org/2000/svg" width="${icon.width}" height="${icon.height}" viewBox="0 0 24 24">
-            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="${icon.color}"/>
-            <circle cx="12" cy="9" r="2.5" fill="white"/>
-          </svg>
-        `
-          icon.data = await sharp(Buffer.from(svgString)).toBuffer()
-        }
-      })
+    return loadMarkers(
+      this.markers,
+      this.zoom,
+      this.xToPx.bind(this),
+      this.yToPx.bind(this)
     )
-
-    // After loading all icons, assign them to markers with offset and coordinate adjustment
-    this.markers.forEach((marker: any, index: number) => {
-      const icon = icons[index]
-      marker.offset = [icon.width / 2, icon.height]
-
-      marker.coord = [
-        this.xToPx(lonToX(marker.coord[0], this.zoom)) - marker.offset[0],
-        this.yToPx(latToY(marker.coord[1], this.zoom)) - marker.offset[1],
-      ]
-
-      if (icon.data) {
-        marker.set(icon.data)
-      }
-    })
-
-    return true
   }
 }
 

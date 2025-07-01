@@ -161,7 +161,7 @@ describe("StaticMaps", () => {
 
   it("textToSVG throws if no coord", () => {
     const map = new StaticMaps(defaultOptions)
-    expect(() => map.textToSVG({} as any)).toThrow("No text coords given")
+    expect(() => map.textToSVG({} as any)).toThrow("No text coordinates given")
   })
 
   it("render throws if empty map and no center/zoom", async () => {
