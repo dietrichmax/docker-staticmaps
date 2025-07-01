@@ -1,4 +1,5 @@
 import { TextOptions, Coordinate } from "../../types/types"
+import { lonToX, latToY, xToLon, yToLat } from "../utils"
 
 /**
  * Represents a text label to be rendered at a specific geographic coordinate.
@@ -51,5 +52,42 @@ export default class Text {
       ? Number(options.offsetY)
       : 0
     this.offset = [this.offsetX, this.offsetY]
+  }
+
+  /**
+   * Calculates the bounding box of the text.
+   *
+   * @returns {[number, number, number, number]} Bounding box as [minLon, minLat, maxLon, maxLat].
+   */
+  extent(zoom?: number, tileSize = 256): [number, number, number, number] {
+    if (!this.coord) throw new Error("No coordinate defined for this text feature.")
+    if (!zoom) return [this.coord[0], this.coord[1], this.coord[0], this.coord[1]]
+
+    const [lon, lat] = this.coord
+    const x = lonToX(lon, zoom)
+    const y = latToY(lat, zoom)
+
+    const offsetX = this.offsetX ?? 0
+    const offsetY = this.offsetY ?? 0
+
+    const fontSize = this.size ?? 20
+    const textLength = this.text?.length ?? 10
+
+    // Rough width/height estimate in pixels
+    const estWidthPx = textLength * (fontSize * 0.6)
+    const estHeightPx = fontSize
+
+    const minX = x + offsetX / tileSize
+    const minY = y - offsetY / tileSize
+
+    const maxX = minX + estWidthPx / tileSize
+    const maxY = minY - estHeightPx / tileSize
+
+    return [
+      Math.min(xToLon(minX, zoom), xToLon(maxX, zoom)),
+      Math.min(yToLat(minY, zoom), yToLat(maxY, zoom)),
+      Math.max(xToLon(minX, zoom), xToLon(maxX, zoom)),
+      Math.max(yToLat(minY, zoom), yToLat(maxY, zoom)),
+    ]
   }
 }

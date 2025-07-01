@@ -262,6 +262,8 @@ class StaticMaps {
       collection.forEach((item) => addExtent(item.extent()))
     )
 
+    this.text.forEach((text) => addExtent(text.extent(zoom, this.tileSize)))
+
     // Add marker extents
     for (const marker of this.markers) {
       if (!marker.coord) throw Error("Marker coordinates undefined")
@@ -494,15 +496,15 @@ class StaticMaps {
     const y = this.yToPx(latToY(text.coord[1], this.zoom)) - text.offset[1]
 
     return `<text
-    x="${x}" y="${y}"
-    fill-rule="inherit"
-    font-family="${text.font}"
-    font-size="${text.size}pt"
-    stroke="${text.color}"
-    fill="${text.fill ?? "none"}"
-    stroke-width="${text.width}"
-    text-anchor="${text.anchor}"
-  >${text.text}</text>`
+      x="${x}" y="${y}"
+      fill-rule="inherit"
+      font-family="${text.font}"
+      font-size="${text.size}pt"
+      stroke="${text.color}"
+      fill="${text.fill ?? "none"}"
+      stroke-width="${text.width}"
+      text-anchor="${text.anchor}"
+    >${text.text}</text>`
   }
 
   /**

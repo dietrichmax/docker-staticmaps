@@ -346,7 +346,7 @@ text=textStyle|textCoord
 **Example**: Text "Hello World" with custom styling.
 
 ```
-http://localhost:3000/api/staticmaps?width=600&height=600&zoom=2&center=2.3522,48.8566&text=text:Hello%20World|size:20|offsetX:-12|offsetY:22|48.8566,2.3522
+http://localhost:3000/api/staticmaps?width=600&height=600&text=text:Hello%20World|size:20|48.8566,2.3522
 ```
 
 ![Text Example](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/text.png)
