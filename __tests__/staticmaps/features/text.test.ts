@@ -57,7 +57,9 @@ describe("Text class", () => {
 
   test("extent throws if coord is undefined", () => {
     const text = new Text()
-    expect(() => text.extent(5)).toThrow("No coordinate defined for this text feature.")
+    expect(() => text.extent(5)).toThrow(
+      "No coordinate defined for this text feature."
+    )
   })
 
   test("extent returns single point if zoom is undefined", () => {

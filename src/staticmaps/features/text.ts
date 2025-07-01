@@ -60,8 +60,10 @@ export default class Text {
    * @returns {[number, number, number, number]} Bounding box as [minLon, minLat, maxLon, maxLat].
    */
   extent(zoom?: number, tileSize = 256): [number, number, number, number] {
-    if (!this.coord) throw new Error("No coordinate defined for this text feature.")
-    if (!zoom) return [this.coord[0], this.coord[1], this.coord[0], this.coord[1]]
+    if (!this.coord)
+      throw new Error("No coordinate defined for this text feature.")
+    if (!zoom)
+      return [this.coord[0], this.coord[1], this.coord[0], this.coord[1]]
 
     const [lon, lat] = this.coord
     const x = lonToX(lon, zoom)
