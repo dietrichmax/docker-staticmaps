@@ -199,7 +199,7 @@ export function createGeodesicLine(
  */
 export function chaikinSmooth(
   coords: Coordinate[],
-  iterations = 2
+  iterations: number = 2
 ): Coordinate[] {
   if (coords.length < 2) return coords // early return for empty or single point
 
