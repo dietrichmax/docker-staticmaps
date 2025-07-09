@@ -457,7 +457,15 @@ export async function loadMarkers(
 
   markers.forEach((marker: any, index: number) => {
     const icon = icons[index]
-    marker.offset = [icon.width / 2, icon.height]
+
+    const offsetX = Number.isFinite(marker.offsetX)
+      ? marker.offsetX
+      : icon.width / 2
+    const offsetY = Number.isFinite(marker.offsetY)
+      ? marker.offsetY
+      : icon.height
+
+    marker.offset = [offsetX, offsetY]
 
     marker.coord = [
       xToPx(lonToX(marker.coord[0], zoom)) - marker.offset[0],
