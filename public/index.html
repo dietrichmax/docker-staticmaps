@@ -7,28 +7,74 @@
     <link rel="stylesheet" href="ol.css" />
     <style>
       body {
-        font-family: Arial, sans-serif;
+        font-family: system-ui, sans-serif;
+        margin: 0;
+        padding: 1.5rem;
+        background: #f8fafc;
+        color: #1e293b;
+        max-width: 1200px;
+        margin: 0 auto;
+        display: grid;
+        gap: 1rem;
       }
+
+      h1 {
+        margin:0;
+        font-size: 1.5rem;
+      }
+
       #map {
         width: 100%;
         height: 400px;
-        margin-bottom: 20px;
+        border-radius: 0.75rem;
+        overflow: hidden;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
       }
-      .button {
-        padding: 10px 20px;
-        background-color: #4caf50;
-        color: white;
+
+      .controls {
+        margin-top: 1rem;
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+
+      button {
+        padding: 0.6rem 1.2rem;
         border: none;
+        border-radius: 0.5rem;
+        background: #3b82f6;
+        color: #fff;
+        font-size: 0.95rem;
         cursor: pointer;
-        margin-right: 10px;
+        transition: background 0.2s;
       }
-      .button:hover {
-        background-color: #45a049;
+
+      button:hover {
+        background: #2563eb;
+      }
+
+      p {
+        margin: 0;
+        font-size: 0.9rem;
+      }
+
+      #staticMapUrlDisplay {
+        font-family: monospace;
+        color: #0f172a;
+      }
+
+      img.static-map {
+        margin-top: 1rem;
+        width: 100%;
+        max-height: 400px;
+        border-radius: 0.75rem;
+        object-fit: cover;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
       }
     </style>
   </head>
   <body>
-    <h1>docker-staticmaps demo</h1>
+    <h1>github.com/docker-staticmaps demo</h1>
     <div id="map"></div>
 
     <button class="button" id="toggleBasemap">Switch to OSMTopo</button>
@@ -36,15 +82,15 @@
 
     <p>
       <strong>Current Static Map URL:</strong>
-      <span id="staticMapUrlDisplay">/staticmaps?</span>
+      <span id="staticMapUrlDisplay" style="word-break: break-all;">/staticmaps?</span>
     </p>
 
     <script src="ol.js"></script>
     <script>
       let map
       let currentBasemap = "osm" // Default base map
-      const center = [-3.9829, 48.7263] // Starting center
-      const zoom = 12 // Starting zoom
+      const center = [0, 20] // Starting center
+      const zoom = 1 // Starting zoom
       const height = 400
       let isLoading = false
       let staticMapImgElement = null
@@ -85,7 +131,9 @@
       // Update static map URL dynamically
       function updateStaticMapUrl(centerLonLat, zoom, currentBasemap) {
         const mapWidth = document.getElementById("map").offsetWidth
-        const staticMapUrl = `/staticmaps?width=${mapWidth}&height=${height}&center=${encodeURIComponent(centerLonLat.toString())}&zoom=${Math.round(zoom)}&basemap=${currentBasemap}`
+        const lat = centerLonLat[1]
+        const lon = centerLonLat[0]
+        const staticMapUrl = `/staticmaps?width=${mapWidth}&height=${height}&center=${encodeURIComponent(lat + "," + lon)}&zoom=${Math.round(zoom)}&basemap=${currentBasemap}`
 
         document.getElementById("staticMapUrlDisplay").textContent =
           staticMapUrl
@@ -126,10 +174,10 @@
         const mapWidth = document.getElementById("map").offsetWidth
         const view = map.getView()
         const centerLonLat = ol.proj.toLonLat(view.getCenter())
+        const lat = centerLonLat[1]
+        const lon = centerLonLat[0]
         const currentZoom = Math.round(view.getZoom())
-        const staticMapUrl = `/staticmaps?width=${mapWidth}&height=${height}&center=${encodeURIComponent(
-          centerLonLat.toString()
-        )}&zoom=${currentZoom}&basemap=${currentBasemap}`
+        const staticMapUrl = `/staticmaps?width=${mapWidth}&height=${height}&center=${encodeURIComponent(lat + "," + lon)}&zoom=${currentZoom}&basemap=${currentBasemap}`
 
         // Update the URL display
         document.getElementById("staticMapUrlDisplay").textContent =
@@ -146,7 +194,6 @@
               staticMapImgElement.src = imgURL
               staticMapImgElement.style.width = "100%"
               staticMapImgElement.style.height = `${height}px`
-              staticMapImgElement.style.marginTop = "20px"
               document.body.appendChild(staticMapImgElement)
             }
           })
