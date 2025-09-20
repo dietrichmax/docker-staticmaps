@@ -61,6 +61,6 @@ export function authenticateApiKey(
     return next()
   }
 
-  logger.warn(`Unauthorized access from IP=${req.ip}, API key=${key ?? "none"}`)
+  logger.warn(`Unauthorized access from IP=${req.ip}, API key=[REDACTED]`)
   res.status(403).json({ error: "Forbidden: Invalid or missing API key" })
 }
