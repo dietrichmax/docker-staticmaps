@@ -123,7 +123,6 @@ describe("StaticMaps methods", () => {
     it("calls drawMarkers and updates image", async () => {
       map.image = { image: "imageBuffer" }
       map.markers = [{ coord: [10, 10] }] as any
-
       ;(drawMarkers as jest.Mock).mockResolvedValue("markerImage")
 
       await map.drawMarkers()

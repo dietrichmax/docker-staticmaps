@@ -202,7 +202,6 @@ polyline=polylineStyle|polylineCoord1|polylineCoord2|...
 ```
 
 - **polylineCoord**:
-
   - **Lat, Lon Coordinates**: Coordinates in `lat, lon` format, separated by `|`. You need at least two coordinates.
   - **Encoded Polylines**: You can also use [Google Encoded Polyline](https://developers.google.com/maps/documentation/utilities/polylinealgorithm "Google Encoded Polyline") format.
 

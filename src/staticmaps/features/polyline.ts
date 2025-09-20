@@ -50,10 +50,14 @@ export default class Polyline {
         ? "polygon"
         : "polyline"
 
-    // Generate geodesic segments only for polylines
-    if (this.type === "polyline" && options.coords.length >= 2) {
+    // 🚑 Skip geodesic expansion if already decoded polyline (or if coords are many)
+    if (
+      this.type === "polyline" &&
+      options.coords.length >= 2 &&
+      !(options.coords as any)._isDecodedPolyline &&
+      options.coords.length < 500 // safeguard
+    ) {
       const segments: Coordinate[] = []
-
       for (let i = 0; i < options.coords.length - 1; i++) {
         const start = options.coords[i]
         const end = options.coords[i + 1]
@@ -62,9 +66,9 @@ export default class Polyline {
         const geodesicSegment: Coordinate[] = createGeodesicLine(
           [start[1], start[0]],
           [end[1], end[0]]
-        ).map(([lat, lon]) => [lon, lat]) // Convert back to [lon, lat]
+        ).map(([lat, lon]) => [lon, lat])
 
-        // Avoid duplicate points
+        // Avoid duplicate points between segments
         if (segments.length > 0) geodesicSegment.shift()
         segments.push(...geodesicSegment)
       }

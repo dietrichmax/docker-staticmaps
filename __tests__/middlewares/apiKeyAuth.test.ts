@@ -128,7 +128,7 @@ describe("authenticateApiKey middleware", () => {
     authenticateApiKey(req as Request, res as Response, next)
 
     expect(logger.warn).toHaveBeenCalledWith(
-      "Unauthorized access from IP=127.0.0.1, API key=none"
+      "Unauthorized access from IP=127.0.0.1, API key=[REDACTED]"
     )
     expect(res.status).toHaveBeenCalledWith(403)
     expect(res.json).toHaveBeenCalledWith({
@@ -149,7 +149,7 @@ describe("authenticateApiKey middleware", () => {
     authenticateApiKey(req as Request, res as Response, next)
 
     expect(logger.warn).toHaveBeenCalledWith(
-      "Unauthorized access from IP=127.0.0.1, API key=wrongkey"
+      "Unauthorized access from IP=127.0.0.1, API key=[REDACTED]"
     )
     expect(res.status).toHaveBeenCalledWith(403)
     expect(res.json).toHaveBeenCalledWith({
