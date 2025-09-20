@@ -5,15 +5,14 @@ on:
     types: [closed] # Trigger when a PR is closed
 
 permissions:
-  contents: write
+  contents: read
   pull-requests: write
 
 jobs:
   update_release_draft:
-    permissions:
-      contents: write
-      pull-requests: write
     runs-on: ubuntu-latest
+    # Ensure job only runs for PRs in this repository (not forks)
+    if: github.repository == 'dietrichmax/docker-staticmaps'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -23,7 +22,7 @@ jobs:
         run: |
           if [[ "${{ github.event.pull_request.merged }}" != "true" ]]; then
             echo "PR was not merged. Skipping release draft update."
-            exit 0  # Exit without failure if the PR is not merged
+            exit 0
           fi
 
       - name: Run Release Drafter
