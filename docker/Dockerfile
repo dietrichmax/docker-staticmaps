@@ -29,6 +29,7 @@ RUN ln -sf /usr/bin/python3 /usr/bin/python
 
 # Copy package.json and package-lock.json first to utilize Docker cache for dependencies
 COPY package*.json ./
+COPY scripts ./scripts
 
 # Install all dependencies (including dev deps) using npm ci for reproducibility
 RUN npm ci
