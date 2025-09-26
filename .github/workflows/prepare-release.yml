@@ -3,29 +3,24 @@ name: Update Release Draft
 on:
   pull_request:
     types: [closed] # Trigger when a PR is closed
+    branches:
+      - main
 
+# Grant only the permissions needed by Release Drafter
 permissions:
-  contents: read
+  contents: write
   pull-requests: write
 
 jobs:
   update_release_draft:
     runs-on: ubuntu-latest
     # Ensure job only runs for PRs in this repository (not forks)
-    if: github.repository == 'dietrichmax/docker-staticmaps'
+    if: github.repository == 'dietrichmax/docker-staticmaps' && github.event.pull_request.merged == true
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Check if PR is merged
-        id: check_merged
-        run: |
-          if [[ "${{ github.event.pull_request.merged }}" != "true" ]]; then
-            echo "PR was not merged. Skipping release draft update."
-            exit 0
-          fi
-
-      - name: Run Release Drafter
+      - name: Update Release Draft
         uses: release-drafter/release-drafter@v6
         with:
           config-name: "release-drafter.yml"
