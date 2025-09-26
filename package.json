@@ -8,9 +8,7 @@
     "dev": "nodemon --watch src/** --watch .env --ext ts,js -I --exec node --experimental-specifier-resolution=node  --loader ts-node/esm ./src/server.ts",
     "test": "jest --coverage",
     "build": "webpack",
-    "start": "node dist/server.cjs",
-    "copy:ol": "node scripts/copy-ol.js",
-    "postinstall": "npm run copy:ol"
+    "start": "node dist/server.cjs"
   },
   "type": "module",
   "main": "dist/server.cjs",
@@ -34,7 +32,6 @@
     "cross-env": "^7.0.3",
     "jest": "^29.7.0",
     "nodemon": "^3.1.10",
-    "ol": "^10.6.1",
     "prettier": "^3.6.2",
     "supertest": "^7.1.4",
     "ts-jest": "^29.4.1",

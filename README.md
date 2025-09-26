@@ -74,10 +74,9 @@ A small demo UI is available at [http://localhost:3000](http://localhost:3000 "D
 
 You can optionally restrict access to the API using an API key.
 
-* **Set an API key** using the environment variable `API_KEY`.
-* **If no key is set**, the API runs in keyless mode (anyone can access it).
-* **Demo endpoints** (`/demo-map`) are accessible either via a valid `demo_auth=true` cookie **or** a valid API key.
-
+- **Set an API key** using the environment variable `API_KEY`.
+- **If no key is set**, the API runs in keyless mode (anyone can access it).
+- **Demo endpoints** (`/demo-map`) are accessible either via a valid `demo_auth=true` cookie **or** a valid API key.
 
 | Name      | Type   | Default | Description                             |
 | --------- | ------ | ------- | --------------------------------------- |
@@ -103,8 +102,8 @@ http://localhost:3000/api/staticmaps?width=600&height=600&center=40.7128,-74.006
 
 #### Demo Page Access
 
-* If running without an API key, the demo UI at [http://localhost:3000](http://localhost:3000) works with a browser cookie: `demo_auth=true`.
-* If API key authentication is enabled, you can access the demo page by passing the key in `x-api-key` or `api_key` query parameter.
+- If running without an API key, the demo UI at [http://localhost:3000](http://localhost:3000) works with a browser cookie: `demo_auth=true`.
+- If API key authentication is enabled, you can access the demo page by passing the key in `x-api-key` or `api_key` query parameter.
 
 ```bash
 curl "http://localhost:3000/?api_key=your_api_key_here"
