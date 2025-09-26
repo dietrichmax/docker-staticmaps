@@ -45,7 +45,10 @@ class AuthConfig {
    */
   static extractApiKey(req: Request): string | undefined {
     return (
+       // API key from header first (preferred)
       req.headers["x-api-key"]?.toString() ||
+
+      // API key from query string (required for docker-staticmaps use case)
       req.query.api_key?.toString() ||
       req.query.API_KEY?.toString()
     )
