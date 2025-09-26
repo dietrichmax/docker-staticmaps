@@ -1,30 +1,21 @@
-import { Request, Response, NextFunction } from "express"
-import logger from "../utils/logger"
-
 /**
- * If API_KEY is set in env, we require clients to supply it.
- * Otherwise, we allow keyless access.
+ * @module middlewares/apiKeyAuth
+ * Middleware to enforce API key authentication for incoming requests.
  */
 
-const API_KEY = process.env.API_KEY
-const REQUIRE_AUTH = Boolean(API_KEY)
-
-if (REQUIRE_AUTH) {
-  logger.info("🔑 API key authentication enabled")
-} else {
-  logger.info("No API key set - running in keyless mode")
-}
+import { Request, Response, NextFunction } from "express"
+import logger from "../utils/logger"
+import AuthConfig from "./authConfig"
 
 /**
- * Extracts the API key from the request headers or query parameters.
+ * Extracts the API key from the request.
+ * Checks in order:
+ * 1. `x-api-key` header
+ * 2. `api_key` query parameter
+ * 3. `API_KEY` query parameter
  *
- * Checks the following locations in order:
- * - `x-api-key` header
- * - `api_key` query parameter
- * - `API_KEY` query parameter
- *
- * @param {Request} req - Express request object
- * @returns {string | undefined} The extracted API key if present, otherwise undefined.
+ * @param req Express request object
+ * @returns API key if present, otherwise undefined
  */
 function extractApiKey(req: Request): string | undefined {
   return (
@@ -35,31 +26,26 @@ function extractApiKey(req: Request): string | undefined {
 }
 
 /**
- * Middleware to enforce API key authentication for incoming requests.
+ * Express middleware to enforce API key authentication.
  *
- * If the environment variable `API_KEY` is set, clients must supply the correct API key
- * via `x-api-key` header, or `api_key` / `API_KEY` query parameters.
- * If `API_KEY` is not set, keyless access is allowed.
+ * - If `API_KEY` is set in environment, clients must supply the correct key.
+ * - If `API_KEY` is not set, keyless access is allowed.
  *
- * Logs info about authentication mode on startup,
- * and logs warnings on unauthorized access attempts.
+ * Logs unauthorized access attempts with IP info.
  *
- * @param {Request} req - Express request object
- * @param {Response} res - Express response object
- * @param {NextFunction} next - Express next middleware callback
+ * @param req Express request object
+ * @param res Express response object
+ * @param next Next middleware function
  */
 export function authenticateApiKey(
   req: Request,
   res: Response,
   next: NextFunction
 ): void {
-  if (!REQUIRE_AUTH) return next()
+  if (!AuthConfig.requireAuth) return next()
 
   const key = extractApiKey(req)
-
-  if (key === API_KEY) {
-    return next()
-  }
+  if (key === AuthConfig.apiKey) return next()
 
   logger.warn(`Unauthorized access from IP=${req.ip}, API key=[REDACTED]`)
   res.status(403).json({ error: "Forbidden: Invalid or missing API key" })

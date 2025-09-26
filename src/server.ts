@@ -24,6 +24,7 @@ import logger from "./utils/logger"
 import { authenticateApiKey } from "./middlewares/apiKeyAuth"
 import { headers } from "./middlewares/headers"
 import { truncate, normalizeIp } from "./utils/helpers"
+import AuthConfig from "./middlewares/authConfig"
 
 // Load environment variables from .env file
 dotenv.config()
@@ -49,6 +50,9 @@ app.use((req: Request, _res: Response, next: NextFunction) => {
   })
   next()
 })
+
+// Initialize authentication
+AuthConfig.init()
 
 /**
  * Middleware to apply security headers and other custom headers.
