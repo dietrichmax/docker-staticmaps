@@ -19,7 +19,7 @@
       }
 
       h1 {
-        margin:0;
+        margin: 0;
         font-size: 1.5rem;
       }
 
@@ -82,7 +82,9 @@
 
     <p>
       <strong>Current Static Map URL:</strong>
-      <span id="staticMapUrlDisplay" style="word-break: break-all;">/staticmaps?</span>
+      <span id="staticMapUrlDisplay" style="word-break: break-all"
+        >/staticmaps?</span
+      >
     </p>
 
     <script src="ol.js"></script>
@@ -177,7 +179,7 @@
         const lat = centerLonLat[1]
         const lon = centerLonLat[0]
         const currentZoom = Math.round(view.getZoom())
-        const staticMapUrl = `/staticmaps?width=${mapWidth}&height=${height}&center=${encodeURIComponent(lat + "," + lon)}&zoom=${currentZoom}&basemap=${currentBasemap}`
+        const staticMapUrl = `/demo-map?width=${mapWidth}&height=${height}&center=${encodeURIComponent(lat + "," + lon)}&zoom=${currentZoom}&basemap=${currentBasemap}`
 
         // Update the URL display
         document.getElementById("staticMapUrlDisplay").textContent =

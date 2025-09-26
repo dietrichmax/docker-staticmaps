@@ -25,6 +25,7 @@ import { authenticateApiKey } from "./middlewares/apiKeyAuth"
 import { headers } from "./middlewares/headers"
 import { truncate, normalizeIp } from "./utils/helpers"
 import AuthConfig from "./middlewares/authConfig"
+import fs from "fs"
 
 // Load environment variables from .env file
 dotenv.config()
@@ -93,6 +94,65 @@ app.use("/api", authenticateApiKey, routes)
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
+// -------------------
+// DEMO PAGE ROUTE
+// -------------------
+
+/**
+ * Route handler for root `/` path.
+ * Sends the main index.html file from the parent 'public' folder.
+ *
+ * @param {Request} _req - HTTP request (not used).
+ * @param {Response} res - HTTP response.
+ */
+app.get(
+  ["/", "/index.html"],
+  authenticateApiKey,
+  (_req: Request, res: Response) => {
+    const htmlFile = path.join(__dirname, "..", "public", "index.html")
+    const html = fs.readFileSync(htmlFile, "utf-8")
+
+    // Set HTTP-only cookie manually
+    const cookieOptions = [
+      "demo_auth=true",
+      "HttpOnly",
+      "SameSite=Lax",
+      `Max-Age=${30 * 60}`, // 30 minutes
+    ]
+    if (process.env.NODE_ENV === "production") {
+      cookieOptions.push("Secure")
+    }
+    res.setHeader("Set-Cookie", cookieOptions.join("; "))
+
+    res.send(html)
+  }
+)
+
+app.get("/demo-map", AuthConfig.checkDemoCookie, async (req, res) => {
+  try {
+    const url = new URL("/api/staticmaps", `http://localhost:${PORT}`)
+    url.search = new URLSearchParams({
+      ...req.query,
+      api_key: process.env.API_KEY!,
+    }).toString()
+
+    const response = await fetch(url.toString())
+    if (!response.ok)
+      return res.status(response.status).send(await response.text())
+
+    const buffer = await response.arrayBuffer()
+    res.setHeader("Content-Type", "image/png")
+    res.send(Buffer.from(buffer))
+  } catch (err) {
+    logger.error("Error proxying demo map", { error: err })
+    res.status(500).json({ error: "Failed to fetch demo map" })
+  }
+})
+
+// -------------------
+// STATIC FILES
+// -------------------
+
 /**
  * Middleware to serve static files from local 'public' directory.
  * Logs debug messages when serving static files.
@@ -110,17 +170,6 @@ app.use(
  * Acts as a fallback or legacy static asset directory.
  */
 app.use(express.static(path.join(__dirname, "..", "public")))
-
-/**
- * Route handler for root `/` path.
- * Sends the main index.html file from the parent 'public' folder.
- *
- * @param {Request} _req - HTTP request (not used).
- * @param {Response} res - HTTP response.
- */
-app.get("/", (_req, res) => {
-  res.sendFile(path.join(__dirname, "..", "public", "index.html"))
-})
 
 /**
  * Health check endpoint.
