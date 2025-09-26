@@ -3,6 +3,7 @@
  * Handles authentication configuration for the API.
  */
 
+import { Request, Response, NextFunction } from "express"
 import logger from "../utils/logger"
 
 /**
@@ -25,11 +26,59 @@ class AuthConfig {
     this.apiKey = process.env.API_KEY
     this.requireAuth = Boolean(this.apiKey)
 
-    if (this.requireAuth) {
-      logger.info("🔑 API key authentication enabled")
-    } else {
-      logger.info("No API key set - running in keyless mode")
+    logger.info(
+      this.requireAuth
+        ? "🔑 API key authentication enabled"
+        : "No API key set - running in keyless mode"
+    )
+  }
+
+  /**
+   * Extracts the API key from the request.
+   * Checks in order:
+   * 1. `x-api-key` header
+   * 2. `api_key` query parameter
+   * 3. `API_KEY` query parameter
+   *
+   * @param req Express request object
+   * @returns API key if present, otherwise undefined
+   */
+  static extractApiKey(req: Request): string | undefined {
+    return (
+      req.headers["x-api-key"]?.toString() ||
+      req.query.api_key?.toString() ||
+      req.query.API_KEY?.toString()
+    )
+  }
+
+  /**
+   * Middleware to check the demo cookie for /demo-map and similar endpoints.
+   * Only allows access if the browser has a valid `demo_auth` cookie.
+   */
+  static checkDemoCookie(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): void {
+    const cookieHeader = req.headers.cookie
+    if (!cookieHeader) {
+      res.status(401).send("Unauthorized")
+      return
     }
+
+    const cookies = Object.fromEntries(
+      cookieHeader.split(";").map((c) => {
+        const [k, v] = c.trim().split("=")
+        return [k, v]
+      })
+    )
+
+    if (cookies.demo_auth === "true") {
+      next()
+      return
+    }
+
+    res.status(401).send("Unauthorized")
   }
 }
 

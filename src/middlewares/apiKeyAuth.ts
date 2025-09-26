@@ -8,24 +8,6 @@ import logger from "../utils/logger"
 import AuthConfig from "./authConfig"
 
 /**
- * Extracts the API key from the request.
- * Checks in order:
- * 1. `x-api-key` header
- * 2. `api_key` query parameter
- * 3. `API_KEY` query parameter
- *
- * @param req Express request object
- * @returns API key if present, otherwise undefined
- */
-function extractApiKey(req: Request): string | undefined {
-  return (
-    req.headers["x-api-key"]?.toString() ||
-    req.query.api_key?.toString() ||
-    req.query.API_KEY?.toString()
-  )
-}
-
-/**
  * Express middleware to enforce API key authentication.
  *
  * - If `API_KEY` is set in environment, clients must supply the correct key.
@@ -44,7 +26,7 @@ export function authenticateApiKey(
 ): void {
   if (!AuthConfig.requireAuth) return next()
 
-  const key = extractApiKey(req)
+  const key = AuthConfig.extractApiKey(req)
   if (key === AuthConfig.apiKey) return next()
 
   logger.warn(`Unauthorized access from IP=${req.ip}, API key=[REDACTED]`)
