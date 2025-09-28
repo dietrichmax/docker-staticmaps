@@ -128,6 +128,13 @@ app.get(
   }
 )
 
+/**
+ * Route handler to proxy a demo static map request.
+ * Uses AuthConfig to check demo authentication cookie.
+ *
+ * @param {Request} req - HTTP request.
+ * @param {Response} res - HTTP response.
+ */
 app.get("/demo-map", AuthConfig.checkDemoCookie, async (req, res) => {
   try {
     const url = new URL("/api/staticmaps", `http://localhost:${PORT}`)

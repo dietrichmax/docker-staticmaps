@@ -35,7 +35,7 @@ curl "http://localhost:3000/api/staticmaps?width=1000&height=1000&center=-18.287
 
 ![Minimal Example](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/minimalexample.png)
 
-A small demo UI is available at [http://localhost:3000](http://localhost:3000 "Demo UI")
+A interactive playground is available at [http://localhost:3000](http://localhost:3000 "docker-staticmaps interactive playground")
 
 ## 📚 Table of Contents
 
