@@ -162,8 +162,8 @@ Request static maps from the `/api/staticmaps` endpoint using the following para
 
 | Parameter | Default | Description |
 | --- | --- | --- |
-| `width` | `800` | Image width in pixels |
-| `height` | `800` | Image height in pixels |
+| `width` | `800` | Width of the output image in pixels. Min: 1, Max: 8192. |
+| `height` | `800` | Heihgt of the output image in pixels. Min: 1, Max: 8192. |
 | `paddingX` | `0` | Horizontal padding in pixels |
 | `paddingY` | `0` | Vertical padding in pixels |
 | `format` | `png` | Output format: `png`, `jpg`, `webp` or `pdf` |
