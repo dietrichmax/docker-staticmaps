@@ -13,7 +13,7 @@ import {
 } from "../types/types"
 import logger from "../utils/logger"
 
-// --- Helpers ---
+// --- Constants ---
 
 /**
  * Set of allowed color names/values for styling shapes.
@@ -80,6 +80,23 @@ const DEFAULTS = {
     /** Text content for attribution */
     text: "",
   },
+}
+
+/**
+ * Defines allowed minimum and maximum dimensions for map images.
+ *
+ * Used to prevent rendering images that are too large (which could cause
+ * performance issues or server overload) or too small (invalid requests).
+ */
+const LIMITS = {
+  /** Maximum allowed image width in pixels */
+  MAX_WIDTH: 8192,
+  /** Maximum allowed image height in pixels */
+  MAX_HEIGHT: 8192,
+  /** Minimum allowed image width in pixels */
+  MIN_WIDTH: 1,
+  /** Minimum allowed image height in pixels */
+  MIN_HEIGHT: 1,
 }
 
 /**
@@ -157,7 +174,12 @@ export function getMapParams(params: MapParamsInput): MapParamsOutput {
   }
 
   const center = parseCenter(params.center)
-  const quality = parseInt(params.quality || 100)
+  const quality = parseInt(params.quality || "100", 10)
+
+  const width = parseInt((params.width ?? DEFAULTS.width).toString(), 10)
+  const height = parseInt((params.height ?? DEFAULTS.height).toString(), 10)
+
+  validateDimensions(width, height)
 
   const hasCoords = Object.values(features).some((list) =>
     Array.isArray(list)
@@ -165,8 +187,7 @@ export function getMapParams(params: MapParamsInput): MapParamsOutput {
       : list?.coords?.length
   )
 
-  const missingParams = []
-
+  const missingParams: string[] = []
   if (!center && !hasCoords) {
     missingParams.push("{center} or {coordinates}")
     logger.debug("Missing required parameters: center or coordinates")
@@ -177,13 +198,15 @@ export function getMapParams(params: MapParamsInput): MapParamsOutput {
     params.basemap
   )
 
-  const rawAttribution = params.attribution
-  const attribution = parseAttributionParam(rawAttribution, basemapAttribution)
+  const attribution = parseAttributionParam(
+    params.attribution,
+    basemapAttribution
+  )
 
   const options: MapOptions = {
     ...DEFAULTS,
-    ...(params.width && { width: parseInt(params.width, 10) }),
-    ...(params.height && { height: parseInt(params.height, 10) }),
+    width,
+    height,
     ...(params.paddingX && { paddingX: parseInt(params.paddingX, 10) }),
     ...(params.paddingY && { paddingY: parseInt(params.paddingY, 10) }),
     ...(params.tileSize && { tileSize: parseInt(params.tileSize, 10) }),
@@ -227,6 +250,37 @@ export function getMapParams(params: MapParamsInput): MapParamsOutput {
 }
 
 /**
+ * Validates the requested image width and height against predefined limits.
+ *
+ * If either dimension exceeds the maximum allowed size or is below the minimum,
+ * an error is logged and an exception is thrown.
+ *
+ * @param {number} width - The requested image width in pixels.
+ * @param {number} height - The requested image height in pixels.
+ * @throws {Error} Throws an error if the width or height is out of allowed bounds.
+ */
+function validateDimensions(width: number, height: number) {
+  if (width > LIMITS.MAX_WIDTH || height > LIMITS.MAX_HEIGHT) {
+    logger.error(
+      `Requested image size ${width}x${height} exceeds maximum allowed ` +
+        `${LIMITS.MAX_WIDTH}x${LIMITS.MAX_HEIGHT}.`
+    )
+    throw new Error(
+      `Requested image size ${width}x${height} exceeds maximum allowed ` +
+        `${LIMITS.MAX_WIDTH}x${LIMITS.MAX_HEIGHT}.`
+    )
+  }
+  if (width < LIMITS.MIN_WIDTH || height < LIMITS.MIN_HEIGHT) {
+    logger.error(
+      `Image dimensions must be at least ${LIMITS.MIN_WIDTH}x${LIMITS.MIN_HEIGHT}.`
+    )
+    throw new Error(
+      `Image dimensions must be at least ${LIMITS.MIN_WIDTH}x${LIMITS.MIN_HEIGHT}.`
+    )
+  }
+}
+
+/**
  * Parses multiple shape definitions from a given parameter key in a params object.
  *
  * The function handles various input formats:
@@ -256,26 +310,16 @@ export function parseMultipleShapes(
    */
   const normalizeCoords = (shape: Record<string, any>): number[][] => {
     const coords = shape?.coords
+    if (!coords) return []
 
     if (Array.isArray(coords)) {
-      if (coords.length === 2 && typeof coords[0] === "number") {
-        return [[coords[0], coords[1]]] // single point [lon, lat]
-      }
-      if (typeof coords[0] === "string") {
-        return parseCoordinates(coords) // parse from strings
-      }
-      if (Array.isArray(coords[0])) {
-        return coords as number[][] // already in [[lon, lat], ...] format
-      }
+      if (coords.length === 2 && typeof coords[0] === "number")
+        return [[coords[0], coords[1]]]
+      if (typeof coords[0] === "string") return parseCoordinates(coords)
+      if (Array.isArray(coords[0])) return coords as number[][]
     }
-
-    if (
-      typeof coords === "object" &&
-      coords?.lat !== undefined &&
-      coords?.lon !== undefined
-    ) {
+    if (coords.lat !== undefined && coords.lon !== undefined)
       return [[coords.lon, coords.lat]]
-    }
 
     return []
   }
@@ -283,35 +327,27 @@ export function parseMultipleShapes(
   /**
    * Merges defaults with given data and normalizes its coordinates.
    */
-  const buildShape = (data: Record<string, any>): Record<string, any> => {
-    const shape = { ...defaults, ...data }
-    shape.coords = normalizeCoords(shape)
-    return shape
-  }
+  const buildShape = (data: Record<string, any>) => ({
+    ...defaults,
+    ...data,
+    coords: normalizeCoords(data),
+  })
 
   // Case: single shape object
-  if (typeof rawValue === "object" && !Array.isArray(rawValue)) {
+  if (typeof rawValue === "object" && !Array.isArray(rawValue))
     return [buildShape(rawValue)]
-  }
-
   // Case: array of shape objects
-  if (Array.isArray(rawValue) && typeof rawValue[0] === "object") {
+  if (Array.isArray(rawValue) && typeof rawValue[0] === "object")
     return rawValue.map(buildShape)
-  }
 
   // Case: raw strings like "color:red|weight:3|12.34,56.78"
   const shapeStrings = Array.isArray(rawValue) ? rawValue : [rawValue]
-
   return shapeStrings.map((str) => {
     const { extracted, coordinates } = extractParams(
       str.split("|"),
       Object.keys(defaults)
     )
-    return {
-      ...defaults,
-      ...extracted,
-      coords: parseCoordinates(coordinates),
-    }
+    return { ...defaults, ...extracted, coords: parseCoordinates(coordinates) }
   })
 }
 
@@ -331,47 +367,37 @@ export function parseMultipleShapes(
  *          `extracted` key-value pairs for recognized parameters, and `coordinates` with
  *          remaining strings treated as coordinate values.
  */
-export function extractParams(
-  items: string[],
-  allowedKeys: string[]
-): { extracted: Record<string, any>; coordinates: string[] } {
+export function extractParams(items: string[], allowedKeys: string[]) {
   const extracted: Record<string, any> = {}
   const coordinates: string[] = []
 
   const allowedKeySet = new Set(allowedKeys)
-
   for (const item of items) {
     let matched = false
-
     for (const key of allowedKeySet) {
-      const prefix = `${key}:`
-      if (item.startsWith(prefix)) {
-        const rawValue = decodeURIComponent(item.slice(prefix.length))
+      if (!item.startsWith(`${key}:`)) continue
+      const raw = decodeURIComponent(item.slice(key.length + 1))
 
-        if (key === "strokeDasharray") {
-          extracted[key] = rawValue
-            .split(",")
-            .map((v) => Number(v.trim()))
-            .filter((n) => !isNaN(n))
-        } else if (COLOR_KEYS.has(key)) {
-          extracted[key] = ALLOWED_COLORS.has(rawValue.toLowerCase())
-            ? rawValue.toLowerCase()
-            : `#${rawValue}`
-        } else if (NUMERIC_KEYS.has(key)) {
-          const num = Number(rawValue)
-          if (!isNaN(num)) extracted[key] = num
-        } else {
-          extracted[key] = rawValue
-        }
-
-        matched = true
-        break
+      if (key === "strokeDasharray") {
+        extracted[key] = raw
+          .split(",")
+          .map((v) => Number(v.trim()))
+          .filter((n) => !isNaN(n))
+      } else if (COLOR_KEYS.has(key)) {
+        extracted[key] = ALLOWED_COLORS.has(raw.toLowerCase())
+          ? raw.toLowerCase()
+          : `#${raw}`
+      } else if (NUMERIC_KEYS.has(key)) {
+        const num = Number(raw)
+        if (!isNaN(num)) extracted[key] = num
+      } else {
+        extracted[key] = raw
       }
-    }
 
-    if (!matched) {
-      coordinates.push(item)
+      matched = true
+      break
     }
+    if (!matched) coordinates.push(item)
   }
 
   return { extracted, coordinates }
@@ -411,15 +437,13 @@ export function parseCoordinates(input: CoordInput): Coordinate[] {
     (typeof input[0] === "object" && input[0] !== null && "lat" in input[0])
   ) {
     return input
-      .map((c) => {
-        if (Array.isArray(c) && c.length === 2) {
-          return c as Coordinate
-        }
-        if (typeof c === "object" && c !== null && "lat" in c && "lon" in c) {
-          return [c.lon, c.lat] as Coordinate
-        }
-        return null
-      })
+      .map((c) =>
+        Array.isArray(c) && c.length === 2
+          ? (c as Coordinate)
+          : c && typeof c === "object" && "lat" in c && "lon" in c
+            ? [c.lon, c.lat]
+            : null
+      )
       .filter((pt): pt is Coordinate => pt !== null)
   }
 
@@ -427,7 +451,7 @@ export function parseCoordinates(input: CoordInput): Coordinate[] {
   const strings = input as string[]
   if (isEncodedPolyline(strings)) {
     const raw = strings.join("|").replace(/^\{|\}$/g, "")
-    return polyline.decode(raw).map(([lat, lon]) => [lon, lat] as Coordinate)
+    return polyline.decode(raw).map(([lat, lon]) => [lon, lat])
   }
 
   // 3) Comma‐separated "lat,lon" pairs
@@ -436,7 +460,7 @@ export function parseCoordinates(input: CoordInput): Coordinate[] {
       const [latStr, lonStr] = str.split(",").map((s) => s.trim())
       const lat = Number(latStr),
         lon = Number(lonStr)
-      return isNaN(lat) || isNaN(lon) ? null : ([lon, lat] as Coordinate)
+      return isNaN(lat) || isNaN(lon) ? null : [lon, lat]
     })
     .filter((pt): pt is Coordinate => pt !== null)
 }
@@ -456,32 +480,22 @@ export function parseCenter(val: any): Coordinate | null {
   if (!val) return null
 
   if (typeof val === "string") {
-    const parts = val.split(",")
-    if (parts.length !== 2) return null
-
-    const lat = Number(parts[0].trim())
-    const lon = Number(parts[1].trim())
-    if (isNaN(lat) || isNaN(lon)) return null
-
-    return [lon, lat]
-  }
-
-  if (Array.isArray(val) && val.length === 2) {
-    const [a, b] = val
-    if (typeof a === "number" && typeof b === "number") {
-      return [b, a]
-    }
-    return null
+    const [latStr, lonStr] = val.split(",").map((s) => s.trim())
+    const lat = Number(latStr),
+      lon = Number(lonStr)
+    return isNaN(lat) || isNaN(lon) ? null : [lon, lat]
   }
 
   if (
-    typeof val === "object" &&
-    val !== null &&
-    typeof val.lat === "number" &&
-    typeof val.lon === "number"
+    Array.isArray(val) &&
+    val.length === 2 &&
+    val.every((v) => typeof v === "number")
   ) {
-    return [val.lon, val.lat]
+    return [val[1], val[0]]
   }
+
+  if (val?.lat !== undefined && val?.lon !== undefined)
+    return [val.lon, val.lat]
 
   return null
 }
