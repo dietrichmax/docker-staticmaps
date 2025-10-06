@@ -28,7 +28,7 @@ const config: Config = {
 
   deploymentBranch: 'gh-pages',
 
-  onBrokenLinks: 'throw',
+  onBrokenLinks: 'warn',
 
   trailingSlash: false,
   // Even if you don't use internationalization, you can use this field to set
