@@ -21,7 +21,7 @@ function HomepageHeader() {
           <Link
             className="button button--secondary button--lg"
             to="/docs/introduction">
-            docker-staticmaps - Tutorial
+            docker-staticmaps - Documentation
           </Link>
         </div>
       </div>
