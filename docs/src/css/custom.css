@@ -1,0 +1,46 @@
+/**
+ * docker-staticmaps Docusaurus theme
+ * Inspired by clean map UI colors — blue base, green accents.
+ */
+:root {
+  /* Primary brand color — map blue */
+  --ifm-color-primary: #0078a8;
+  --ifm-color-primary-dark: #006b97;
+  --ifm-color-primary-darker: #005e86;
+  --ifm-color-primary-darkest: #00445f;
+  --ifm-color-primary-light: #0093c4;
+  --ifm-color-primary-lighter: #00a7da;
+  --ifm-color-primary-lightest: #00bdf2;
+
+  /* Accent color for links and highlights */
+  --ifm-link-color: #0093c4;
+  --ifm-code-font-size: 95%;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 120, 168, 0.08);
+
+  /* Subtle map-inspired neutral tones */
+  --ifm-background-color: #f9fafb;
+  --ifm-background-surface-color: #ffffff;
+  --ifm-color-emphasis-200: #e5e7eb;
+  --ifm-color-emphasis-300: #d1d5db;
+  --ifm-color-emphasis-400: #9ca3af;
+}
+
+/* 🌙 Dark mode — inverted palette with teal-green accents */
+[data-theme='dark'] {
+  --ifm-color-primary: #33c7ba;
+  --ifm-color-primary-dark: #2eb3a8;
+  --ifm-color-primary-darker: #299f97;
+  --ifm-color-primary-darkest: #1f7a73;
+  --ifm-color-primary-light: #4cd3c8;
+  --ifm-color-primary-lighter: #66dfd6;
+  --ifm-color-primary-lightest: #99f0ec;
+
+  --ifm-link-color: #4cd3c8;
+  --ifm-background-color: #0d1117;
+  --ifm-background-surface-color: #161b22;
+  --ifm-color-emphasis-200: #30363d;
+  --ifm-color-emphasis-300: #484f58;
+  --ifm-color-emphasis-400: #8b949e;
+
+  --docusaurus-highlighted-code-line-bg: rgba(51, 199, 186, 0.15);
+}
