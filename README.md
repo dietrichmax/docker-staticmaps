@@ -28,10 +28,7 @@ https://dietrichmax.github.io/docker-staticmaps/.
 
 # License
 
-The Python source code is available under a GPL license version 3 or later.
-The Lua configuration files for osm2pgsql are released under the
-Apache License, Version 2.0. All other files are under a GPLv2 license.
-
+The source code is available under a GPL license version 3 or later.
 
 # Contributing
 
