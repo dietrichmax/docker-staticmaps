@@ -7,7 +7,7 @@ build:
 
 documentation:
   - "README.md"
-  - "examples/**"
+  - "docs/**"
 
 server:
   - "src/**"
