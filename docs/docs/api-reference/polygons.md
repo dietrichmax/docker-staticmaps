@@ -1,4 +1,15 @@
 ---
+title: Polygons
+description: ""
+authors:
+  - name: Max Dietrich
+  - url: https://mxd.codes
+last_update:
+  date: 10/07/2025
+  author: Max Dietrich
+keywords:
+  - Polygons
+slug: /api-reference/polygons
 sidebar_position: 5
 ---
 

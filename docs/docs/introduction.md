@@ -1,4 +1,16 @@
 ---
+
+title: Introduction
+description: "docker-staticmaps is an open-source API for rendering static map images. Easily create maps with markers, polygons, circles, polylines or text, making it perfect for embedding map images on websites or apps. Comes with built-in rate limiting and image caching to optimize performance and protect against abuse."
+authors:
+  - name: Max Dietrich
+  - url: https://mxd.codes
+last_update:
+  date: 10/07/2025
+  author: Max Dietrich
+keywords:
+  - Introduction
+slug: /
 sidebar_position: 1
 ---
 

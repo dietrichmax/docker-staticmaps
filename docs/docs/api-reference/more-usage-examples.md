@@ -1,4 +1,15 @@
 ---
+title: More Usage Examples
+description: ""
+authors:
+  - name: Max Dietrich
+  - url: https://mxd.codes
+last_update:
+  date: 10/07/2025
+  author: Max Dietrich
+keywords:
+  - "More Usage Eamples"
+slug: /api-reference/more-usage-examples
 sidebar_position: 9
 ---
 

@@ -1,4 +1,15 @@
 ---
+title: Attribution
+description: ""
+authors:
+  - name: Max Dietrich
+  - url: https://mxd.codes
+last_update:
+  date: 10/07/2025
+  author: Max Dietrich
+keywords:
+  - Attribution
+slug: /api-reference/attribution
 sidebar_position: 3
 ---
 

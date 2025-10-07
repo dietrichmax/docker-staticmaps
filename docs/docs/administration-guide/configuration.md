@@ -1,5 +1,15 @@
 ---
 title: Configuration
+description: ""
+authors:
+  - name: Max Dietrich
+  - url: https://mxd.codes
+last_update:
+  date: 10/07/2025
+  author: Max Dietrich
+keywords:
+  - Configuration
+slug: /administration-guide/configuration
 sidebar_position: 2
 ---
 

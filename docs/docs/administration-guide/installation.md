@@ -1,5 +1,15 @@
 ---
 title: Installation
+description: ""
+authors:
+  - name: Max Dietrich
+  - url: https://mxd.codes
+last_update:
+  date: 10/07/2025
+  author: Max Dietrich
+keywords:
+  - Installation
+slug: /administration-guide/installation
 sidebar_position: 1
 ---
 

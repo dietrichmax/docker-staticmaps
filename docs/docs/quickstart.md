@@ -1,4 +1,15 @@
 ---
+title: Quickstart
+description: ""
+authors:
+  - name: Max Dietrich
+  - url: https://mxd.codes
+last_update:
+  date: 10/07/2025
+  author: Max Dietrich
+keywords:
+  - Introduction
+slug: /quickstart
 sidebar_position: 2
 ---
 

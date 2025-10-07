@@ -1,4 +1,15 @@
 ---
+title: Markers
+description: ""
+authors:
+  - name: Max Dietrich
+  - url: https://mxd.codes
+last_update:
+  date: 10/07/2025
+  author: Max Dietrich
+keywords:
+  - Markers
+slug: /api-reference/markers
 sidebar_position: 6
 ---
 
