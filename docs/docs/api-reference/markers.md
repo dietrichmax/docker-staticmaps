@@ -10,7 +10,7 @@ last_update:
 keywords:
   - Markers
 slug: /api-reference/markers
-sidebar_position: 6
+sidebar_position: 7
 ---
 
 # Markers
@@ -41,4 +41,4 @@ markers=markerStyle|markerCoord1|markerCoord2|...
    <p><code>http://localhost:3000/api/staticmaps?width=1200&height=800&format=png&basemap=national-geographic&markers=color:red|37.2159,-7.0050|28.0997,-17.1092|24.0617,-74.4767|24.2000,-74.5000|23.1167,-82.3833|19.0000,-72.7000|38.7169,-27.2231|38.7169,-9.1399|37.2159,-7.0050&markers=color:green|36.5271,-6.2886|15.4150,-61.3710|16.2650,-61.5510|18.4655,-66.1057|18.4861,-69.9312|21.5218,-77.7812&markers=color:orange|36.7781,-6.3515|14.9167,-23.5167|10.6000,-61.2000|8.5833,-62.4000|18.4861,-69.9312&markers=color:blue|36.5271,-6.2886|17.9352,-76.8419|15.9194,-85.9597|9.3547,-79.9014|21.5218,-77.7812|36.5271,-6.2886</code></p>
 </details>
 
-![Markers Example](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/markers.png)
+![Markers Example](./img/markers.png)

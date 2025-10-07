@@ -46,7 +46,16 @@ export async function generateMap(
         options.width,
         options.height
       )
+
       await map.image.compositeSVG(svg)
+    }
+
+    if (options.border) {
+      const { color, width } = options.border
+      map.image = await map.image.addFrame({
+        width: width,
+        background: color,
+      })
     }
 
     const buffer = await map.image.buffer(options.format)

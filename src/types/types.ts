@@ -67,6 +67,9 @@ export interface MapOptions {
   polyline?: Record<string, unknown>[]
   polygon?: Record<string, unknown>[]
   text?: Record<string, unknown>[]
+  border: {
+    color: string
+    width: number
 }
 
 /**

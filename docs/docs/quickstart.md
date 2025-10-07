@@ -27,6 +27,6 @@ Send a sample request:
 curl "http://localhost:3000/api/staticmaps?width=1000&height=1000&center=-18.2871,147.6992&zoom=9&basemap=satellite"
 ```
 
-![Minimal Example](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/minimalexample.png)
+![Minimal Example](./img/minimalexample.png)
 
 An interactive playground is available at [http://localhost:3000](http://localhost:3000).
