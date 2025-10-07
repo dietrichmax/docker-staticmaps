@@ -96,11 +96,6 @@ const config: Config = {
               label: 'Github',
               to: 'https://github.com/dietrichmax/docker-staticmaps',
             },
-          ],
-        },
-        {
-          title: 'Links',
-          items: [
             {
               label: 'Privacy Policy',
               to: '/docs/introduction',
@@ -108,7 +103,7 @@ const config: Config = {
             {
               label: 'Imprint',
               to: '/docs/introduction',
-            },
+            }
           ],
         },
       ],
