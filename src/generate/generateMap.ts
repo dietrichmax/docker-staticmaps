@@ -52,7 +52,7 @@ export async function generateMap(
 
     if (options.border) {
       const { color, width } = options.border
-      map.image = await map.image.addFrame({
+      map.image = await map.image.addBorder({
         width: width,
         background: color,
       })

@@ -157,7 +157,7 @@ export default class Image {
    * Adds a frame or padding around the current image.
    * @param options - Border options including background color and width.
    */
-  async addFrame(options: {
+  async addBorder(options: {
     width?: number
     background?: string
   }): Promise<this> {

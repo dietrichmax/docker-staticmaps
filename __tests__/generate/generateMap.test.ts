@@ -151,7 +151,7 @@ describe("generateMap", () => {
 
     expect(mockMapInstance.image.addBorder).toHaveBeenCalledWith({
       width: 15,
-      color: "#123456",
+      background: "123456",
     })
     expect(result.buffer).toBeInstanceOf(Buffer)
   })
