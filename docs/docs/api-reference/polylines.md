@@ -1,4 +1,15 @@
 ---
+title: Polylines
+description: ""
+authors:
+  - name: Max Dietrich
+  - url: https://mxd.codes
+last_update:
+  date: 10/07/2025
+  author: Max Dietrich
+keywords:
+  - Polylines
+slug: /api-reference/polylines
 sidebar_position: 4
 ---
 

@@ -45,11 +45,11 @@ const config: Config = {
       {
         docs: {
           sidebarPath: './sidebars.ts',
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
+          routeBasePath: '/', // Serve the docs at the site's root
           editUrl:
             'https://github.com/dietrichmax/docker-staticmaps/edit/main/docs/',
         },
+        blog: false, // Optional: disable the blog plugin
         theme: {
           customCss: './src/css/custom.css',
         },
@@ -57,7 +57,6 @@ const config: Config = {
     ],
   ],
 
-  
   scripts: [{src: 'https://analytics.mxd.codes/js/script.js', defer: true, 'data-domain': 'dietrichmax.github.io'}],
 
   themeConfig: {
@@ -90,7 +89,7 @@ const config: Config = {
           items: [
             {
               label: 'Documentation',
-              to: '/docs/introduction',
+              to: '/',
             },
             {
               label: 'Github',
@@ -98,11 +97,11 @@ const config: Config = {
             },
             {
               label: 'Privacy Policy',
-              to: '/docs/introduction',
+              to: '/privacy-policy',
             },
             {
-              label: 'Imprint',
-              to: '/docs/introduction',
+              label: 'Site Notice',
+              to: '/site-notice',
             }
           ],
         },
