@@ -35,7 +35,7 @@ The `border` parameter accepts key-value pairs separated by `|`, for example:
 | Key | Description | Example |
 | --- | --- | --- |
 | width | Border width in pixels (integer) | `width:3` |
-| color | Border color in hexadecimal format. Must be e.g. `#ffffff`; the missing `#` will be added automatically | `color:ff0000` |
+| color | Border color in hexadecimal format. Must be e.g. `ffffff`; the missing `#` will be added automatically | `color:ff0000` |
 
 <details>
   <summary>Border example request</summary>
