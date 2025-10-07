@@ -543,7 +543,7 @@ export function getTileUrl(
  *  - `show`: Whether attribution should be shown (default `true`).
  *  - `text`: The attribution text to display (optional).
  */
-function parseAttributionParam(
+export function parseAttributionParam(
   param?: string,
   basemapAttribution?: string
 ): { show: boolean; text?: string } {
@@ -595,7 +595,7 @@ function parseAttributionParam(
  *          An object with optional `width` (number) and `color` (string) properties,
  *          or `undefined` if the input is empty or invalid.
  */
-function parseBorderParam(
+export function parseBorderParam(
   param?: string
 ): { width?: number; color?: string } | undefined {
   if (!param) return undefined

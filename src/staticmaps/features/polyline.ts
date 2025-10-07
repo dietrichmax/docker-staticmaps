@@ -1,6 +1,5 @@
 import { createGeodesicLine, normalizeStrokeDasharray } from "../utils"
 import { PolylineOptions, Coordinate } from "../../types/types"
-import logger from "../../utils/logger"
 
 /**
  * Represents a polyline or polygon with optional styling.

@@ -1,8 +1,6 @@
-import {
-  createAttributionSVG,
-  parseAttributionParam,
-} from "../../src/utils/attribution"
+import { createAttributionSVG } from "../../src/utils/attribution"
 import { measureTextWidth } from "../../src/utils/helpers"
+import { parseAttributionParam } from "../../src/generate/generateParams"
 
 // Mock measureTextWidth since it's used in createAttributionSVG
 jest.mock("../../src/utils/helpers", () => ({

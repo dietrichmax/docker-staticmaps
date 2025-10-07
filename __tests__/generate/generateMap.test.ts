@@ -131,6 +131,31 @@ describe("generateMap", () => {
     expect(result.buffer).toBeInstanceOf(Buffer)
   })
 
+  it("should apply border if options.border is provided", async () => {
+    // Add addBorder mock to the image
+    mockMapInstance.image.addBorder = jest
+      .fn()
+      .mockResolvedValue(mockMapInstance.image)
+
+    const options = {
+      format: "png",
+      width: 300,
+      height: 200,
+      border: {
+        width: 15,
+        color: "123456",
+      },
+    }
+
+    const result = await generateMap(options)
+
+    expect(mockMapInstance.image.addBorder).toHaveBeenCalledWith({
+      width: 15,
+      color: "#123456",
+    })
+    expect(result.buffer).toBeInstanceOf(Buffer)
+  })
+
   it("should throw an error if map.image is undefined after render", async () => {
     mockMapInstance.image = undefined
 
