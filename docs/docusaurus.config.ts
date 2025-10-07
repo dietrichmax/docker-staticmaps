@@ -89,12 +89,25 @@ const config: Config = {
           title: 'Links',
           items: [
             {
-              label: 'Tutorial',
-              to: '/docs/intro',
+              label: 'Documentation',
+              to: '/docs/introduction',
             },
             {
               label: 'Github',
               to: 'https://github.com/dietrichmax/docker-staticmaps',
+            },
+          ],
+        },
+        {
+          title: 'Links',
+          items: [
+            {
+              label: 'Privacy Policy',
+              to: '/docs/introduction',
+            },
+            {
+              label: 'Imprint',
+              to: '/docs/introduction',
             },
           ],
         },
