@@ -14,11 +14,9 @@ keywords:
 slug: /site-notice
 ---
 
-The following information (Impressum) is required under German law.
-Verantwortlich für den Inhalt gemäß § 55 Abs.2 RStV
+The following information (Impressum) is required under German law. Verantwortlich für den Inhalt gemäß § 55 Abs.2 RStV
 
-Max Dietrich
-[mail@mxd.codes](mailto:mail@mxd.codes)
+Max Dietrich [mail@mxd.codes](mailto:mail@mxd.codes)
 
 All views expressed on this site are my own and do not represent the opinions of any entity whatsover with which I have been, am now or will be affiliated with.
 
@@ -33,5 +31,3 @@ The content of the website has been carefully checked and created to the best of
 I observe the applicable data protection regulations when collecting, using and processing personal data. Insofar as it is possible to enter personal data (e-mail address, names, addresses, etc.) on the website, this is done voluntarily. The personal data you provide will only be used internally to answer your inquiries, process your orders or provide you with access to certain information. Upon your written request, I will inform you about the personal data I have stored about you. You also have the right to have this data corrected, deleted and/or blocked at any time.
 
 More informat at [Privacy Policy](/privacy-policy "Privacy Policy").
-
-

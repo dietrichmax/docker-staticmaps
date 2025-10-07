@@ -2,7 +2,7 @@
 import { getCachedTile, setCachedTile } from "../utils/cache"
 import { workOnQueue } from "./utils"
 import logger from "../utils/logger"
-import { TileServerOptions, TileServerConfigOptions } from "../types/types"
+import { TileServerOptions } from "../types/types"
 
 /**
  * Class to configure tile server URLs and subdomains.

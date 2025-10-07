@@ -20,8 +20,7 @@ I recommend that you read this Privacy Policy in full to ensure you are fully in
 
 # Plausible
 
-This website uses Plausible, a privacy-friendly, open-source web analytics platform designed to track basic website usage without collecting any personal data. IP addresses are not stored, cookies are not used, and all data is anonymized.
-The Plausible instance is self-hosted on a virtual server owned by Netcup GmbH, and no data is shared with third parties at any time.
+This website uses Plausible, a privacy-friendly, open-source web analytics platform designed to track basic website usage without collecting any personal data. IP addresses are not stored, cookies are not used, and all data is anonymized. The Plausible instance is self-hosted on a virtual server owned by Netcup GmbH, and no data is shared with third parties at any time.
 
 # Third party websites
 

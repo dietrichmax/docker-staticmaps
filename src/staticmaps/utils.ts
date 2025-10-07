@@ -1,6 +1,5 @@
 // utils.ts
 import { Coordinate } from "src/types/types"
-import logger from "../utils/logger"
 
 /**
  * Transform longitude to tile number.

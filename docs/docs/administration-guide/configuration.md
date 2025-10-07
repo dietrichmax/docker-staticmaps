@@ -39,9 +39,9 @@ You can optionally restrict access to the API using an API key.
 - **If no key is set**, the API runs in keyless mode (anyone can access it).
 - **Demo endpoints** (`/demo-map`) are accessible either via a valid `demo_auth=true` cookie **or** a valid API key.
 
-| Name | Type | Default | Description |
-| --- | --- | --- | --- |
-| `API_KEY` | string | (none) | Optional key to restrict access to the API |
+| Name      | Type   | Default | Description                                |
+| --------- | ------ | ------- | ------------------------------------------ |
+| `API_KEY` | string | (none)  | Optional key to restrict access to the API |
 
 **Passing the API Key**
 
@@ -52,7 +52,7 @@ You can provide the API key in two ways:
 ```bash
 curl -H "x-api-key: your_api_key_here" \
   "http://localhost:3000/api/staticmaps?width=600&height=600&center=40.7128,-74.006&zoom=12"
-````
+```
 
 #### 2. Query parameter
 
@@ -66,8 +66,8 @@ http://localhost:3000/api/staticmaps?width=600&height=600&center=40.7128,-74.006
 
 ## Demo Page Access
 
-* Without an API key: Access [http://localhost:3000](http://localhost:3000) directly using a browser cookie `demo_auth=true`.
-* With API key: Pass the key using `x-api-key` header or `api_key` query parameter.
+- Without an API key: Access [http://localhost:3000](http://localhost:3000) directly using a browser cookie `demo_auth=true`.
+- With API key: Pass the key using `x-api-key` header or `api_key` query parameter.
 
 Example:
 

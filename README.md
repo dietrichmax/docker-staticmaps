@@ -4,9 +4,7 @@
 
 **Generate static map images via a lightweight REST API**
 
-[![Shield: Buy me a coffee](https://img.shields.io/badge/Buy%20me%20a%20coffee-Support-yellow?logo=buymeacoffee)](https://buymeacoffee.com/mxdcodes) ![Version](https://img.shields.io/github/v/release/dietrichmax/docker-staticmaps) [![Shield: Docker Pulls](https://img.shields.io/docker/pulls/mxdcodes/docker-staticmaps?label=Docker%20Pull)](https://hub.docker.com/r/mxdcodes/docker-staticmaps) ![Shield: Docker Image Size](https://img.shields.io/docker/image-size/mxdcodes/docker-staticmaps/latest?label=Image%20Size) [![Build](https://github.com/dietrichmax/docker-staticmaps/actions/workflows/docker-build.yml/badge.svg)](https://github.com/dietrichmax/docker-staticmaps/actions/workflows/docker-build.yml) 
-[![Deploy Docs](https://github.com/dietrichmax/docker-staticmaps/actions/workflows/deploy-docs.yml/badge.svg)](https://github.com/dietrichmax/docker-staticmaps/actions/workflows/deploy-docs.yml)
-[![Shield: License: GPL v3](https://img.shields.io/github/license/dietrichmax/docker-staticmaps)](https://www.gnu.org/licenses/gpl-3.0)
+[![Shield: Buy me a coffee](https://img.shields.io/badge/Buy%20me%20a%20coffee-Support-yellow?logo=buymeacoffee)](https://buymeacoffee.com/mxdcodes) ![Version](https://img.shields.io/github/v/release/dietrichmax/docker-staticmaps) [![Shield: Docker Pulls](https://img.shields.io/docker/pulls/mxdcodes/docker-staticmaps?label=Docker%20Pull)](https://hub.docker.com/r/mxdcodes/docker-staticmaps) ![Shield: Docker Image Size](https://img.shields.io/docker/image-size/mxdcodes/docker-staticmaps/latest?label=Image%20Size) [![Build](https://github.com/dietrichmax/docker-staticmaps/actions/workflows/docker-build.yml/badge.svg)](https://github.com/dietrichmax/docker-staticmaps/actions/workflows/docker-build.yml) [![Deploy Docs](https://github.com/dietrichmax/docker-staticmaps/actions/workflows/deploy-docs.yml/badge.svg)](https://github.com/dietrichmax/docker-staticmaps/actions/workflows/deploy-docs.yml) [![Shield: License: GPL v3](https://img.shields.io/github/license/dietrichmax/docker-staticmaps)](https://www.gnu.org/licenses/gpl-3.0)
 
 </div>
 
@@ -23,10 +21,7 @@
 
 # Documentation
 
-The documentation of the latest development version is in the
-`docs/` subdirectory. A HTML version can be found at
-https://dietrichmax.github.io/docker-staticmaps/.
-
+The documentation of the latest development version is in the `docs/` subdirectory. A HTML version can be found at https://dietrichmax.github.io/docker-staticmaps/.
 
 # License
 
@@ -35,6 +30,3 @@ The source code is available under a GPL license version 3 or later.
 # Contributing
 
 Contributions, bug reports and pull requests are welcome.
-
-
-

@@ -1,8 +1,6 @@
 // src/types.ts
 
 import { Request } from "express"
-import IconMarker from "../staticmaps/features/marker"
-import Polyline from "../staticmaps/features/polyline"
 
 /**
  * Coordinate as [longitude, latitude].
@@ -67,6 +65,10 @@ export interface MapOptions {
   polyline?: Record<string, unknown>[]
   polygon?: Record<string, unknown>[]
   text?: Record<string, unknown>[]
+  border?: {
+    color: string
+    width: number
+  }
 }
 
 /**

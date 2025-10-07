@@ -10,7 +10,7 @@ last_update:
 keywords:
   - Text
 slug: /api-reference/text
-sidebar_position: 8
+sidebar_position: 9
 ---
 
 # Text
@@ -42,4 +42,4 @@ text=textStyle|textCoord
 http://localhost:3000/api/staticmaps?width=600&height=600&text=text:Hello%20World|size:20|48.8566,2.3522
 ```
 
-![Text Example](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/text.png)
+![Text Example](./img/text.png)

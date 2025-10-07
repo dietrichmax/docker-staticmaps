@@ -154,6 +154,32 @@ export default class Image {
   }
 
   /**
+   * Adds a frame or padding around the current image.
+   * @param options - Border options including background color and width.
+   */
+  async addFrame(options: {
+    width?: number
+    background?: string
+  }): Promise<this> {
+    if (!this.image) throw new Error("No image to extend")
+
+    const borderWidth = options.width || 10
+    const borderColor = options.background || "#ffffff"
+
+    this.image = await sharp(this.image)
+      .extend({
+        top: borderWidth,
+        bottom: borderWidth,
+        left: borderWidth,
+        right: borderWidth,
+        background: borderColor,
+      })
+      .toBuffer()
+
+    return this
+  }
+
+  /**
    * Return the image as a buffer.
    * @param mime - The MIME type or short format name (e.g., "png", "jpeg", "webp", "pdf").
    * @param outOpts - Additional options for converting to a buffer.

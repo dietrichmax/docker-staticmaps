@@ -26,7 +26,7 @@
 }
 
 /* 🌙 Dark mode — inverted palette with teal-green accents */
-[data-theme='dark'] {
+[data-theme="dark"] {
   --ifm-color-primary: #33c7ba;
   --ifm-color-primary-dark: #2eb3a8;
   --ifm-color-primary-darker: #299f97;

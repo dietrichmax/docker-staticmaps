@@ -1,14 +1,14 @@
-import {themes as prismThemes} from 'prism-react-renderer';
-import type {Config} from '@docusaurus/types';
-import type * as Preset from '@docusaurus/preset-classic';
+import { themes as prismThemes } from "prism-react-renderer"
+import type { Config } from "@docusaurus/types"
+import type * as Preset from "@docusaurus/preset-classic"
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
 const config: Config = {
-  title: 'docker-staticmaps',
-  tagline: 'A static map rendering API service built with Node.js & Docker',
-  
-  favicon: 'img/favicon.ico',
+  title: "docker-staticmaps",
+  tagline: "A static map rendering API service built with Node.js & Docker",
+
+  favicon: "img/favicon.ico",
 
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
   future: {
@@ -16,48 +16,54 @@ const config: Config = {
   },
 
   // Set the production url of your site here
-  url: 'https://dietrichmax.github.io',
+  url: "https://dietrichmax.github.io",
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: '/docker-staticmaps/',
+  baseUrl: "/docker-staticmaps/",
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'dietrichmax',
-  projectName: 'docker-staticmaps',
+  organizationName: "dietrichmax",
+  projectName: "docker-staticmaps",
 
-  deploymentBranch: 'gh-pages',
+  deploymentBranch: "gh-pages",
 
-  onBrokenLinks: 'warn',
+  onBrokenLinks: "warn",
 
   trailingSlash: false,
   // Even if you don't use internationalization, you can use this field to set
   // useful metadata like html lang. For example, if your site is Chinese, you
   // may want to replace "en" with "zh-Hans".
   i18n: {
-    defaultLocale: 'en',
-    locales: ['en'],
+    defaultLocale: "en",
+    locales: ["en"],
   },
 
   presets: [
     [
-      'classic',
+      "classic",
       {
         docs: {
-          sidebarPath: './sidebars.ts',
-          routeBasePath: '/', // Serve the docs at the site's root
+          sidebarPath: "./sidebars.ts",
+          routeBasePath: "/", // Serve the docs at the site's root
           editUrl:
-            'https://github.com/dietrichmax/docker-staticmaps/edit/main/docs/',
+            "https://github.com/dietrichmax/docker-staticmaps/edit/main/docs/",
         },
         blog: false, // Optional: disable the blog plugin
         theme: {
-          customCss: './src/css/custom.css',
+          customCss: "./src/css/custom.css",
         },
       } satisfies Preset.Options,
     ],
   ],
 
-  scripts: [{src: 'https://analytics.mxd.codes/js/script.js', defer: true, 'data-domain': 'dietrichmax.github.io'}],
+  scripts: [
+    {
+      "src": "https://analytics.mxd.codes/js/script.js",
+      "defer": true,
+      "data-domain": "dietrichmax.github.io",
+    },
+  ],
 
   themeConfig: {
     // Replace with your project's social card
@@ -66,43 +72,43 @@ const config: Config = {
       respectPrefersColorScheme: true,
     },
     navbar: {
-      title: 'docker-staticmaps',
+      title: "docker-staticmaps",
       items: [
         {
-          type: 'docSidebar',
-          sidebarId: 'tutorialSidebar',
-          position: 'left',
-          label: 'Documentation',
+          type: "docSidebar",
+          sidebarId: "tutorialSidebar",
+          position: "left",
+          label: "Documentation",
         },
         {
-          href: 'https://github.com/dietrichmax/docker-staticmaps',
-          label: 'GitHub',
-          position: 'right',
+          href: "https://github.com/dietrichmax/docker-staticmaps",
+          label: "GitHub",
+          position: "right",
         },
       ],
     },
     footer: {
-      style: 'dark',
+      style: "dark",
       links: [
         {
-          title: 'Links',
+          title: "Links",
           items: [
             {
-              label: 'Documentation',
-              to: '/',
+              label: "Documentation",
+              to: "/",
             },
             {
-              label: 'Github',
-              to: 'https://github.com/dietrichmax/docker-staticmaps',
+              label: "Github",
+              to: "https://github.com/dietrichmax/docker-staticmaps",
             },
             {
-              label: 'Privacy Policy',
-              to: '/privacy-policy',
+              label: "Privacy Policy",
+              to: "/privacy-policy",
             },
             {
-              label: 'Site Notice',
-              to: '/site-notice',
-            }
+              label: "Site Notice",
+              to: "/site-notice",
+            },
           ],
         },
       ],
@@ -113,6 +119,6 @@ const config: Config = {
       darkTheme: prismThemes.github,
     },
   } satisfies Preset.ThemeConfig,
-};
+}
 
-export default config;
+export default config

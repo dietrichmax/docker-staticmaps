@@ -1,10 +1,10 @@
 import logger from "../utils/logger"
 import StaticMaps from "../staticmaps/staticmaps"
-import { addMarkers } from "../features/addMarkers"
-import { addPolylines } from "../features/addPolylines"
-import { addCircles } from "../features/addCircles"
-import { addTexts } from "../features/addTexts"
-import { asArray } from "../features/asArray"
+import { addMarkers } from "../features"
+import { addPolylines } from "../features"
+import { addCircles } from "../features"
+import { addTexts } from "../features"
+import { asArray } from "../features"
 import { createAttributionSVG } from "../utils/attribution"
 import { MapOptions } from "../types/types"
 
@@ -46,7 +46,16 @@ export async function generateMap(
         options.width,
         options.height
       )
+
       await map.image.compositeSVG(svg)
+    }
+
+    if (options.border) {
+      const { color, width } = options.border
+      map.image = await map.image.addFrame({
+        width: width,
+        background: color,
+      })
     }
 
     const buffer = await map.image.buffer(options.format)
