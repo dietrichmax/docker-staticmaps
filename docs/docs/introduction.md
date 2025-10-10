@@ -19,6 +19,6 @@ sidebar_position: 1
 
 This guide comes in three parts:
 
-- **[Quickstart](/docker-staticmaps/docs/quickstart)**: For those who want to setup docker-staticmaps quickly
-- **[Administration Guide](/docker-staticmaps/docs/category/administration-guide)**, Including [Installation](/docker-staticmaps/docs/administration-guide/installation) and [Configuration](/docker-staticmaps/docs/administration-guide/configuration): for those who want to install their own docker-staticmaps api server
-- **[API Reference](/docker-staticmaps/docs/category/api-reference)**: For those who want to create specific static map images
+- **[Quickstart](/docker-staticmaps/quickstart)**: For those who want to setup docker-staticmaps quickly
+- **[Administration Guide](/docker-staticmaps/category/administration-guide)**: Ffor those who want to install their own docker-staticmaps api server
+- **[API Reference](/docker-staticmaps/category/api-reference)**: For those who want to create specific static map images
