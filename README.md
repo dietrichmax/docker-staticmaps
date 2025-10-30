@@ -39,8 +39,7 @@ A interactive playground is available at [http://localhost:3000](http://localhos
 
 ## Documentation
 
-The documentation of the latest development version is in the `docs/` subdirectory. A HTML version can be found at https://
-dietrichmax.github.io/docker-staticmaps/.
+The documentation of the latest development version is in the `docs/` subdirectory. A HTML version can be found at https://dietrichmax.github.io/docker-staticmaps/.
 
 ## License
 
