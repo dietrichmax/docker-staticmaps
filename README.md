@@ -19,14 +19,33 @@
 - 🧊 **Tile and image caching** for performance.
 - 🚦 **Built-in rate limiting** per IP to protect against abuse.
 
-# Documentation
+## 🏁 Quickstart
 
-The documentation of the latest development version is in the `docs/` subdirectory. A HTML version can be found at https://dietrichmax.github.io/docker-staticmaps/.
+Run the service with Docker:
 
-# License
+```bash
+docker run -p '3000:3000/tcp' mxdcodes/docker-staticmaps:latest
+```
+
+Send a sample request:
+
+```bash
+curl "http://localhost:3000/api/staticmaps?width=1000&height=1000&center=-18.2871,147.6992&zoom=9&basemap=satellite"
+```
+
+![Minimal Example](https://raw.githubusercontent.com/dietrichmax/docker-staticmaps/refs/heads/main/examples/minimalexample.png)
+
+A interactive playground is available at [http://localhost:3000](http://localhost:3000 "docker-staticmaps interactive playground")
+
+## Documentation
+
+The documentation of the latest development version is in the `docs/` subdirectory. A HTML version can be found at https://
+dietrichmax.github.io/docker-staticmaps/.
+
+## License
 
 The source code is available under a GPL license version 3 or later.
 
-# Contributing
+## Contributing
 
 Contributions, bug reports and pull requests are welcome.
