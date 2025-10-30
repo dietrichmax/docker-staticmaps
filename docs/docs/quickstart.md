@@ -30,3 +30,5 @@ curl "http://localhost:3000/api/staticmaps?width=1000&height=1000&center=-18.287
 ![Minimal Example](./img/minimalexample.png)
 
 An interactive playground is available at [http://localhost:3000](http://localhost:3000).
+
+![Interactive playground](./img/docker-staticmaps-playground-screenshot.png)
