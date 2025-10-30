@@ -37,6 +37,8 @@ curl "http://localhost:3000/api/staticmaps?width=1000&height=1000&center=-18.287
 
 A interactive playground is available at [http://localhost:3000](http://localhost:3000 "docker-staticmaps interactive playground")
 
+![Interactive playground](https://dietrichmax.github.io/docker-staticmaps/assets/images/docker-staticmaps-playground-screenshot-91d4739dfbc7eb705bd4ae4152982a0e.png)
+
 ## Documentation
 
 The documentation of the latest development version is in the `docs/` subdirectory. A HTML version can be found at https://dietrichmax.github.io/docker-staticmaps/.
