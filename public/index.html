@@ -17,6 +17,12 @@
         display: grid;
         gap: 1rem;
       }
+      
+
+      p {
+        margin: 0;
+        font-size: 0.9rem;
+      }
 
       h1 {
         margin: 0;
@@ -53,9 +59,29 @@
         background: #2563eb;
       }
 
-      p {
-        margin: 0;
-        font-size: 0.9rem;
+      #basemapSelect {
+        padding: 0.6rem 1.2rem;
+        border: none;
+        border-radius: 0.5rem;
+        background: #3b82f6;
+        color: #fff;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: background 0.2s;
+        font-family: system-ui, sans-serif;
+      }
+
+      #basemapSelect:hover,
+      #basemapSelect:focus {
+        background: #2563eb;
+        outline: none;
+      }
+
+      /* Dropdown options styling */
+      #basemapSelect option {
+        color: #fff;
+        background: #3b82f6;
+        font-size: 0.95rem;
       }
 
       #staticMapUrlDisplay {
@@ -77,8 +103,14 @@
     <h1>github.com/docker-staticmaps demo</h1>
     <div id="map"></div>
 
-    <button class="button" id="toggleBasemap">Switch to OSMTopo</button>
-    <button class="button" id="generateStaticMap">Generate Static Map</button>
+    <div class="controls"></div>
+      <label for="basemapSelect">Choose basemap:</label>
+      <select id="basemapSelect">
+      <!-- Options will be populated dynamically -->
+      </select>
+        
+      <button id="generateStaticMap">Generate Static Map</button>
+    </div>
 
     <p>
       <strong>Current Static Map URL:</strong>
@@ -88,135 +120,5 @@
     </p>
 
     <script src="ol.js"></script>
-    <script>
-      let map
-      let currentBasemap = "osm" // Default base map
-      const center = [0, 20] // Starting center
-      const zoom = 1 // Starting zoom
-      const height = 400
-      let isLoading = false
-      let staticMapImgElement = null
-
-      // Initialize the map
-      function initializeMap() {
-        const osmLayer = new ol.layer.Tile({
-          source: new ol.source.OSM(),
-        })
-
-        const layerGroup = new ol.layer.Group({
-          layers: [osmLayer],
-        })
-
-        map = new ol.Map({
-          target: "map",
-          layers: [layerGroup],
-          view: new ol.View({
-            center: ol.proj.fromLonLat(center),
-            zoom: zoom,
-            projection: "EPSG:3857",
-          }),
-        })
-
-        // Update static map URL on every moveend event
-        map.on("moveend", function () {
-          const view = map.getView()
-          const centerLonLat = ol.proj.toLonLat(view.getCenter())
-          updateStaticMapUrl(centerLonLat, view.getZoom(), currentBasemap)
-        })
-
-        // Update map size on window resize
-        window.addEventListener("resize", () => {
-          map.updateSize()
-        })
-      }
-
-      // Update static map URL dynamically
-      function updateStaticMapUrl(centerLonLat, zoom, currentBasemap) {
-        const mapWidth = document.getElementById("map").offsetWidth
-        const lat = centerLonLat[1]
-        const lon = centerLonLat[0]
-        const staticMapUrl = `/staticmaps?width=${mapWidth}&height=${height}&center=${encodeURIComponent(lat + "," + lon)}&zoom=${Math.round(zoom)}&basemap=${currentBasemap}`
-
-        document.getElementById("staticMapUrlDisplay").textContent =
-          staticMapUrl
-      }
-
-      // Switch between basemaps (OSM and OSMTopo)
-      function toggleBasemap() {
-        const osmtopoLayer = new ol.layer.Tile({
-          source: new ol.source.XYZ({
-            url: "https://tile.opentopomap.org/{z}/{x}/{y}.png",
-          }),
-        })
-
-        const osmLayer = new ol.layer.Tile({
-          source: new ol.source.OSM(),
-        })
-
-        const layerGroup = map.getLayers().item(0)
-        layerGroup.getLayers().clear()
-
-        if (currentBasemap === "osm") {
-          layerGroup.getLayers().push(osmtopoLayer)
-          currentBasemap = "otm"
-          document.getElementById("toggleBasemap").innerText = "Switch to OSM"
-        } else {
-          layerGroup.getLayers().push(osmLayer)
-          currentBasemap = "osm"
-          document.getElementById("toggleBasemap").innerText =
-            "Switch to OSMTopo"
-        }
-      }
-
-      // Generate a static map image
-      function generateStaticMap() {
-        if (isLoading) return
-        isLoading = true
-
-        const mapWidth = document.getElementById("map").offsetWidth
-        const view = map.getView()
-        const centerLonLat = ol.proj.toLonLat(view.getCenter())
-        const lat = centerLonLat[1]
-        const lon = centerLonLat[0]
-        const currentZoom = Math.round(view.getZoom())
-        const staticMapUrl = `/demo-map?width=${mapWidth}&height=${height}&center=${encodeURIComponent(lat + "," + lon)}&zoom=${currentZoom}&basemap=${currentBasemap}`
-
-        // Update the URL display
-        document.getElementById("staticMapUrlDisplay").textContent =
-          staticMapUrl
-
-        fetch(staticMapUrl)
-          .then((response) => response.blob())
-          .then((blob) => {
-            const imgURL = URL.createObjectURL(blob)
-            if (staticMapImgElement) {
-              staticMapImgElement.src = imgURL
-            } else {
-              staticMapImgElement = document.createElement("img")
-              staticMapImgElement.src = imgURL
-              staticMapImgElement.style.width = "100%"
-              staticMapImgElement.style.height = `${height}px`
-              document.body.appendChild(staticMapImgElement)
-            }
-          })
-          .catch((error) =>
-            console.error("Error generating static map:", error)
-          )
-          .finally(() => {
-            isLoading = false
-          })
-      }
-
-      // Event listeners for buttons
-      document
-        .getElementById("toggleBasemap")
-        .addEventListener("click", toggleBasemap)
-      document
-        .getElementById("generateStaticMap")
-        .addEventListener("click", generateStaticMap)
-
-      // Initialize the map when the page loads
-      window.onload = initializeMap
-    </script>
   </body>
 </html>

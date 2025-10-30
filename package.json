@@ -5,9 +5,11 @@
   "repository": "github:dietrichmax/docker-staticmaps",
   "scripts": {
     "format": "prettier --write .",
-    "dev": "nodemon --watch src/** --watch .env --ext ts,js -I --exec node --experimental-specifier-resolution=node  --loader ts-node/esm ./src/server.ts",
+    "dev": " npm run build:client && nodemon --watch src/** --watch .env --ext ts,js -I --exec node --experimental-specifier-resolution=node  --loader ts-node/esm ./src/server.ts",
     "test": "jest --coverage",
-    "build": "webpack",
+    "build:server": "webpack --config webpack.config.js",
+    "build:client": "webpack --config webpack.client.config.js",
+    "build": "npm run build:server && npm run build:client",
     "start": "node dist/server.cjs"
   },
   "type": "module",
@@ -19,6 +21,7 @@
     "express": "^5.1.0",
     "express-rate-limit": "^8.2.0",
     "node-cache": "^5.1.2",
+    "ol": "^10.6.1",
     "pdfkit": "^0.17.2",
     "sharp": "^0.34.4"
   },
@@ -30,9 +33,11 @@
     "@types/pdfkit": "^0.17.3",
     "@types/supertest": "^6.0.3",
     "cross-env": "^10.1.0",
+    "css-loader": "^7.1.2",
     "jest": "^30.2.0",
     "nodemon": "^3.1.10",
     "prettier": "^3.6.2",
+    "style-loader": "^4.0.0",
     "supertest": "^7.1.4",
     "ts-jest": "^29.4.5",
     "ts-loader": "^9.5.4",
