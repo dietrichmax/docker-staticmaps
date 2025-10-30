@@ -42,11 +42,11 @@ export function createAttributionSVG(
         .attr-text {
           font-family: Arial, sans-serif;
           font-size: ${fontSize}px;
-          fill: rgba(255, 255, 255, 0.95);
+          fill: rgba(0, 0, 0, 0.5);
           text-anchor: end;
         }
         .attr-bg {
-          fill: rgba(0, 0, 0, 0.5);
+          fill: rgba(255, 255, 255, 0.95);
         }
       </style>
       <rect x="${rectX}" y="${rectY}" width="${rectWidth}" height="${rectHeight}" class="attr-bg"/>
