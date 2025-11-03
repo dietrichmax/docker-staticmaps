@@ -34,4 +34,9 @@ Use the `basemap` parameter to select a predefined basemap or specify a `custom`
 | `carto-light` | [Carto Light](https://carto.com/location-data-services/basemaps/) |
 | `carto-dark` | [Carto Dark](https://carto.com/location-data-services/basemaps/) |
 
+
+```
+&basemap=osm
+```
+
 Make sure to respect the usage policy of each provider!
