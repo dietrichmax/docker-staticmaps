@@ -70,7 +70,7 @@ app.use(express.json({ limit: process.env.MAX_BODY_SIZE || '100kb' }))
  * Middleware to parse URL-encoded request bodies (from forms).
  * The 'extended: true' option allows for rich objects and arrays.
  */
-app.use(express.urlencoded({ extended: true, limit: process.env.MAX_BODY_SIZE || '100kb' , parameterLimit: 100000}))
+app.use(express.urlencoded({ extended: true, limit: process.env.MAX_BODY_SIZE || '100kb' , parameterLimit: Number(process.env.MAX_PARAMETER_LIMIT) || 1000 }))
 
 /**
  * Redirect handler for legacy `/staticmaps` route.
@@ -224,7 +224,7 @@ app.listen(PORT, () => {
       `  PORT: ${PORT}\n` +
       `  ENVIRONMENT: ${process.env.NODE_ENV || "development"}\n` +
       `  TILE_CACHE_TTL: ${process.env.TILE_CACHE_TTL || "3600"}\n` +
-      `  TILE_CACHE_DISABLE: ${process.env.TILE_CACHE_DISABLE || "false"}\n` +
+      `  DISABLE_TILE_CACHE: ${process.env.DISABLE_TILE_CACHE || "false"}\n` +
       `  TILE_USER_AGENT: ${process.env.TILE_USER_AGENT || "(not set)"}\n` +
       `  API_KEY: ${process.env.API_KEY ? "(set)" : "(not set)"}\n` +
       `  RATE_LIMIT_MS: ${process.env.RATE_LIMIT_MS || "60000"}\n` +

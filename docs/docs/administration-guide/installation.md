@@ -30,6 +30,7 @@ docker run -d \
   -e LOG_LEVEL="INFO" \
   -e TILE_CACHE_TTL=3600 \
   -e DISABLE_TILE_CACHE=false \
+  -e MAX_BODY_SIZE=100kb \
   -e RATE_LIMIT_MS=60000 \
   -e RATE_LIMIT_MAX=60 \
   mxdcodes/docker-staticmaps:latest
@@ -50,6 +51,7 @@ services:
       - LOG_LEVEL=INFO
       - TILE_CACHE_TTL=3600
       - DISABLE_TILE_CACHE=false
+      - MAX_BODY_SIZE=100kb
       - RATE_LIMIT_MS=60000
       - RATE_LIMIT_MAX=60
 ```
