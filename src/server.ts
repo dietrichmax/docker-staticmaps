@@ -64,13 +64,13 @@ app.use(headers)
 /**
  * Middleware to parse incoming JSON request bodies.
  */
-app.use(express.json())
+app.use(express.json({ limit: process.env.MAX_BODY_SIZE || '100kb' }))
 
 /**
  * Middleware to parse URL-encoded request bodies (from forms).
  * The 'extended: true' option allows for rich objects and arrays.
  */
-app.use(express.urlencoded({ extended: true }))
+app.use(express.urlencoded({ extended: true, limit: process.env.MAX_BODY_SIZE || '100kb' , parameterLimit: 100000}))
 
 /**
  * Redirect handler for legacy `/staticmaps` route.
@@ -229,7 +229,8 @@ app.listen(PORT, () => {
       `  API_KEY: ${process.env.API_KEY ? "(set)" : "(not set)"}\n` +
       `  RATE_LIMIT_MS: ${process.env.RATE_LIMIT_MS || "60000"}\n` +
       `  RATE_LIMIT_MAX: ${process.env.RATE_LIMIT_MAX || "60"}\n` +
-      `  LOG_LEVEL: ${process.env.LOG_LEVEL || "INFO"}`
+      `  LOG_LEVEL: ${process.env.LOG_LEVEL || "INFO"}\n` +
+      `  MAX_BODY_SIZE: ${process.env.MAX_BODY_SIZE || "100kb"}`
   )
   logger.info(
     `🗺️  docker-staticmaps running at http://localhost:${PORT}/api/staticmaps \nDemo running at http://localhost:${PORT}/`
