@@ -26,6 +26,8 @@ You can configure the **Docker Static Maps API** through environment variables.
 | `LOG_LEVEL` | string | INFO | Logging level (`DEBUG`, `INFO`, `WARN`, `ERROR`) |
 | `TILE_CACHE_TTL` | number | 3600 | Tile cache TTL in seconds |
 | `DISABLE_TILE_CACHE` | boolean | false | Set to `true` to disable tile caching |
+| `MAX_BODY_SIZE` | string | 100kb | Modify to increase decrese request body |
+| `MAX_PARAMETER_LIMIT` | number | 1000 | Modify to increase parameter limit |
 | `RATE_LIMIT_MS` | number | 60000 | Rate limit window in milliseconds |
 | `RATE_LIMIT_MAX` | number | 60 | Max requests per IP per window |
 
