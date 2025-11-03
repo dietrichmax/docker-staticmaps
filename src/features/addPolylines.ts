@@ -14,6 +14,7 @@ import { Polyline } from "../staticmaps/features"
  * - `weight` {number}: Stroke width in pixels.
  * - `fill` {string}: Fill color for polygons (ignored for polylines).
  * - `strokeDasharray` {number[]} Optional array specifying dash pattern for stroke.
+ * - `withGeodesicLine` {boolean} Optional flag to control geodesic line generation (default: true).
  *
  * @param {StaticMaps} map - The StaticMaps instance to which features will be added.
  * @param {Array<Object>} items - Array of polyline or polygon configuration objects.
@@ -25,7 +26,7 @@ export function addPolylines(
   isPolygon = false
 ): void {
   items.forEach((item, i) => {
-    const { coords = [], color, weight, fill, strokeDasharray } = item
+    const { coords = [], color, weight, fill, strokeDasharray, withGeodesicLine } = item
     if (coords.length < 2) {
       logger.warn(
         `Skipping ${isPolygon ? "polygon" : "polyline"} [${i}] due to insufficient coords`,
@@ -40,6 +41,7 @@ export function addPolylines(
       width: weight,
       fill,
       strokeDasharray,
+      withGeodesicLine,
     })
     isPolygon ? map.addPolygon(shape) : map.addLine(shape)
   })

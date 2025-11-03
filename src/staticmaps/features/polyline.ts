@@ -28,6 +28,7 @@ export default class Polyline {
    * @param {string} [options.fill] - Optional fill color, used if the polyline is a polygon.
    * @param {number} [options.width=3] - Stroke width in pixels.
    * @param {number[]} [options.strokeDasharray] - Optional stroke dash pattern, as an array of non-negative numbers.
+   * @param {boolean} [options.withGeodesicLine=true] - Whether to generate geodesic lines between coordinates.
    *
    * @throws {Error} If invalid coordinates are provided.
    */
@@ -49,8 +50,14 @@ export default class Polyline {
         ? "polygon"
         : "polyline"
 
-    // 🚑 Skip geodesic expansion if already decoded polyline (or if coords are many)
+
+
+    // Extract withGeodesicLine parameter (default: true)
+    const withGeodesicLine = options.withGeodesicLine ?? true
+
+    // 🚑 Skip geodesic expansion if already decoded polyline (or if coords are many) or if withGeodesicLine is false
     if (
+      withGeodesicLine &&
       this.type === "polyline" &&
       options.coords.length >= 2 &&
       !(options.coords as any)._isDecodedPolyline &&

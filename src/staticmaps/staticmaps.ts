@@ -107,11 +107,11 @@ class StaticMaps {
   /**
    * Adds a polyline to the map.
    *
-   * @param {Polyline} options - Options object for creating the polyline.
+   * @param {Polyline} polyline - Polyline instance to add to the map.
    * @returns {void}
    */
-  addLine(options: Polyline): void {
-    this.lines.push(new Polyline(options))
+  addLine(polyline: Polyline): void {
+    this.lines.push(polyline)
   }
 
   /**
@@ -133,11 +133,11 @@ class StaticMaps {
   /**
    * Adds a polygon to the map.
    *
-   * @param {Polyline} options - Options object for creating the polygon.
+   * @param {Polyline} polygon - Polyline instance to add to the map as a polygon.
    * @returns {void}
    */
-  addPolygon(options: Polyline): void {
-    this.lines.push(new Polyline(options))
+  addPolygon(polygon: Polyline): void {
+    this.lines.push(polygon)
   }
 
   /**
