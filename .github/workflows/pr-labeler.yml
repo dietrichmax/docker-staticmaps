@@ -5,14 +5,22 @@ on:
     types: [opened, synchronize]
 
 permissions:
-  contents: read
-  pull-requests: write
+  contents: read       # required to checkout & read repo files
+  pull-requests: write # required to add labels to PRs
 
 jobs:
   label-ci:
     runs-on: ubuntu-latest
+    # Skip PRs from forks
+    if: github.repository == 'dietrichmax/docker-staticmaps'
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Apply Labels
         uses: actions/labeler@v4
         with:
-          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          configuration-path: .github/labeler.yml
+          sync-labels: false
+          dot: false
