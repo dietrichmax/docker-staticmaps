@@ -1,12 +1,10 @@
 name: Update Release Draft
 
 on:
-  pull_request:
-    types: [closed] # Trigger when a PR is closed
+  push:
     branches:
       - main
 
-# Grant only the permissions needed by Release Drafter
 permissions:
   contents: write
   pull-requests: write
@@ -14,8 +12,6 @@ permissions:
 jobs:
   update_release_draft:
     runs-on: ubuntu-latest
-    # Ensure job only runs for PRs in this repository (not forks)
-    if: github.repository == 'dietrichmax/docker-staticmaps' && github.event.pull_request.merged == true
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -23,6 +19,6 @@ jobs:
       - name: Update Release Draft
         uses: release-drafter/release-drafter@v6
         with:
-          config-name: "release-drafter.yml"
+          config-name: release-drafter.yml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
