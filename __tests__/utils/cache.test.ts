@@ -23,12 +23,14 @@ describe("Tile Cache", () => {
   const mockRequest = (
     method: string,
     path: string,
-    query: Record<string, any> = {}
+    query: Record<string, any> = {},
+    body: Record<string, any> = {}
   ): MapRequest =>
     ({
       method,
       path,
       query,
+      body,
     }) as unknown as MapRequest
 
   describe("getCachedTile & setCachedTile", () => {
@@ -50,7 +52,7 @@ describe("Tile Cache", () => {
   })
 
   describe("createCacheKeyFromRequest", () => {
-    it("should create consistent cache key with sorted query parameters", () => {
+    it("should create consistent hash-based cache key with sorted parameters", () => {
       const req1 = mockRequest("GET", "/api/staticmaps", {
         width: "800",
         height: "600",
@@ -65,16 +67,22 @@ describe("Tile Cache", () => {
       const key1 = createCacheKeyFromRequest(req1)
       const key2 = createCacheKeyFromRequest(req2)
       expect(key1).toBe(key2)
+      expect(key1).toMatch(/^GET:\/api\/staticmaps:[a-f0-9]{64}$/)
     })
 
-    it("should handle array query parameters by joining with commas", () => {
-      process.env.DISABLE_TILE_CACHE = "false"
-      const req = mockRequest("GET", "/tiles", {
+    it("should generate different hashes for different parameters", () => {
+      const req1 = mockRequest("GET", "/tiles", {
         layers: ["base", "roads"],
       })
+      const req2 = mockRequest("GET", "/tiles", {
+        layers: ["satellite", "labels"],
+      })
 
-      const key = createCacheKeyFromRequest(req)
-      expect(key).toContain("layers=base%2Croads")
+      const key1 = createCacheKeyFromRequest(req1)
+      const key2 = createCacheKeyFromRequest(req2)
+      expect(key1).not.toBe(key2)
+      expect(key1).toMatch(/^GET:\/tiles:[a-f0-9]{64}$/)
+      expect(key2).toMatch(/^GET:\/tiles:[a-f0-9]{64}$/)
     })
 
     it("should return DEV key if cache is disabled", () => {
@@ -82,6 +90,42 @@ describe("Tile Cache", () => {
       const req = mockRequest("GET", "/tiles")
       const key = createCacheKeyFromRequest(req)
       expect(key).toBe("DEV:GET:/tiles")
+    })
+
+    it("should handle POST requests using body parameters", () => {
+      const req1 = mockRequest("POST", "/api/staticmaps", {}, {
+        width: "800",
+        polyline: "coord1,coord2,coord3",
+      })
+      const req2 = mockRequest("POST", "/api/staticmaps", {}, {
+        width: "800",
+        polyline: "coord4,coord5,coord6",
+      })
+
+      const key1 = createCacheKeyFromRequest(req1)
+      const key2 = createCacheKeyFromRequest(req2)
+      expect(key1).not.toBe(key2)
+      expect(key1).toMatch(/^POST:\/api\/staticmaps:[a-f0-9]{64}$/)
+      expect(key2).toMatch(/^POST:\/api\/staticmaps:[a-f0-9]{64}$/)
+    })
+
+    it("should handle large parameter sets without truncation", () => {
+      const largeParams: Record<string, string> = {}
+      for (let i = 0; i < 2000; i++) {
+        largeParams[`coord${i}`] = `${Math.random()},${Math.random()}`
+      }
+
+      const req1 = mockRequest("POST", "/api/staticmaps", {}, largeParams)
+      const req2 = mockRequest("POST", "/api/staticmaps", {}, {
+        ...largeParams,
+        coord0: "different,value",
+      })
+
+      const key1 = createCacheKeyFromRequest(req1)
+      const key2 = createCacheKeyFromRequest(req2)
+      expect(key1).not.toBe(key2)
+      expect(key1).toMatch(/^POST:\/api\/staticmaps:[a-f0-9]{64}$/)
+      expect(key2).toMatch(/^POST:\/api\/staticmaps:[a-f0-9]{64}$/)
     })
   })
 })
