@@ -1,4 +1,5 @@
 import NodeCache from "node-cache"
+import { createHash } from "crypto"
 import { MapRequest } from "src/types/types"
 import logger from "./logger"
 
@@ -78,7 +79,7 @@ export function createCacheKeyFromRequest(req: MapRequest): string {
     return devKey
   }
 
-  const queryParams = Object.entries(req.query)
+  const queryParams = Object.entries(req.method === "GET" ? req.query : req.body)
     .map(([k, v]) => {
       if (Array.isArray(v)) {
         return [k, v.join(",")] // join array values with a comma
@@ -89,8 +90,9 @@ export function createCacheKeyFromRequest(req: MapRequest): string {
     .map(([k, v]) => `${k}=${v}`) // turn into key=value strings
     .join("&") // join to form cache key string
 
-  const queryString = new URLSearchParams(queryParams).toString()
-  const cacheKey = `${req.method}:${req.path}?${queryString}`
+  // Use hash for large parameter sets to avoid URL length issues
+  const paramHash = createHash('sha256').update(queryParams).digest('hex')
+  const cacheKey = `${req.method}:${req.path}:${paramHash}`
 
   logger.debug(`Generated cache key: ${cacheKey}`)
   return cacheKey
