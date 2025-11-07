@@ -1,5 +1,5 @@
 # -------- Stage 1: Build --------
-FROM node:22-alpine AS build
+FROM node:24-alpine AS build
 
 # Metadata
 LABEL org.opencontainers.image.title="docker-staticmaps"
@@ -46,7 +46,7 @@ RUN npm prune --production
 RUN npm cache clean --force
 
 # Stage 2: Final Stage (Minimal Image)
-FROM node:22-alpine AS final
+FROM node:24-alpine AS final
 
 # Install runtime dependencies required by node-canvas
 RUN apk add --no-cache \

@@ -5,7 +5,7 @@
   "repository": "github:dietrichmax/docker-staticmaps",
   "scripts": {
     "format": "prettier --write .",
-    "dev": " npm run build:client && nodemon --watch src/** --watch .env --ext ts,js -I --exec node --experimental-specifier-resolution=node  --loader ts-node/esm ./src/server.ts",
+    "dev": "npm run build:client && nodemon --watch src --watch .env --ext ts,js -I --exec node --experimental-specifier-resolution=node --loader ts-node/esm ./src/server.ts",
     "test": "jest --coverage",
     "build:server": "webpack --config webpack.config.js",
     "build:client": "webpack --config webpack.client.config.js",

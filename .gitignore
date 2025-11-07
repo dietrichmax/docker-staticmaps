@@ -14,3 +14,4 @@ dist
 *zip.
 *releaseAnnouncement*
 coverage
+/public/ol.js
