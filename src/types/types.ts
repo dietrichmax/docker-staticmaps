@@ -89,6 +89,7 @@ export interface PolylineOptions {
   fill?: string // Fill color (optional)
   width?: number // Line width in pixels (default: 3)
   strokeDasharray?: number[] // Optional dash pattern for the line
+  withGeodesicLine?: boolean // Whether to generate geodesic lines (default: true)
 }
 
 /**

@@ -46,6 +46,11 @@ const NUMERIC_KEYS = new Set([
   "offsetY",
 ])
 
+/**
+ * Keys that represent boolean properties.
+ */
+const BOOLEAN_KEYS = new Set(["withGeodesicLine"])
+
 // ——— Defaults —————————————————————————————————————————————
 
 /**
@@ -107,12 +112,14 @@ const SHAPE_DEFAULTS: Record<ShapeType, Feature> = {
     color: "blue", // Stroke color
     fill: "", // No fill for lines
     strokeDasharray: [], // Default: solid line (empty dash array)
+    withGeodesicLine: true, // Generate geodesic lines by default
   },
   polygon: {
     weight: 3, // Border thickness
     color: "#4874db", // Border color
     fill: "", // No fill by default
     strokeDasharray: [], // Default: solid line (empty dash array)
+    withGeodesicLine: true, // Generate geodesic lines by default
   },
   circle: {
     color: "#4874db", // Border color
@@ -359,12 +366,12 @@ export function parseMultipleShapes(
  * The function scans each string in `items` for keys specified in `allowedKeys`.
  * If a string starts with a key followed by ":", its value is decoded and added to
  * the `extracted` object. Values for known color keys are validated and normalized,
- * numeric keys are parsed as numbers, and the special key `strokeDasharray` is parsed
- * as an array of numbers from a comma-separated string.
+ * numeric keys are parsed as numbers, boolean keys are parsed as booleans,
+ * and the special key `strokeDasharray` is parsed as an array of numbers from a comma-separated string.
  * Strings that don't match any allowed key prefix are collected as coordinate strings.
  *
- * @param {string[]} items - Array of string items, e.g. ["color:red", "weight:5", "12.34,56.78"]
- * @param {string[]} allowedKeys - List of keys to extract, e.g. ["color", "weight", "radius", "strokeDasharray"]
+ * @param {string[]} items - Array of string items, e.g. ["color:red", "weight:5", "withGeodesicLine:false", "12.34,56.78"]
+ * @param {string[]} allowedKeys - List of keys to extract, e.g. ["color", "weight", "radius", "strokeDasharray", "withGeodesicLine"]
  * @returns {{ extracted: Record<string, any>, coordinates: string[] }} An object containing
  *          `extracted` key-value pairs for recognized parameters, and `coordinates` with
  *          remaining strings treated as coordinate values.
@@ -392,6 +399,8 @@ export function extractParams(items: string[], allowedKeys: string[]) {
       } else if (NUMERIC_KEYS.has(key)) {
         const num = Number(raw)
         if (!isNaN(num)) extracted[key] = num
+      } else if (BOOLEAN_KEYS.has(key)) {
+        extracted[key] = raw === "true" || raw === "1"
       } else {
         extracted[key] = raw
       }
