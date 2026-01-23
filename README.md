@@ -47,6 +47,8 @@ The documentation of the latest development version is in the `docs/` subdirecto
 
 The source code is available under a GPL license version 3 or later.
 
+Portions of this project (in the staticmaps folder) were originally based on[staticmaps](https://github.com/StephanGeorg/staticmaps) (MIT License).
+
 ## Contributing
 
 Contributions, bug reports and pull requests are welcome.
