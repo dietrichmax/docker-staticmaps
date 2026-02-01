@@ -45,9 +45,11 @@ The documentation of the latest development version is in the `docs/` subdirecto
 
 ## License
 
-The source code is available under a AGPL license version 3 or later.
+Copyright (C) 2026 Max Dietrich
 
-Portions of this project (in the staticmaps folder) were originally based on [staticmaps](https://github.com/StephanGeorg/staticmaps) (MIT License).
+The source code of this project is licensed under the GNU Affero General Public License version 3 or later (AGPL-3.0+).  
+
+Portions of this project (in the `staticmaps` folder) were originally based on [staticmaps](https://github.com/StephanGeorg/staticmaps) (MIT License).
 
 ## Contributing
 
