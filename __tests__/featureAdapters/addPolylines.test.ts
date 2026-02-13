@@ -1,4 +1,4 @@
-import { addPolylines } from "../../src/features/addPolylines"
+import { addPolylines } from "../../src/featureAdapters/addPolylines"
 import StaticMaps from "../../src/staticmaps/staticmaps"
 import { Polyline } from "../../src/staticmaps/features"
 import logger from "../../src/utils/logger"

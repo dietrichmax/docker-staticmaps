@@ -24,15 +24,6 @@ export function normalizeIp(ip: string): string {
 }
 
 /**
- * Checks whether the current environment is in development mode.
- *
- * @returns {boolean} - True if NODE_ENV is "development", false otherwise.
- */
-export function isDev() {
-  return process.env.NODE_ENV === "development"
-}
-
-/**
  * Measures the width of a given text string using a canvas context.
  *
  * @param {string} text - The text to measure.

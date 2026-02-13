@@ -1,11 +1,11 @@
 import { generateMap } from "../../src/generate/generateMap"
 import { Coordinate } from "../../src/types/types"
 jest.mock("../../src/staticmaps/staticmaps")
-jest.mock("../../src/features/addMarkers")
-jest.mock("../../src/features/addPolylines")
-jest.mock("../../src/features/addCircles")
-jest.mock("../../src/features/addTexts")
-jest.mock("../../src/features/asArray")
+jest.mock("../../src/featureAdapters/addMarkers")
+jest.mock("../../src/featureAdapters/addPolylines")
+jest.mock("../../src/featureAdapters/addCircles")
+jest.mock("../../src/featureAdapters/addTexts")
+jest.mock("../../src/featureAdapters/asArray")
 jest.mock("../../src/utils/attribution", () => ({
   createAttributionSVG: jest.fn(),
 }))
@@ -13,11 +13,11 @@ jest.mock("../../src/utils/logger")
 
 import StaticMaps from "../../src/staticmaps/staticmaps"
 import logger from "../../src/utils/logger"
-import * as addMarkersModule from "../../src/features/addMarkers"
-import * as addPolylinesModule from "../../src/features/addPolylines"
-import * as addCirclesModule from "../../src/features/addCircles"
-import * as addTextsModule from "../../src/features/addTexts"
-import * as asArrayModule from "../../src/features/asArray"
+import * as addMarkersModule from "../../src/featureAdapters/addMarkers"
+import * as addPolylinesModule from "../../src/featureAdapters/addPolylines"
+import * as addCirclesModule from "../../src/featureAdapters/addCircles"
+import * as addTextsModule from "../../src/featureAdapters/addTexts"
+import * as asArrayModule from "../../src/featureAdapters/asArray"
 import * as attributionModule from "../../src/utils/attribution"
 
 describe("generateMap", () => {
