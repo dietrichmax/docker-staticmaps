@@ -1,6 +1,9 @@
 import { createAttributionSVG } from "../../src/utils/attribution"
 import { measureTextWidth } from "../../src/utils/helpers"
-import { parseAttributionParam } from "../../src/generate/generateParams"
+import {
+  parseAttributionParam,
+  parseBorderParam,
+} from "../../src/generate/generateParams"
 
 // Mock measureTextWidth since it's used in createAttributionSVG
 jest.mock("../../src/utils/helpers", () => ({
@@ -98,5 +101,53 @@ describe("parseAttributionParam", () => {
     const input = "show:true"
     const result = parseAttributionParam(input, "Basemap attribution")
     expect(result.text).toBe("Basemap attribution")
+  })
+
+  it("handles object input from JSON POST body", () => {
+    const result = parseAttributionParam({ show: true, text: "TEST" })
+    expect(result).toEqual({ show: true, text: "TEST" })
+  })
+
+  it("handles object input with show:false", () => {
+    const result = parseAttributionParam({ show: false, text: "Hidden" })
+    expect(result).toEqual({ show: false, text: "Hidden" })
+  })
+
+  it("handles object input without text, falls back to basemap attribution", () => {
+    const result = parseAttributionParam({ show: true }, "Basemap text")
+    expect(result).toEqual({ show: true, text: "Basemap text" })
+  })
+})
+
+describe("parseBorderParam", () => {
+  it("returns undefined if no param provided", () => {
+    expect(parseBorderParam()).toBeUndefined()
+    expect(parseBorderParam("")).toBeUndefined()
+  })
+
+  it("parses string input with width and color", () => {
+    expect(parseBorderParam("width:2|color:#ff0000")).toEqual({
+      width: 2,
+      color: "#ff0000",
+    })
+  })
+
+  it("normalizes color without # prefix", () => {
+    expect(parseBorderParam("color:ff0000")).toEqual({ color: "#ff0000" })
+  })
+
+  it("handles object input from JSON POST body", () => {
+    expect(parseBorderParam({ width: 2, color: "#ff0000" })).toEqual({
+      width: 2,
+      color: "#ff0000",
+    })
+  })
+
+  it("handles object input with only width", () => {
+    expect(parseBorderParam({ width: 3 })).toEqual({ width: 3 })
+  })
+
+  it("handles object input with only color", () => {
+    expect(parseBorderParam({ color: "#000" })).toEqual({ color: "#000" })
   })
 })

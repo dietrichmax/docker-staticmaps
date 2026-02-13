@@ -43,13 +43,21 @@ export function getTileUrl(
  *  - `text`: The attribution text to display (optional).
  */
 export function parseAttributionParam(
-  param?: string,
+  param?: string | { show?: boolean; text?: string },
   basemapAttribution?: string
 ): { show: boolean; text?: string } {
   const result: { show: boolean; text?: string } = { show: true }
 
   if (!param) {
     if (basemapAttribution) result.text = basemapAttribution
+    return result
+  }
+
+  // Handle object input (e.g. from JSON POST body)
+  if (typeof param === "object") {
+    if (typeof param.show === "boolean") result.show = param.show
+    if (param.text) result.text = param.text
+    if (!result.text && basemapAttribution) result.text = basemapAttribution
     return result
   }
 
@@ -95,9 +103,17 @@ export function parseAttributionParam(
  *          or `undefined` if the input is empty or invalid.
  */
 export function parseBorderParam(
-  param?: string
+  param?: string | { width?: number; color?: string }
 ): { width?: number; color?: string } | undefined {
   if (!param) return undefined
+
+  // Handle object input (e.g. from JSON POST body)
+  if (typeof param === "object") {
+    return {
+      ...(param.width !== undefined && { width: param.width }),
+      ...(param.color !== undefined && { color: param.color }),
+    }
+  }
 
   const parts = param.split("|")
   const result: { width?: number; color?: string } = {}
