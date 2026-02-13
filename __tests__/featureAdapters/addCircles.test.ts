@@ -1,4 +1,4 @@
-import { addCircles } from "../../src/features/addCircles"
+import { addCircles } from "../../src/featureAdapters/addCircles"
 import StaticMaps from "../../src/staticmaps/staticmaps"
 import { Circle } from "../../src/staticmaps/features"
 import logger from "../../src/utils/logger"

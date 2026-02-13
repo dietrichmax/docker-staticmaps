@@ -1,4 +1,4 @@
-import { addMarkers } from "../../src/features"
+import { addMarkers } from "../../src/featureAdapters"
 import StaticMaps from "../../src/staticmaps/staticmaps"
 import { IconMarker } from "../../src/staticmaps/features"
 import logger from "../../src/utils/logger"

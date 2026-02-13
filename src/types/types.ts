@@ -7,11 +7,6 @@ import { Request } from "express"
  */
 export type Coordinate = [number, number]
 
-/**
- * Array of coordinates.
- */
-export type Coordinates = Coordinate[]
-
 export type CoordInput =
   | Array<Coordinate>
   | Array<string>
@@ -170,15 +165,6 @@ export interface TileServerOptions {
   tileUrl?: string // Optional tile URL template (default: "https://tile.openstreetmap.org/{z}/{x}/{y}.png")
   tileSubdomains?: string[] // Optional subdomains for tile requests
   subdomains?: string[] // Optional subdomains (backward compatibility)
-}
-
-/**
- * Information about client rate limiting.
- */
-export interface ClientRateLimitInfo {
-  totalHits: number // Number of requests made in the window
-  resetTime: Date // When the rate limit window resets
-  // Additional properties may be added based on the rate limiter version
 }
 
 /**

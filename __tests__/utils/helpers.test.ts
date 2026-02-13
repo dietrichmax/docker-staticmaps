@@ -1,7 +1,6 @@
 import {
   truncate,
   normalizeIp,
-  isDev,
   measureTextWidth,
   formatBytes,
 } from "../../src/utils/helpers"
@@ -31,28 +30,6 @@ describe("normalizeIp", () => {
 
   it("returns normal IP unchanged", () => {
     expect(normalizeIp("127.0.0.1")).toBe("127.0.0.1")
-  })
-})
-
-describe("isDev", () => {
-  const OLD_ENV = process.env
-
-  beforeEach(() => {
-    process.env = { ...OLD_ENV }
-  })
-
-  afterEach(() => {
-    process.env = OLD_ENV
-  })
-
-  it("returns true if NODE_ENV is development", () => {
-    process.env.NODE_ENV = "development"
-    expect(isDev()).toBe(true)
-  })
-
-  it("returns false if NODE_ENV is not development", () => {
-    process.env.NODE_ENV = "production"
-    expect(isDev()).toBe(false)
   })
 })
 

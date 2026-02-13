@@ -1,4 +1,4 @@
-import { addTexts } from "../../src/features/addTexts"
+import { addTexts } from "../../src/featureAdapters/addTexts"
 import StaticMaps from "../../src/staticmaps/staticmaps"
 import { Text } from "../../src/staticmaps/features"
 import logger from "../../src/utils/logger"

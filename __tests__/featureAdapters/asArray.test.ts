@@ -1,4 +1,4 @@
-import { asArray } from "../../src/features/asArray"
+import { asArray } from "../../src/featureAdapters/asArray"
 
 describe("asArray", () => {
   it("returns an empty array if input is undefined", () => {
