@@ -7,6 +7,18 @@ import { Request } from "express"
  */
 export type Coordinate = [number, number]
 
+/**
+ * Bounding box as [minLon, minLat, maxLon, maxLat].
+ */
+export type BBox = [number, number, number, number]
+
+/**
+ * Interface for features that can calculate their geographic extent.
+ */
+export interface HasExtent {
+  extent(...args: any[]): BBox
+}
+
 export type CoordInput =
   | Array<Coordinate>
   | Array<string>

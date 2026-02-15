@@ -97,6 +97,17 @@ describe("meterToPixel", () => {
     const pixels = meterToPixel(1000, 10, 52.52)
     expect(pixels).toBeGreaterThan(0)
   })
+
+  test("returns 0 for negative zoom", () => {
+    expect(meterToPixel(1000, -1, 52.52)).toBe(0)
+    expect(meterToPixel(1000, -10, 0)).toBe(0)
+  })
+
+  test("returns valid result for zoom 0", () => {
+    const pixels = meterToPixel(1000, 0, 52.52)
+    expect(pixels).toBeGreaterThan(0)
+    expect(Number.isFinite(pixels)).toBe(true)
+  })
 })
 
 describe("workOnQueue", () => {

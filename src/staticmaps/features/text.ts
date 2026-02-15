@@ -1,11 +1,11 @@
-import { TextOptions, Coordinate } from "../../types/types"
+import { TextOptions, Coordinate, BBox, HasExtent } from "../../types/types"
 import { lonToX, latToY, xToLon, yToLat } from "../utils"
 
 /**
  * Represents a text label to be rendered at a specific geographic coordinate.
  * Includes support for styling such as font size, color, anchor alignment, and pixel offsets.
  */
-export default class Text {
+export default class Text implements HasExtent {
   coord?: Coordinate
   text?: string
   public readonly color: string
@@ -59,7 +59,7 @@ export default class Text {
    *
    * @returns {[number, number, number, number]} Bounding box as [minLon, minLat, maxLon, maxLat].
    */
-  extent(zoom?: number, tileSize = 256): [number, number, number, number] {
+  extent(zoom?: number, tileSize = 256): BBox {
     if (!this.coord)
       throw new Error("No coordinate defined for this text feature.")
     if (!zoom)

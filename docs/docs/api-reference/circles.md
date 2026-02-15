@@ -27,7 +27,7 @@ circle=circleStyle|circleCoord
   | Parameter | Default    | Description                              |
   | --------- | ---------- | ---------------------------------------- |
   | `radius`  | (required) | Specifies the radius of the element.     |
-  | `color`   | `#0000bb`  | Defines the stroke color of the element. |
+  | `color`   | `#4874db`  | Defines the stroke color of the element. |
   | `width`   | `3`        | Sets the stroke width of the element.    |
   | `fill`    | `{color}`  | Specifies the fill color of the element. |
 

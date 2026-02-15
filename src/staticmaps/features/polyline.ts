@@ -1,5 +1,5 @@
 import { createGeodesicLine, normalizeStrokeDasharray } from "../utils"
-import { PolylineOptions, Coordinate } from "../../types/types"
+import { PolylineOptions, Coordinate, BBox, HasExtent } from "../../types/types"
 
 /**
  * Represents a polyline or polygon with optional styling.
@@ -7,7 +7,7 @@ import { PolylineOptions, Coordinate } from "../../types/types"
  * For each pair of coordinates in the input, a geodesic line is generated between them.
  * If the first and last coordinate are the same, the polyline is treated as a polygon.
  */
-export default class Polyline {
+export default class Polyline implements HasExtent {
   coords: Coordinate[]
   color: string
   fill?: string
@@ -90,12 +90,17 @@ export default class Polyline {
    *
    * @returns {[number, number, number, number]} Bounding box as [minLon, minLat, maxLon, maxLat].
    */
-  extent(): [number, number, number, number] {
-    return [
-      Math.min(...this.coords.map((c) => c[0])),
-      Math.min(...this.coords.map((c) => c[1])),
-      Math.max(...this.coords.map((c) => c[0])),
-      Math.max(...this.coords.map((c) => c[1])),
-    ]
+  extent(): BBox {
+    let minLon = Infinity,
+      minLat = Infinity,
+      maxLon = -Infinity,
+      maxLat = -Infinity
+    for (const [lon, lat] of this.coords) {
+      if (lon < minLon) minLon = lon
+      if (lat < minLat) minLat = lat
+      if (lon > maxLon) maxLon = lon
+      if (lat > maxLat) maxLat = lat
+    }
+    return [minLon, minLat, maxLon, maxLat]
   }
 }

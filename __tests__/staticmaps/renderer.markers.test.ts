@@ -268,7 +268,7 @@ describe("loadMarkers", () => {
     expect(result).toBe(true)
   })
 
-  it("throws error if fetch fails", async () => {
+  it("falls back to default SVG marker if fetch fails", async () => {
     const markers = [
       {
         img: "https://bad-url.com/icon.png",
@@ -276,6 +276,10 @@ describe("loadMarkers", () => {
         set: jest.fn(),
         width: 10,
         height: 10,
+        color: "#d9534f",
+        offsetX: 5,
+        offsetY: 10,
+        offset: [5, 10],
       },
     ]
 
@@ -283,8 +287,14 @@ describe("loadMarkers", () => {
       ok: false,
     })
 
-    await expect(
-      loadMarkers(markers as any, 1, jest.fn(), jest.fn())
-    ).rejects.toThrow(/Failed to fetch image from/)
+    const result = await loadMarkers(
+      markers as any,
+      1,
+      jest.fn(() => 0),
+      jest.fn(() => 0)
+    )
+    expect(result).toBe(true)
+    // Marker should have been set with fallback SVG data
+    expect(markers[0].set).toHaveBeenCalled()
   })
 })

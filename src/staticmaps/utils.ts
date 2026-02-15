@@ -1,6 +1,15 @@
 // utils.ts
 import { Coordinate } from "src/types/types"
 
+/** Maximum latitude supported by Web Mercator projection (degrees). */
+export const MAX_LATITUDE = 85.05112878
+
+/** Approximate meters per degree of latitude. */
+export const METERS_PER_DEGREE_LAT = 111320
+
+/** Meters per pixel at zoom level 0 at the equator (Web Mercator). */
+const METERS_PER_PIXEL_Z0 = 156543.03392
+
 /**
  * Transform longitude to tile number.
  *
@@ -23,7 +32,6 @@ export function lonToX(lon: number, zoom: number): number {
  * @returns The tile number corresponding to the given latitude at the specified zoom level.
  */
 export function latToY(lat: number, zoom: number): number {
-  const MAX_LATITUDE = 85.05112878
   if (lat > MAX_LATITUDE) lat = MAX_LATITUDE
   if (lat < -MAX_LATITUDE) lat = -MAX_LATITUDE
 
@@ -66,7 +74,7 @@ export function xToLon(x: number, zoom: number): number {
 
 /**
  * Convert meters to pixels at a given zoom level and latitude.
- *a
+ *
  * @param meter - Distance in meters.
  * @param zoom - Zoom level.
  * @param lat - Latitude at which to calculate the conversion.
@@ -77,8 +85,9 @@ export const meterToPixel = (
   zoom: number,
   lat: number
 ): number => {
+  if (zoom < 0) return 0
   const latitudeRadians = lat * (Math.PI / 180)
-  const meterPerPixel = (156543.03392 * Math.cos(latitudeRadians)) / 2 ** zoom
+  const meterPerPixel = (METERS_PER_PIXEL_Z0 * Math.cos(latitudeRadians)) / 2 ** zoom
   return meter / meterPerPixel
 }
 

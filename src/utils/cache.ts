@@ -99,9 +99,9 @@ export function createCacheKeyFromRequest(req: MapRequest): string {
 }
 
 /**
- * Internal cache instance used for storing tile buffers.
- * Exported for testing purposes only.
- *
- * @internal
+ * Flushes all entries from the tile cache.
+ * Intended for use in tests to reset cache state between runs.
  */
-export const _tileCache = tileCache
+export function flushTileCache(): void {
+  tileCache.flushAll()
+}

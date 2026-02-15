@@ -433,24 +433,29 @@ export async function loadMarkers(
     }
   }
 
+  const defaultSvg = (ic: Icon) => `
+    <svg xmlns="http://www.w3.org/2000/svg" width="${ic.width}" height="${ic.height}" viewBox="0 0 24 24">
+      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="${ic.color}"/>
+      <circle cx="12" cy="9" r="2.5" fill="white"/>
+    </svg>`
+
   await Promise.all(
     icons.map(async (icon) => {
       if (isValidUrl(icon.file)) {
-        const response = await fetch(icon.file, { method: "GET" })
-        if (!response.ok)
-          throw new Error(`Failed to fetch image from ${icon.file}`)
-        const arrayBuffer = await response.arrayBuffer()
-        icon.data = await sharp(Buffer.from(arrayBuffer))
-          .resize(icon.width, icon.height)
-          .toBuffer()
+        try {
+          const response = await fetch(icon.file, { method: "GET" })
+          if (!response.ok)
+            throw new Error(`Failed to fetch image from ${icon.file}`)
+          const arrayBuffer = await response.arrayBuffer()
+          icon.data = await sharp(Buffer.from(arrayBuffer))
+            .resize(icon.width, icon.height)
+            .toBuffer()
+        } catch {
+          // Graceful fallback to default SVG marker on fetch failure
+          icon.data = await sharp(Buffer.from(defaultSvg(icon))).toBuffer()
+        }
       } else {
-        const svgString = `
-          <svg xmlns="http://www.w3.org/2000/svg" width="${icon.width}" height="${icon.height}" viewBox="0 0 24 24">
-            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="${icon.color}"/>
-            <circle cx="12" cy="9" r="2.5" fill="white"/>
-          </svg>
-        `
-        icon.data = await sharp(Buffer.from(svgString)).toBuffer()
+        icon.data = await sharp(Buffer.from(defaultSvg(icon))).toBuffer()
       }
     })
   )

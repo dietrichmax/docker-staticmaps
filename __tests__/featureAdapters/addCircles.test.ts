@@ -51,11 +51,11 @@ describe("addCircles", () => {
 
     expect(logger.warn).toHaveBeenCalledTimes(2)
     expect(logger.warn).toHaveBeenCalledWith(
-      expect.stringContaining("Skipping circle [0] due to missing coords"),
+      expect.stringContaining("Skipping circle [0] due to insufficient coords"),
       circles[0]
     )
     expect(logger.warn).toHaveBeenCalledWith(
-      expect.stringContaining("Skipping circle [1] due to missing coords"),
+      expect.stringContaining("Skipping circle [1] due to insufficient coords"),
       circles[1]
     )
   })

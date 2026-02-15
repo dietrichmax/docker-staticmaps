@@ -3,7 +3,7 @@ import {
   getCachedTile,
   setCachedTile,
   createCacheKeyFromRequest,
-  _tileCache,
+  flushTileCache,
 } from "../../src/utils/cache"
 import { MapRequest } from "../../src/types/types"
 
@@ -12,12 +12,12 @@ describe("Tile Cache", () => {
   const value = Buffer.from("mock tile data")
 
   beforeEach(() => {
-    _tileCache.flushAll()
+    flushTileCache()
     process.env.DISABLE_TILE_CACHE = "false"
   })
 
   afterAll(() => {
-    _tileCache.flushAll()
+    flushTileCache()
   })
 
   const mockRequest = (

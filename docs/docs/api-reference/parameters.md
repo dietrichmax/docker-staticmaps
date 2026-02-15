@@ -21,15 +21,15 @@ Request static maps from the `/api/staticmaps` endpoint using the following para
 
 | Parameter | Default | Description |
 | --- | --- | --- |
-| `center` | (required) | Center of map (`lon,lat`, e.g. `-119.49280,37.81084`) |
-| `zoom` | (required) | Zoom level (`1` to `18`). |
+| `center` | (required) | Center of map (`lat,lon`, e.g. `37.81084,-119.49280`). Required if no feature coordinates are provided. |
 
 ## Optional Parameters
 
 | Parameter | Default | Description |
 | --- | --- | --- |
+| `zoom` |  | Zoom level (`1` to `17`). Auto-calculated from features if omitted. |
 | `width` | `800` | Width of the output image in pixels. Min: 1, Max: 8192. |
-| `height` | `800` | Heihgt of the output image in pixels. Min: 1, Max: 8192. |
+| `height` | `800` | Height of the output image in pixels. Min: 1, Max: 8192. |
 | `paddingX` | `0` | Horizontal padding in pixels |
 | `paddingY` | `0` | Vertical padding in pixels |
 | `format` | `png` | Output format: `png`, `jpg`, `webp` or `pdf` |

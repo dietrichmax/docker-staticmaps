@@ -1,9 +1,9 @@
-import { Coordinate } from "src/types/types"
+import { Coordinate, BBox, HasExtent } from "src/types/types"
 
 /**
  * Represents a bounding box or envelope for a set of coordinates.
  */
-export default class Bound {
+export default class Bound implements HasExtent {
   /**
    * Options passed to the Bound instance.
    * @type {{ coords: Coordinate[] }}
@@ -30,7 +30,7 @@ export default class Bound {
    *
    * @returns A tuple representing the bounding box: [minLon, minLat, maxLon, maxLat].
    */
-  extent(): [number, number, number, number] {
+  extent(): BBox {
     if (!this.coords || this.coords.length === 0) {
       throw Error("Coordinates are required to calculate the bounding box.")
     }

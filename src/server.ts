@@ -208,7 +208,7 @@ app.use(
       ip: req.ip,
       headers: req.headers,
       params: req.params,
-      body: req.method !== "GET" ? req.body : undefined,
+      body: req.method !== "GET" ? "[redacted]" : undefined,
     })
     res.status(500).json({ error: "Internal server error" })
   }

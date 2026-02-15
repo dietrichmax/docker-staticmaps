@@ -2,6 +2,59 @@ import { basemaps } from "../utils/basemaps"
 import logger from "../utils/logger"
 
 /**
+ * Checks if a URL points to a private or internal network address.
+ * Used to prevent SSRF attacks via custom tile URLs.
+ */
+function isPrivateUrl(urlString: string): boolean {
+  try {
+    const url = new URL(urlString)
+    const hostname = url.hostname.replace(/^\[|\]$/g, "")
+    if (
+      hostname === "localhost" ||
+      hostname === "127.0.0.1" ||
+      hostname === "::1" ||
+      hostname.endsWith(".local") ||
+      hostname.endsWith(".internal")
+    )
+      return true
+    const parts = hostname.split(".").map(Number)
+    if (parts.length === 4 && parts.every((n) => !isNaN(n))) {
+      if (parts[0] === 10) return true
+      if (parts[0] === 172 && parts[1] >= 16 && parts[1] <= 31) return true
+      if (parts[0] === 192 && parts[1] === 168) return true
+      if (parts[0] === 169 && parts[1] === 254) return true
+      if (parts[0] === 0) return true
+    }
+    return false
+  } catch {
+    return true
+  }
+}
+
+/**
+ * Parses a pipe-separated string of key:value pairs into a Map.
+ * Values may contain colons (e.g., "text:http://example.com").
+ * Parts without a colon are returned with key = the part itself and value = "".
+ *
+ * @param {string} input - Pipe-separated string, e.g. "show:true|text:Hello%20World".
+ * @returns {Map<string, string>} Parsed key-value pairs.
+ */
+function parsePipeParams(input: string): Map<string, string> {
+  const result = new Map<string, string>()
+  for (const part of input.split("|")) {
+    const colonIdx = part.indexOf(":")
+    if (colonIdx === -1) {
+      result.set(part.trim(), "")
+    } else {
+      const key = part.slice(0, colonIdx).trim()
+      const value = part.slice(colonIdx + 1).trim()
+      result.set(key, value)
+    }
+  }
+  return result
+}
+
+/**
  * Generates a tile URL and attribution based on the provided custom URL and basemap.
  *
  * @param {string|null} customUrl - A custom URL template for the tiles.
@@ -12,7 +65,14 @@ export function getTileUrl(
   customUrl: string | null,
   basemapName: string | null
 ): { url: string; attribution: string } {
-  if (customUrl) return { url: customUrl, attribution: "" }
+  if (customUrl) {
+    const testUrl = customUrl.replace(/\{[^}]+\}/g, "0")
+    if (isPrivateUrl(testUrl)) {
+      logger.error(`Blocked private/internal tile URL: ${customUrl}`)
+      return { url: "", attribution: "" }
+    }
+    return { url: customUrl, attribution: "" }
+  }
   const name = basemapName || "osm"
   const tile = basemaps.find((b) => b.basemap === name)
   if (!tile) {
@@ -61,24 +121,17 @@ export function parseAttributionParam(
     return result
   }
 
-  const parts = param.split("|")
+  const kvMap = parsePipeParams(param)
 
-  for (const part of parts) {
-    // Check if part contains colon (key:value)
-    if (part.includes(":")) {
-      const [key, ...valueParts] = part.split(":")
-      const value = valueParts.join(":") // allow colons in text
-
-      if (key === "show") {
-        // Set show explicitly based on string "true"/"false"
-        result.show = value === "true"
-      } else if (key === "text") {
-        result.text = decodeURIComponent(value)
-      }
-    } else {
-      // Handle the case where param is just "true" or "false" without key
-      if (part === "true") result.show = true
-      else if (part === "false") result.show = false
+  for (const [key, value] of kvMap) {
+    if (key === "show") {
+      result.show = value === "true"
+    } else if (key === "text") {
+      result.text = decodeURIComponent(value)
+    } else if (!value) {
+      // Handle bare "true" or "false" without key
+      if (key === "true") result.show = true
+      else if (key === "false") result.show = false
     }
   }
 
@@ -115,19 +168,19 @@ export function parseBorderParam(
     }
   }
 
-  const parts = param.split("|")
+  const kvMap = parsePipeParams(param)
   const result: { width?: number; color?: string } = {}
 
-  for (const part of parts) {
-    const [key, value] = part.split(":").map((v) => v.trim().toLowerCase())
-    if (!key || !value) continue
+  for (const [key, value] of kvMap) {
+    const k = key.toLowerCase()
+    const v = value.toLowerCase()
+    if (!k || !v) continue
 
-    if (key === "width") {
-      const parsed = parseInt(value, 10)
+    if (k === "width") {
+      const parsed = parseInt(v, 10)
       if (!isNaN(parsed)) result.width = parsed
-    } else if (key === "color") {
-      // Normalize color (#fff or rgba(12, 10, 124, 1))
-      result.color = value.startsWith("#") ? value : `#${value}`
+    } else if (k === "color") {
+      result.color = v.startsWith("#") ? v : `#${v}`
     }
   }
 

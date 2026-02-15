@@ -1,9 +1,10 @@
-import { Coordinate } from "../../types/types"
+import { Coordinate, BBox, HasExtent } from "../../types/types"
+import { METERS_PER_DEGREE_LAT } from "../utils"
 
 /**
  * Represents a circle shape with styling and geometry.
  */
-export default class Circle {
+export default class Circle implements HasExtent {
   coord: Coordinate
   radius: number
   color: string
@@ -40,7 +41,7 @@ export default class Circle {
     if (!this.coord || !Array.isArray(this.coord) || this.coord.length < 2) {
       throw Error("Specify center of circle")
     }
-    if (!this.radius || isNaN(this.radius)) {
+    if (isNaN(this.radius) || this.radius < 0) {
       throw Error("Specify valid radius for circle")
     }
   }
@@ -50,13 +51,13 @@ export default class Circle {
    *
    * @returns {[number, number, number, number]} Bounding box as [minLon, minLat, maxLon, maxLat].
    */
-  extent(): [number, number, number, number] {
+  extent(): BBox {
     const [lon, lat] = this.coord
 
     // Convert radius from meters to degrees (latitude and longitude scale factors)
-    const radiusInDegreesLat = this.radius / 111320 // Conversion factor for latitude (1 degree ~ 111320 meters)
+    const radiusInDegreesLat = this.radius / METERS_PER_DEGREE_LAT
     const radiusInDegreesLon =
-      this.radius / (Math.cos((lat * Math.PI) / 180) * 111320) // Longitude scaling factor
+      this.radius / (Math.cos((lat * Math.PI) / 180) * METERS_PER_DEGREE_LAT)
 
     // Calculate bounding box coordinates
     const minLon = lon - radiusInDegreesLon

@@ -33,8 +33,8 @@ text=textStyle|textCoord
   | `size`    | `12`        | Font-size of the text                         |
   | `font`    | `Arial`     | Font-family of the text                       |
   | `anchor`  | `start`     | Determines the text anchor alignment.         |
-  | `offsetX` | `0`         | Horizontal offset relative to the coordinate. |
-  | `offsetY` | `0`         | Vertical offset relative to the coordinate.   |
+  | `offsetX` | `-12`       | Horizontal offset relative to the coordinate. |
+  | `offsetY` | `22`        | Vertical offset relative to the coordinate.   |
 
 **Example**: Text "Hello World" with custom styling.
 

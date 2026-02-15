@@ -75,11 +75,11 @@ describe("addTexts", () => {
 
     expect(logger.warn).toHaveBeenCalledTimes(2)
     expect(logger.warn).toHaveBeenCalledWith(
-      expect.stringContaining("Skipping text [0] due to missing coords"),
+      expect.stringContaining("Skipping text [0] due to insufficient coords"),
       texts[0]
     )
     expect(logger.warn).toHaveBeenCalledWith(
-      expect.stringContaining("Skipping text [1] due to missing coords"),
+      expect.stringContaining("Skipping text [1] due to insufficient coords"),
       texts[1]
     )
   })

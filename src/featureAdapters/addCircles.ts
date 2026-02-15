@@ -1,6 +1,6 @@
-import logger from "../utils/logger"
 import StaticMaps from "../staticmaps/staticmaps"
 import { Circle } from "../staticmaps/features"
+import { forEachValidFeature } from "./adapterUtils"
 
 /**
  * Adds circle features to a StaticMaps instance based on the provided configurations.
@@ -9,22 +9,11 @@ import { Circle } from "../staticmaps/features"
  * Circles without valid coordinates are skipped with a warning.
  *
  * @param {StaticMaps} map - The StaticMaps instance to which circles will be added.
- * @param {Array<Object>} circles - An array of circle configuration objects. Each object may include:
- *   - `coords` {Array<[number, number]>} - Array with at least one coordinate tuple [lng, lat].
- *   - `radius` {number} - Radius of the circle in pixels or map units.
- *   - `color` {string} - Stroke color of the circle.
- *   - `width` {number} - Stroke width.
- *   - `fill` {string} - Fill color.
+ * @param {Array<Object>} circles - An array of circle configuration objects.
  */
 export function addCircles(map: StaticMaps, circles: any[]): void {
-  circles.forEach((circ, i) => {
-    const { coords = [], radius, color, width, fill } = circ
-    const coord = coords[0]
-    if (!coord) {
-      logger.warn(`Skipping circle [${i}] due to missing coords`, circ)
-      return
-    }
-    logger.debug(`Adding circle [${i}]`, circ)
-    map.addCircle(new Circle({ coord, radius, color, width, fill }))
+  forEachValidFeature("circle", circles, 1, (circ) => {
+    const { coords, radius, color, width, fill } = circ
+    map.addCircle(new Circle({ coord: coords[0], radius, color, width, fill }))
   })
 }

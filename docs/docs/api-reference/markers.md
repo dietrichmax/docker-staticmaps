@@ -32,8 +32,8 @@ markers=markerStyle|markerCoord1|markerCoord2|...
   | `height` | `28` | Height of marker image in px. |
   | `drawWidth` | `width` | Resize marker image to width in px. |
   | `drawHeight` | `height` | Resize marker image to height in px. |
-  | `offsetX` | `13.5` | Horizontal offset for the marker position. |
-  | `offsetY` | `27.5` | Vertical offset for the marker position. |
+  | `offsetX` | `14` | Horizontal offset for the marker position. |
+  | `offsetY` | `28` | Vertical offset for the marker position. |
   | `resizeMode` | `cover` | Applied resize method if needed. See: [https://sharp.pixelplumbing.com/api-resize](https://sharp.pixelplumbing.com/api-resize) |
 
 <details>

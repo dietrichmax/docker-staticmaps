@@ -5,6 +5,8 @@ import {
   MapOptions,
   TileServerConfigOptions,
   Coordinate,
+  BBox,
+  HasExtent,
 } from "src/types/types"
 import { TileManager, TileServerConfig } from "./tilemanager"
 import {
@@ -16,6 +18,130 @@ import {
   drawMarkers,
   loadMarkers,
 } from "./renderer"
+
+/**
+ * Input for the standalone determineExtent function.
+ */
+interface ExtentInput {
+  center: number[]
+  bounds: HasExtent[]
+  lines: HasExtent[]
+  circles: HasExtent[]
+  text: Text[]
+  markers: IconMarker[]
+  tileSize: number
+}
+
+/**
+ * Calculates the bounding extent [minLon, minLat, maxLon, maxLat] that covers
+ * all map features including bounds, lines, circles, markers, and optionally the center.
+ *
+ * @param {ExtentInput} input - Feature collections and tile size.
+ * @param {number} [zoom] - Optional zoom level to calculate marker extents in geographic coordinates.
+ * @returns {BBox} Bounding box as [minLon, minLat, maxLon, maxLat].
+ */
+export function determineExtent(input: ExtentInput, zoom?: number): BBox {
+  const extents: BBox[] = []
+
+  const addExtent = (e: number[] | undefined) => {
+    if (e && e.length === 4) extents.push(e as BBox)
+  }
+
+  addExtent(input.center)
+
+  ;[input.bounds, input.lines, input.circles].forEach((collection) =>
+    collection.forEach((item) => addExtent(item.extent()))
+  )
+
+  input.text.forEach((text) => addExtent(text.extent(zoom, input.tileSize)))
+
+  for (const marker of input.markers) {
+    if (!marker.coord) throw Error("Marker coordinates undefined")
+
+    if (!zoom) {
+      extents.push([
+        marker.coord[0],
+        marker.coord[1],
+        marker.coord[0],
+        marker.coord[1],
+      ])
+      continue
+    }
+
+    const [lon, lat] = marker.coord
+    const ePx = marker.extentPx()
+    const x = lonToX(lon, zoom)
+    const y = latToY(lat, zoom)
+    extents.push([
+      xToLon(x - ePx[0] / input.tileSize, zoom),
+      yToLat(y + ePx[1] / input.tileSize, zoom),
+      xToLon(x + ePx[2] / input.tileSize, zoom),
+      yToLat(y - ePx[3] / input.tileSize, zoom),
+    ])
+  }
+
+  let minLon = Infinity,
+    minLat = Infinity,
+    maxLon = -Infinity,
+    maxLat = -Infinity
+  for (const e of extents) {
+    if (e[0] < minLon) minLon = e[0]
+    if (e[1] < minLat) minLat = e[1]
+    if (e[2] > maxLon) maxLon = e[2]
+    if (e[3] > maxLat) maxLat = e[3]
+  }
+  return [minLon, minLat, maxLon, maxLat]
+}
+
+/**
+ * Input for the standalone calculateZoom function.
+ */
+interface ZoomInput extends ExtentInput {
+  zoomRange: { min: number; max: number }
+  width: number
+  height: number
+  padding: number[]
+}
+
+/**
+ * Calculates the optimal zoom level to fit all map features within the map view.
+ *
+ * @param {ZoomInput} input - Map dimensions, padding, zoom range, and feature collections.
+ * @returns {number} The best zoom level that fits all features within the view.
+ */
+export function calculateZoom(input: ZoomInput): number {
+  const { min: minZoom = 1, max: maxZoom = 20 } = input.zoomRange || {}
+
+  const extent = determineExtent(input)
+
+  if (
+    !extent ||
+    extent.length !== 4 ||
+    extent[0] === Infinity ||
+    extent[1] === Infinity ||
+    extent[2] === -Infinity ||
+    extent[3] === -Infinity ||
+    extent[0] > extent[2] ||
+    extent[1] > extent[3]
+  ) {
+    return minZoom
+  }
+
+  for (let z = maxZoom; z >= minZoom; z--) {
+    const extentZ = determineExtent(input, z)
+    const widthPx =
+      (lonToX(extentZ[2], z) - lonToX(extentZ[0], z)) * input.tileSize
+    if (widthPx > input.width - input.padding[0] * 2) continue
+
+    const heightPx =
+      (latToY(extentZ[1], z) - latToY(extentZ[3], z)) * input.tileSize
+    if (heightPx > input.height - input.padding[1] * 2) continue
+
+    return z
+  }
+
+  return minZoom
+}
 
 class StaticMaps {
   options: MapOptions
@@ -229,120 +355,36 @@ class StaticMaps {
   }
 
   /**
-   * Calculates the bounding extent [minLon, minLat, maxLon, maxLat] that covers
-   * all map features including bounds, lines, circles, markers, and optionally the center.
-   *
-   * When a zoom level is provided, marker extents are expanded in geographic coordinates
-   * based on their pixel extents at that zoom, accounting for marker icon sizes.
-   *
-   * @param {number} [zoom] - Optional zoom level to calculate marker extents in geographic coordinates.
-   *                          If omitted, markers are treated as points without extent.
-   * @returns {number[]} Bounding box array with [minLongitude, minLatitude, maxLongitude, maxLatitude].
-   *                     Coordinates are in EPSG:4326 geographic degrees.
-   * @throws {Error} Throws if any marker has undefined coordinates.
+   * Delegates to the standalone `determineExtent` function.
    */
-  determineExtent(zoom?: number): number[] {
-    const extents: number[][] = []
-
-    // Helper to safely add extent if defined and has length 4
-    const addExtent = (e: number[] | undefined) => {
-      if (e && e.length === 4) extents.push(e)
-    }
-
-    // Add center if it's a bbox extent
-    addExtent(this.center)
-
-    // Add extents from collections
-    ;[this.bounds, this.lines, this.circles].forEach((collection) =>
-      collection.forEach((item) => addExtent(item.extent()))
-    )
-
-    this.text.forEach((text) => addExtent(text.extent(zoom, this.tileSize)))
-
-    // Add marker extents
-    for (const marker of this.markers) {
-      if (!marker.coord) throw Error("Marker coordinates undefined")
-
-      if (!zoom) {
-        extents.push([
-          marker.coord[0],
-          marker.coord[1],
-          marker.coord[0],
-          marker.coord[1],
-        ])
-        continue
-      }
-
-      const [lon, lat] = marker.coord
-      const ePx = marker.extentPx()
-      const x = lonToX(lon, zoom)
-      const y = latToY(lat, zoom)
-      extents.push([
-        xToLon(x - ePx[0] / this.tileSize, zoom),
-        yToLat(y + ePx[1] / this.tileSize, zoom),
-        xToLon(x + ePx[2] / this.tileSize, zoom),
-        yToLat(y - ePx[3] / this.tileSize, zoom),
-      ])
-    }
-
-    return [
-      Math.min(...extents.map((e) => e[0])),
-      Math.min(...extents.map((e) => e[1])),
-      Math.max(...extents.map((e) => e[2])),
-      Math.max(...extents.map((e) => e[3])),
-    ]
+  determineExtent(zoom?: number): BBox {
+    return determineExtent(this._extentInput(), zoom)
   }
 
   /**
-   * Calculates the optimal zoom level to fit all map features within the map view,
-   * respecting the configured width, height, and padding.
-   *
-   * The method:
-   * - Determines the bounding extent of all features.
-   * - Iterates from the maximum zoom level down to the minimum zoom level.
-   * - For each zoom, calculates if the extent fits within the available map area.
-   * - Returns the highest zoom level where the extent fits.
-   * - If no features exist or extent is invalid, returns the minimum zoom.
-   *
-   * @returns {number} The best zoom level that fits all features within the view,
-   *                   or the minimum zoom if no features or no zoom fits.
+   * Delegates to the standalone `calculateZoom` function.
    */
   calculateZoom(): number {
-    const { min: minZoom = 1, max: maxZoom = 20 } = this.zoomRange || {}
+    return calculateZoom({
+      ...this._extentInput(),
+      zoomRange: this.zoomRange,
+      width: this.width,
+      height: this.height,
+      padding: this.padding,
+    })
+  }
 
-    // Determine extent once, without zoom or at min zoom
-    const extent = this.determineExtent()
-
-    // Validate extent (must be 4 numbers and valid box)
-    if (
-      !extent ||
-      extent.length !== 4 ||
-      extent[0] === Infinity ||
-      extent[1] === Infinity ||
-      extent[2] === -Infinity ||
-      extent[3] === -Infinity ||
-      extent[0] > extent[2] ||
-      extent[1] > extent[3]
-    ) {
-      // No valid extent, so no features to zoom on => return min zoom
-      return minZoom
+  /** Builds the ExtentInput from current instance state. */
+  private _extentInput(): ExtentInput {
+    return {
+      center: this.center,
+      bounds: this.bounds,
+      lines: this.lines,
+      circles: this.circles,
+      text: this.text,
+      markers: this.markers,
+      tileSize: this.tileSize,
     }
-
-    for (let z = maxZoom; z >= minZoom; z--) {
-      const extentZ = this.determineExtent(z)
-      const widthPx =
-        (lonToX(extentZ[2], z) - lonToX(extentZ[0], z)) * this.tileSize
-      if (widthPx > this.width - this.padding[0] * 2) continue
-
-      const heightPx =
-        (latToY(extentZ[1], z) - latToY(extentZ[3], z)) * this.tileSize
-      if (heightPx > this.height - this.padding[1] * 2) continue
-
-      return z
-    }
-
-    // No zoom level fits, return min zoom as fallback
-    return minZoom
   }
 
   /**

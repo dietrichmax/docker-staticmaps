@@ -70,8 +70,9 @@ class AuthConfig {
 
     const cookies = Object.fromEntries(
       cookieHeader.split(";").map((c) => {
-        const [k, v] = c.trim().split("=")
-        return [k, v]
+        const idx = c.indexOf("=")
+        if (idx === -1) return [c.trim(), ""]
+        return [c.slice(0, idx).trim(), c.slice(idx + 1).trim()]
       })
     )
 

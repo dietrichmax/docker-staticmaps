@@ -165,7 +165,7 @@ export function getMapParams(params: MapParamsInput): MapParamsOutput {
     ...(params.paddingX && { paddingX: parseInt(params.paddingX, 10) }),
     ...(params.paddingY && { paddingY: parseInt(params.paddingY, 10) }),
     ...(params.tileSize && { tileSize: parseInt(params.tileSize, 10) }),
-    ...(params.zoom && { zoom: parseInt(params.zoom, 10) }),
+    ...(params.zoom && { zoom: clampZoom(parseInt(params.zoom, 10), params.zoomRange) }),
     ...(params.format && { format: params.format }),
     ...(params.tileRequestTimeout && {
       tileRequestTimeout: params.tileRequestTimeout,
@@ -212,6 +212,19 @@ export function getMapParams(params: MapParamsInput): MapParamsOutput {
  * @param {number} height - The requested image height in pixels.
  * @throws {Error} Throws an error if the width or height is out of allowed bounds.
  */
+/**
+ * Clamps a zoom level to the allowed range.
+ *
+ * @param {number} zoom - The requested zoom level.
+ * @param {{ min?: number; max?: number }} [zoomRange] - Optional zoom range override.
+ * @returns {number} The clamped zoom level.
+ */
+function clampZoom(zoom: number, zoomRange?: { min?: number; max?: number }): number {
+  const min = zoomRange?.min ?? DEFAULTS.zoomRange.min
+  const max = zoomRange?.max ?? DEFAULTS.zoomRange.max
+  return Math.max(min, Math.min(max, zoom))
+}
+
 function validateDimensions(width: number, height: number) {
   if (width > LIMITS.MAX_WIDTH || height > LIMITS.MAX_HEIGHT) {
     logger.error(

@@ -132,5 +132,18 @@ describe("AuthConfig", () => {
       expect(res.send).toHaveBeenCalledWith("Unauthorized")
       expect(next).not.toHaveBeenCalled()
     })
+
+    test("handles cookie values containing = characters (base64)", () => {
+      req.headers!.cookie = "session=abc=def==; demo_auth=true; token=xyz=123"
+      AuthConfig.checkDemoCookie(req as Request, res as Response, next)
+      expect(next).toHaveBeenCalled()
+      expect(res.status).not.toHaveBeenCalled()
+    })
+
+    test("handles cookie values with URL-encoded content containing =", () => {
+      req.headers!.cookie = "data=aGVsbG8gd29ybGQ=; demo_auth=true"
+      AuthConfig.checkDemoCookie(req as Request, res as Response, next)
+      expect(next).toHaveBeenCalled()
+    })
   })
 })

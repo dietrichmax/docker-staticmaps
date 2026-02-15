@@ -29,8 +29,8 @@ polyline=polylineStyle|polylineCoord1|polylineCoord2|...
 
   | Parameter | Default | Description |
   | --- | --- | --- |
-  | `weight` | `6` | Sets the stroke width of the polyline. |
-  | `color` | `#0000ff` | Defines the stroke color of the polyline. |
+  | `weight` | `5` | Sets the stroke width of the polyline. |
+  | `color` | `blue` | Defines the stroke color of the polyline. |
   | `fill` |  | Specifies the fill color of the polyline. |
   | `strokeDasharray` | (none) | Pattern of dashes and gaps, e.g., `5,5` see [stroke-dasharray](https://developer.mozilla.org/de/docs/Web/CSS/stroke-dasharray). |
   | `withGeodesicLine` | `true` | When `true`, generates geodesic lines between each pair of coordinates. Set to `false` to draw straight lines. |

@@ -42,12 +42,17 @@ describe("Circle class", () => {
 
   test("constructor throws if radius is invalid", () => {
     expect(() => {
-      new Circle({ coord: [10, 20], radius: 0 })
+      new Circle({ coord: [10, 20], radius: NaN })
     }).toThrow("Specify valid radius for circle")
 
     expect(() => {
-      new Circle({ coord: [10, 20], radius: NaN })
+      new Circle({ coord: [10, 20], radius: -1 })
     }).toThrow("Specify valid radius for circle")
+  })
+
+  test("constructor allows radius of 0", () => {
+    const c = new Circle({ coord: [10, 20], radius: 0 })
+    expect(c.radius).toBe(0)
   })
 
   test("width defaults to 3 if not finite", () => {

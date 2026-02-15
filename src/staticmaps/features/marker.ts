@@ -99,9 +99,9 @@ export default class Icon {
   }
 
   /**
-   * Calculates the bounding box of the polyline or polygon.
+   * Calculates the pixel extent of the icon relative to its anchor point.
    *
-   * @returns {[number, number, number, number]} Bounding box as [minLon, minLat, maxLon, maxLat].
+   * @returns {[number, number, number, number]} Extent as [left, top, right, bottom] in pixels.
    */
   extentPx(): [number, number, number, number] {
     return [

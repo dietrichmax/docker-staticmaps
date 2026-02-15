@@ -117,6 +117,17 @@ describe("parseAttributionParam", () => {
     const result = parseAttributionParam({ show: true }, "Basemap text")
     expect(result).toEqual({ show: true, text: "Basemap text" })
   })
+
+  it("handles text values containing colons (URLs)", () => {
+    const result = parseAttributionParam("text:http://example.com")
+    expect(result.text).toBe("http://example.com")
+  })
+
+  it("handles text with multiple colons (URLs with port)", () => {
+    const result = parseAttributionParam("show:true|text:http://example.com:8080/path")
+    expect(result.show).toBe(true)
+    expect(result.text).toBe("http://example.com:8080/path")
+  })
 })
 
 describe("parseBorderParam", () => {
@@ -149,5 +160,16 @@ describe("parseBorderParam", () => {
 
   it("handles object input with only color", () => {
     expect(parseBorderParam({ color: "#000" })).toEqual({ color: "#000" })
+  })
+
+  it("ignores unknown keys", () => {
+    expect(parseBorderParam("width:2|foo:bar")).toEqual({ width: 2 })
+  })
+
+  it("handles extra whitespace in keys and values", () => {
+    expect(parseBorderParam(" width : 3 | color : #abc ")).toEqual({
+      width: 3,
+      color: "#abc",
+    })
   })
 })
