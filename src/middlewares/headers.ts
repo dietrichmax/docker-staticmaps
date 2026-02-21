@@ -28,7 +28,7 @@ export function headers(req: Request, res: Response, next: NextFunction): void {
     "X-Content-Type-Options": "nosniff",
 
     // Control referrer information
-    "Referrer-Policy": "no-referrer-when-downgrade",
+    "Referrer-Policy": "strict-origin-when-cross-origin",
 
     // Restrict browser feature access
     "Permissions-Policy":
@@ -44,8 +44,8 @@ export function headers(req: Request, res: Response, next: NextFunction): void {
     "Content-Security-Policy": [
       "default-src 'self';",
       "img-src 'self' data: blob: *;",
-      "style-src 'self' 'unsafe-inline';",
-      "script-src 'self' 'unsafe-inline';",
+      "style-src 'self';",
+      "script-src 'self';",
       "connect-src 'self';",
       "font-src 'self' data:;",
       "object-src 'none';",

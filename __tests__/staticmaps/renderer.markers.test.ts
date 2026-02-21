@@ -209,6 +209,7 @@ describe("loadMarkers", () => {
     const arrayBuffer = new Uint8Array([1, 2, 3]).buffer
     ;(global.fetch as jest.Mock).mockResolvedValue({
       ok: true,
+      headers: { get: (name: string) => name === "content-type" ? "image/png" : null },
       arrayBuffer: jest.fn().mockResolvedValue(arrayBuffer),
     })
 
@@ -220,7 +221,7 @@ describe("loadMarkers", () => {
 
     expect(global.fetch).toHaveBeenCalledWith(
       "https://example.com/marker.png",
-      { method: "GET" }
+      { method: "GET", redirect: "manual" }
     )
     expect(sharpMock).toHaveBeenCalled()
     expect(sharpInstance.resize).toHaveBeenCalledWith(10, 15)

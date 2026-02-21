@@ -4,6 +4,7 @@
  */
 
 import { Request, Response, NextFunction } from "express"
+import { timingSafeEqual } from "crypto"
 import logger from "../utils/logger"
 import AuthConfig from "./authConfig"
 
@@ -27,7 +28,12 @@ export function authenticateApiKey(
   if (!AuthConfig.requireAuth) return next()
 
   const key = AuthConfig.extractApiKey(req)
-  if (key === AuthConfig.apiKey) return next()
+  if (
+    key &&
+    AuthConfig.apiKey &&
+    key.length === AuthConfig.apiKey.length &&
+    timingSafeEqual(Buffer.from(key), Buffer.from(AuthConfig.apiKey))
+  ) return next()
 
   logger.warn(`Unauthorized access from IP=${req.ip}, API key=[REDACTED]`)
   res.status(403).json({ error: "Forbidden: Invalid or missing API key" })

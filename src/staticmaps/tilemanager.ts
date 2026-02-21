@@ -67,15 +67,26 @@ export class TileManager {
       }
     }
 
-    const options = {
-      method: "GET",
-      headers: this.tileRequestHeader || {},
-      timeout: this.tileRequestTimeout,
+    const headers = { ...this.tileRequestHeader }
+    if (process.env.TILE_USER_AGENT && !headers["User-Agent"]) {
+      headers["User-Agent"] = process.env.TILE_USER_AGENT
     }
 
-    try {
-      const res = await fetch(data.url, options)
+    const controller = new AbortController()
+    const timeout = Math.min(this.tileRequestTimeout ?? 10_000, 30_000)
+    const timeoutId = setTimeout(() => controller.abort(), timeout)
 
+    try {
+      const res = await fetch(data.url, {
+        method: "GET",
+        headers,
+        redirect: "manual" as RequestRedirect,
+        signal: controller.signal,
+      })
+
+      if (res.status >= 300 && res.status < 400) {
+        throw new Error(`Tile server returned redirect (${res.status}), blocked for security`)
+      }
       if (!res.ok) {
         throw new Error(`Failed to fetch tile: ${res.statusText}`)
       }
@@ -83,8 +94,13 @@ export class TileManager {
       logger.debug(`Fetched tile: ${data.url}`)
 
       const contentType = res.headers.get("content-type")
-      if (contentType && !contentType.startsWith("image/")) {
+      if (!contentType || !contentType.startsWith("image/")) {
         throw new Error("Tiles server response with wrong data")
+      }
+
+      const contentLength = Number(res.headers.get("content-length") || 0)
+      if (contentLength > 10 * 1024 * 1024) {
+        throw new Error(`Tile response too large: ${contentLength} bytes`)
       }
 
       const arrayBuffer = await res.arrayBuffer()
@@ -105,6 +121,8 @@ export class TileManager {
         success: false,
         error: error.message || error,
       }
+    } finally {
+      clearTimeout(timeoutId)
     }
   }
 

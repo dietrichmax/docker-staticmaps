@@ -1,4 +1,5 @@
 import { measureTextWidth } from "./helpers"
+import { escapeXml } from "./security"
 
 /**
  * Creates an SVG buffer containing an attribution box with the specified text,
@@ -50,7 +51,7 @@ export function createAttributionSVG(
         }
       </style>
       <rect x="${rectX}" y="${rectY}" width="${rectWidth}" height="${rectHeight}" class="attr-bg"/>
-      <text x="${textX}" y="${textY}" class="attr-text">${text}</text>
+      <text x="${textX}" y="${textY}" class="attr-text">${escapeXml(text)}</text>
     </svg>
   `
 

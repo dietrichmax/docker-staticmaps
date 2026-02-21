@@ -96,8 +96,9 @@ describe("AuthConfig", () => {
       next = jest.fn()
     })
 
-    test("calls next() if demo_auth cookie is true", () => {
-      req.headers!.cookie = "demo_auth=true"
+    test("calls next() if demo_auth cookie is valid signed value", () => {
+      const signed = AuthConfig.signDemoCookie()
+      req.headers!.cookie = `demo_auth=${signed}`
       AuthConfig.checkDemoCookie(req as Request, res as Response, next)
       expect(next).toHaveBeenCalled()
       expect(res.status).not.toHaveBeenCalled()
@@ -110,16 +111,17 @@ describe("AuthConfig", () => {
       expect(next).not.toHaveBeenCalled()
     })
 
-    test("returns 401 if demo_auth cookie is not true", () => {
-      req.headers!.cookie = "demo_auth=false"
+    test("returns 401 if demo_auth cookie is invalid", () => {
+      req.headers!.cookie = "demo_auth=forged_value"
       AuthConfig.checkDemoCookie(req as Request, res as Response, next)
       expect(res.status).toHaveBeenCalledWith(401)
       expect(res.send).toHaveBeenCalledWith("Unauthorized")
       expect(next).not.toHaveBeenCalled()
     })
 
-    test("handles multiple cookies and still calls next() when demo_auth=true", () => {
-      req.headers!.cookie = "other=123; demo_auth=true; another=456"
+    test("handles multiple cookies and still calls next() when demo_auth is valid", () => {
+      const signed = AuthConfig.signDemoCookie()
+      req.headers!.cookie = `other=123; demo_auth=${signed}; another=456`
       AuthConfig.checkDemoCookie(req as Request, res as Response, next)
       expect(next).toHaveBeenCalled()
       expect(res.status).not.toHaveBeenCalled()

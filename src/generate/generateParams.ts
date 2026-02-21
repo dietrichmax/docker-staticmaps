@@ -9,6 +9,7 @@ import logger from "../utils/logger"
 import { parseCenter } from "./parseCoordinates"
 import { parseMultipleShapes } from "./parseShapes"
 import { getTileUrl, parseAttributionParam, parseBorderParam } from "./parseTileConfig"
+import { sanitizeTileHeaders, isPrivateUrl } from "../utils/security"
 
 // Re-export submodule functions for backward compatibility with tests
 export { isEncodedPolyline, parseCoordinates, parseCenter } from "./parseCoordinates"
@@ -56,9 +57,17 @@ const DEFAULTS = {
 const LIMITS = {
   MAX_WIDTH: 8192,
   MAX_HEIGHT: 8192,
+  MAX_PIXELS: 25_000_000,
   MIN_WIDTH: 1,
   MIN_HEIGHT: 1,
 }
+
+const ALLOWED_FORMATS = new Set(["png", "jpeg", "jpg", "webp", "pdf"])
+
+const MAX_TILE_REQUEST_LIMIT = 8
+const MAX_TILE_REQUEST_TIMEOUT = 30_000
+const MAX_ZOOM = 20
+const MAX_FEATURES = 1000
 
 /**
  * Default style and properties for each supported shape type.
@@ -126,8 +135,16 @@ export function getMapParams(params: MapParamsInput): MapParamsOutput {
     logger.debug(`Parsed ${key}:`, features[key])
   }
 
+  const totalFeatures = Object.values(features).reduce(
+    (sum, list) => sum + (Array.isArray(list) ? list.length : list ? 1 : 0),
+    0
+  )
+  if (totalFeatures > MAX_FEATURES) {
+    throw new Error(`Too many features: ${totalFeatures} exceeds limit of ${MAX_FEATURES}`)
+  }
+
   const center = parseCenter(params.center)
-  const quality = parseInt(params.quality || "100", 10)
+  const quality = Math.max(1, Math.min(100, parseInt(params.quality || "100", 10)))
 
   const width = parseInt((params.width ?? DEFAULTS.width).toString(), 10)
   const height = parseInt((params.height ?? DEFAULTS.height).toString(), 10)
@@ -165,26 +182,35 @@ export function getMapParams(params: MapParamsInput): MapParamsOutput {
     ...(params.paddingX && { paddingX: parseInt(params.paddingX, 10) }),
     ...(params.paddingY && { paddingY: parseInt(params.paddingY, 10) }),
     ...(params.tileSize && { tileSize: parseInt(params.tileSize, 10) }),
-    ...(params.zoom && { zoom: parseInt(params.zoom, 10) }),
-    ...(params.format && { format: params.format }),
+    ...(params.zoom && { zoom: Math.min(parseInt(params.zoom, 10), MAX_ZOOM) }),
+    ...(params.format && {
+      format: ALLOWED_FORMATS.has(params.format.toLowerCase())
+        ? params.format
+        : (() => { throw new Error(`Unsupported format: "${params.format}". Allowed: ${[...ALLOWED_FORMATS].join(", ")}`) })(),
+    }),
     ...(params.tileRequestTimeout && {
-      tileRequestTimeout: params.tileRequestTimeout,
+      tileRequestTimeout: Math.min(Math.max(0, Number(params.tileRequestTimeout)), MAX_TILE_REQUEST_TIMEOUT),
     }),
     ...(params.tileRequestHeader && {
-      tileRequestHeader: params.tileRequestHeader,
+      tileRequestHeader: sanitizeTileHeaders(params.tileRequestHeader),
     }),
     ...(params.tileRequestLimit && {
-      tileRequestLimit: params.tileRequestLimit,
+      tileRequestLimit: Math.min(Number(params.tileRequestLimit), MAX_TILE_REQUEST_LIMIT),
     }),
-    ...(params.zoomRange && { zoomRange: params.zoomRange }),
+    ...(params.zoomRange && {
+      zoomRange: {
+        min: Math.max(1, Math.min(Number(params.zoomRange.min) || 1, MAX_ZOOM)),
+        max: Math.max(1, Math.min(Number(params.zoomRange.max) || 17, MAX_ZOOM)),
+      },
+    }),
     ...(typeof params.reverseY !== "undefined" && {
       reverseY: params.reverseY,
     }),
     ...(typeof params.tileSubdomains !== "undefined" && {
-      tileSubdomains: params.tileSubdomains,
+      tileSubdomains: validateSubdomains(params.tileSubdomains),
     }),
     ...(typeof params.tileLayers !== "undefined" && {
-      tileLayers: params.tileLayers,
+      tileLayers: validateTileLayers(params.tileLayers),
     }),
     ...(typeof attribution?.show !== "undefined" || attribution?.text
       ? { attribution }
@@ -205,28 +231,43 @@ export function getMapParams(params: MapParamsInput): MapParamsOutput {
   }
 }
 
-/**
- * Validates the requested image width and height against predefined limits.
- *
- * @param {number} width - The requested image width in pixels.
- * @param {number} height - The requested image height in pixels.
- * @throws {Error} Throws an error if the width or height is out of allowed bounds.
- */
+function validateSubdomains(subdomains: any): string[] {
+  if (!Array.isArray(subdomains)) return []
+  return subdomains
+    .filter((s: any) => typeof s === "string" && /^[a-zA-Z0-9-]+$/.test(s))
+    .slice(0, 10)
+}
+
+function validateTileLayers(layers: any): any[] {
+  if (!Array.isArray(layers)) return []
+  return layers.slice(0, 10).map((layer: any) => {
+    if (!layer || typeof layer !== "object") return {}
+    const testUrl = (layer.tileUrl || "").replace(/\{[^}]+\}/g, "0")
+    if (layer.tileUrl && isPrivateUrl(testUrl)) {
+      logger.error(`Blocked private/internal tile layer URL: ${layer.tileUrl}`)
+      return { ...layer, tileUrl: "" }
+    }
+    return {
+      ...layer,
+      ...(layer.tileSubdomains && { tileSubdomains: validateSubdomains(layer.tileSubdomains) }),
+      ...(layer.subdomains && { subdomains: validateSubdomains(layer.subdomains) }),
+    }
+  })
+}
+
 function validateDimensions(width: number, height: number) {
   if (width > LIMITS.MAX_WIDTH || height > LIMITS.MAX_HEIGHT) {
-    logger.error(
-      `Requested image size ${width}x${height} exceeds maximum allowed ` +
-        `${LIMITS.MAX_WIDTH}x${LIMITS.MAX_HEIGHT}.`
-    )
     throw new Error(
       `Requested image size ${width}x${height} exceeds maximum allowed ` +
         `${LIMITS.MAX_WIDTH}x${LIMITS.MAX_HEIGHT}.`
     )
   }
-  if (width < LIMITS.MIN_WIDTH || height < LIMITS.MIN_HEIGHT) {
-    logger.error(
-      `Image dimensions must be at least ${LIMITS.MIN_WIDTH}x${LIMITS.MIN_HEIGHT}.`
+  if (width * height > LIMITS.MAX_PIXELS) {
+    throw new Error(
+      `Requested image size ${width}x${height} (${(width * height).toLocaleString()} pixels) exceeds pixel budget of ${LIMITS.MAX_PIXELS.toLocaleString()}.`
     )
+  }
+  if (width < LIMITS.MIN_WIDTH || height < LIMITS.MIN_HEIGHT) {
     throw new Error(
       `Image dimensions must be at least ${LIMITS.MIN_WIDTH}x${LIMITS.MIN_HEIGHT}.`
     )

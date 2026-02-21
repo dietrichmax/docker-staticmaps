@@ -29,7 +29,7 @@ export default class Image {
    * @param data - Tile data including image buffer and box coordinates.
    */
   async prepareTileParts(data: TileData): Promise<TilePart> {
-    const tile = sharp(data.body)
+    const tile = sharp(data.body, { limitInputPixels: 100_000_000 })
     try {
       const metadata = await tile.metadata()
       if (!metadata.width || !metadata.height) {

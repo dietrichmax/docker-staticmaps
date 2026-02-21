@@ -4,6 +4,7 @@
  */
 
 import { Request, Response, NextFunction } from "express"
+import crypto from "crypto"
 import logger from "../utils/logger"
 
 /**
@@ -16,6 +17,10 @@ class AuthConfig {
 
   /** Whether API key authentication is required */
   static requireAuth: boolean = false
+
+  /** Secret for HMAC-signing demo cookies. Random per process if not set. */
+  private static demoCookieSecret: string =
+    process.env.DEMO_COOKIE_SECRET || crypto.randomBytes(32).toString("hex")
 
   /**
    * Initialize the auth configuration.
@@ -53,9 +58,38 @@ class AuthConfig {
     )
   }
 
+  /** Creates an HMAC-signed demo cookie value with a 30-minute expiry. */
+  static signDemoCookie(): string {
+    const expires = Date.now() + 30 * 60 * 1000
+    const payload = `demo:${expires}`
+    const sig = crypto
+      .createHmac("sha256", this.demoCookieSecret)
+      .update(payload)
+      .digest("hex")
+    return `${payload}.${sig}`
+  }
+
+  /** Verifies an HMAC-signed demo cookie value. Returns true if valid and not expired. */
+  static verifyDemoCookie(value: string): boolean {
+    const lastDot = value.lastIndexOf(".")
+    if (lastDot === -1) return false
+    const payload = value.slice(0, lastDot)
+    const sig = value.slice(lastDot + 1)
+    const expected = crypto
+      .createHmac("sha256", this.demoCookieSecret)
+      .update(payload)
+      .digest("hex")
+    if (!crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expected)))
+      return false
+    const parts = payload.split(":")
+    if (parts.length !== 2 || parts[0] !== "demo") return false
+    const expires = parseInt(parts[1], 10)
+    return Date.now() < expires
+  }
+
   /**
    * Middleware to check the demo cookie for /demo-map and similar endpoints.
-   * Only allows access if the browser has a valid `demo_auth` cookie.
+   * Only allows access if the browser has a valid HMAC-signed `demo_auth` cookie.
    */
   static checkDemoCookie(
     req: Request,
@@ -70,12 +104,13 @@ class AuthConfig {
 
     const cookies = Object.fromEntries(
       cookieHeader.split(";").map((c) => {
-        const [k, v] = c.trim().split("=")
-        return [k, v]
+        const idx = c.indexOf("=")
+        if (idx === -1) return [c.trim(), ""]
+        return [c.slice(0, idx).trim(), c.slice(idx + 1).trim()]
       })
     )
 
-    if (cookies.demo_auth === "true") {
+    if (cookies.demo_auth && AuthConfig.verifyDemoCookie(cookies.demo_auth)) {
       next()
       return
     }

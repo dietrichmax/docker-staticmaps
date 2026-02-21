@@ -24,7 +24,9 @@ import logger from "./utils/logger"
 import { authenticateApiKey } from "./middlewares/apiKeyAuth"
 import { headers } from "./middlewares/headers"
 import { truncate, normalizeIp } from "./utils/helpers"
+import { redactUrl } from "./utils/security"
 import AuthConfig from "./middlewares/authConfig"
+import { rateLimiter } from "./utils/rateLimit"
 import fs from "fs"
 
 // Load environment variables from .env file
@@ -44,9 +46,11 @@ const PORT = Number(process.env.PORT) || 3000
  */
 app.use((req: Request, _res: Response, next: NextFunction) => {
   const ip = req.ip ?? req.socket.remoteAddress ?? "unknown"
+  // Strip api_key from logged URL to avoid leaking secrets
+  const safeUrl = redactUrl(req.url)
   logger.info("Incoming request", {
     method: req.method,
-    url: truncate(req.url, 500),
+    url: truncate(safeUrl, 500),
     ip: normalizeIp(ip),
   })
   next()
@@ -94,56 +98,51 @@ app.use("/api", authenticateApiKey, routes)
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
+// Cache demo page HTML at startup
+const demoHtml = fs.readFileSync(
+  path.join(__dirname, "..", "public", "index.html"),
+  "utf-8"
+)
+
 // -------------------
 // DEMO PAGE ROUTE
 // -------------------
 
-/**
- * Route handler for root `/` path.
- * Sends the main index.html file from the parent 'public' folder.
- *
- * @param {Request} _req - HTTP request (not used).
- * @param {Response} res - HTTP response.
- */
 app.get(
   ["/", "/index.html"],
   authenticateApiKey,
   (_req: Request, res: Response) => {
-    const htmlFile = path.join(__dirname, "..", "public", "index.html")
-    const html = fs.readFileSync(htmlFile, "utf-8")
-
-    // Set HTTP-only cookie manually
+    const cookieValue = AuthConfig.signDemoCookie()
     const cookieOptions = [
-      "demo_auth=true",
+      `demo_auth=${cookieValue}`,
       "HttpOnly",
-      "SameSite=Lax",
-      `Max-Age=${30 * 60}`, // 30 minutes
+      "SameSite=Strict",
+      "Path=/",
+      `Max-Age=${30 * 60}`,
     ]
     if (process.env.NODE_ENV === "production") {
       cookieOptions.push("Secure")
     }
     res.setHeader("Set-Cookie", cookieOptions.join("; "))
 
-    res.send(html)
+    res.send(demoHtml)
   }
 )
 
-/**
- * Route handler to proxy a demo static map request.
- * Uses AuthConfig to check demo authentication cookie.
- *
- * @param {Request} req - HTTP request.
- * @param {Response} res - HTTP response.
- */
-app.get("/demo-map", AuthConfig.checkDemoCookie, async (req, res) => {
+app.get("/demo-map", rateLimiter, AuthConfig.checkDemoCookie, async (req: Request, res: Response) => {
   try {
     const url = new URL("/api/staticmaps", `http://localhost:${PORT}`)
-    url.search = new URLSearchParams({
-      ...req.query,
-      api_key: process.env.API_KEY!,
-    }).toString()
+    // Forward query params but use internal API key via header (not logged in URL)
+    const queryParams = { ...req.query } as Record<string, string>
+    delete queryParams.api_key
+    delete queryParams.API_KEY
+    url.search = new URLSearchParams(queryParams).toString()
 
-    const response = await fetch(url.toString())
+    const response = await fetch(url.toString(), {
+      headers: process.env.API_KEY
+        ? { "x-api-key": process.env.API_KEY }
+        : {},
+    })
     if (!response.ok)
       return res.status(response.status).send(await response.text())
 
@@ -200,15 +199,13 @@ app.get("/health", (_req, res) => {
  */
 app.use(
   (err: Error, req: Request, res: Response, _next: NextFunction): void => {
+    const safeUrl = redactUrl(req.url)
     logger.error("Unhandled error occurred", {
       error: err.message,
       stack: err.stack,
       method: req.method,
-      url: req.url,
+      url: safeUrl,
       ip: req.ip,
-      headers: req.headers,
-      params: req.params,
-      body: req.method !== "GET" ? req.body : undefined,
     })
     res.status(500).json({ error: "Internal server error" })
   }
