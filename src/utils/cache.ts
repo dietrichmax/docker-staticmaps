@@ -16,7 +16,7 @@ const tileCacheTTL = parseInt(process.env.TILE_CACHE_TTL ?? "", 10) || 3600
  * - stdTTL: standard TTL for cached items (in seconds).
  * - checkperiod: interval in seconds to check and purge expired cache entries.
  */
-const tileCache = new NodeCache({ stdTTL: tileCacheTTL, checkperiod: 120 })
+const tileCache = new NodeCache({ stdTTL: tileCacheTTL, checkperiod: 120, maxKeys: 500 })
 
 /**
  * Retrieves a cached tile buffer by its cache key.

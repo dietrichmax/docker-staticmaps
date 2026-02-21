@@ -11,6 +11,8 @@ import {
 } from "./utils"
 import { Text, Polyline, Circle, IconMarker } from "./features"
 import sharp from "sharp"
+import { isSafeOutboundUrl, escapeXml } from "../utils/security"
+import logger from "../utils/logger"
 
 /**
  * Draws a map tile layer by loading and rendering tiles based on the given viewport and configuration.
@@ -217,8 +219,8 @@ export function lineToSVG({
 <svg xmlns="http://www.w3.org/2000/svg">
   <path
     d="${d}"
-    fill="${line.fill || "none"}"
-    stroke="${line.color}"
+    fill="${escapeXml(line.fill || "none")}"
+    stroke="${escapeXml(line.color)}"
     stroke-width="${line.width}"
     stroke-linejoin="round"
     stroke-linecap="round"
@@ -259,13 +261,13 @@ export function textToSVG({
   return `<text
     x="${x}" y="${y}"
     fill-rule="inherit"
-    font-family="${text.font}"
+    font-family="${escapeXml(text.font)}"
     font-size="${text.size}pt"
-    stroke="${text.color}"
-    fill="${text.fill ?? "none"}"
+    stroke="${escapeXml(text.color)}"
+    fill="${escapeXml(text.fill ?? "none")}"
     stroke-width="${text.width}"
-    text-anchor="${text.anchor}"
-  >${text.text}</text>`
+    text-anchor="${escapeXml(text.anchor)}"
+  >${escapeXml(text.text ?? "")}</text>`
 }
 
 /**
@@ -302,8 +304,8 @@ export function circleToSVG({
   return `<circle
     cx="${cx}" cy="${cy}" r="${r}"
     fill-rule="inherit"
-    stroke="${circle.color}"
-    fill="${circle.fill}"
+    stroke="${escapeXml(circle.color)}"
+    fill="${escapeXml(circle.fill)}"
     stroke-width="${circle.width}"
   />`
 }
@@ -436,9 +438,31 @@ export async function loadMarkers(
   await Promise.all(
     icons.map(async (icon) => {
       if (isValidUrl(icon.file)) {
-        const response = await fetch(icon.file, { method: "GET" })
+        if (!isSafeOutboundUrl(icon.file)) {
+          logger.warn(`Blocked private/internal marker URL: ${icon.file}`)
+          throw new Error(`Blocked private/internal marker URL`)
+        }
+        const controller = new AbortController()
+        const timeoutId = setTimeout(() => controller.abort(), 10_000)
+        let response: globalThis.Response
+        try {
+          response = await fetch(icon.file, { method: "GET", redirect: "manual" as RequestRedirect, signal: controller.signal })
+        } finally {
+          clearTimeout(timeoutId)
+        }
+        if (response.status >= 300 && response.status < 400) {
+          throw new Error(`Marker URL returned redirect, blocked for security`)
+        }
         if (!response.ok)
           throw new Error(`Failed to fetch image from ${icon.file}`)
+        const contentType = response.headers.get("content-type")
+        if (!contentType || !contentType.startsWith("image/")) {
+          throw new Error(`Marker URL did not return an image: ${icon.file}`)
+        }
+        const contentLength = Number(response.headers.get("content-length") || 0)
+        if (contentLength > 5 * 1024 * 1024) {
+          throw new Error(`Marker image too large: ${contentLength} bytes`)
+        }
         const arrayBuffer = await response.arrayBuffer()
         icon.data = await sharp(Buffer.from(arrayBuffer))
           .resize(icon.width, icon.height)
@@ -446,7 +470,7 @@ export async function loadMarkers(
       } else {
         const svgString = `
           <svg xmlns="http://www.w3.org/2000/svg" width="${icon.width}" height="${icon.height}" viewBox="0 0 24 24">
-            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="${icon.color}"/>
+            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="${escapeXml(icon.color)}"/>
             <circle cx="12" cy="9" r="2.5" fill="white"/>
           </svg>
         `

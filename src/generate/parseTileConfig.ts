@@ -1,5 +1,6 @@
 import { basemaps } from "../utils/basemaps"
 import logger from "../utils/logger"
+import { isPrivateUrl, replacePlaceholders } from "../utils/security"
 
 /**
  * Generates a tile URL and attribution based on the provided custom URL and basemap.
@@ -12,7 +13,14 @@ export function getTileUrl(
   customUrl: string | null,
   basemapName: string | null
 ): { url: string; attribution: string } {
-  if (customUrl) return { url: customUrl, attribution: "" }
+  if (customUrl) {
+    const testUrl = replacePlaceholders(customUrl)
+    if (isPrivateUrl(testUrl)) {
+      logger.error(`Blocked private/internal tile URL: ${customUrl}`)
+      return { url: "", attribution: "" }
+    }
+    return { url: customUrl, attribution: "" }
+  }
   const name = basemapName || "osm"
   const tile = basemaps.find((b) => b.basemap === name)
   if (!tile) {

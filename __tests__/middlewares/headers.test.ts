@@ -34,7 +34,7 @@ describe("headers middleware", () => {
     )
     expect(res.setHeader).toHaveBeenCalledWith(
       "Referrer-Policy",
-      "no-referrer-when-downgrade"
+      "strict-origin-when-cross-origin"
     )
     expect(res.setHeader).toHaveBeenCalledWith(
       "Permissions-Policy",
