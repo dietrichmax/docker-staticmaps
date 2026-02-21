@@ -261,5 +261,78 @@ describe("generateParams", () => {
       expect(result.url).toBe("")
       expect(result.attribution).toBe("")
     })
+
+    it("blocks private/internal tile URL", () => {
+      const result = getTileUrl("http://192.168.1.1/{z}/{x}/{y}.png", null)
+      expect(result.url).toBe("")
+      expect(result.attribution).toBe("")
+      expect(logger.error).toHaveBeenCalledWith(
+        "Blocked private/internal tile URL: http://192.168.1.1/{z}/{x}/{y}.png"
+      )
+    })
+
+    it("blocks localhost tile URL", () => {
+      const result = getTileUrl("http://localhost:8080/{z}/{x}/{y}.png", null)
+      expect(result.url).toBe("")
+    })
+  })
+
+  describe("security boundary validation", () => {
+    it("clamps quality below 1 to 1", () => {
+      const result = getMapParams({ center: "50,10", quality: "0" })
+      expect(result.options.quality).toBe(1)
+    })
+
+    it("clamps quality above 100 to 100", () => {
+      const result = getMapParams({ center: "50,10", quality: "999" })
+      expect(result.options.quality).toBe(100)
+    })
+
+    it("clamps negative quality to 1", () => {
+      const result = getMapParams({ center: "50,10", quality: "-50" })
+      expect(result.options.quality).toBe(1)
+    })
+
+    it("throws on unsupported format", () => {
+      expect(() =>
+        getMapParams({ center: "50,10", format: "svg" })
+      ).toThrow(/Unsupported format/)
+    })
+
+    it("throws on executable format", () => {
+      expect(() =>
+        getMapParams({ center: "50,10", format: "exe" })
+      ).toThrow(/Unsupported format/)
+    })
+
+    it("accepts allowed formats", () => {
+      for (const fmt of ["png", "jpeg", "jpg", "webp", "pdf"]) {
+        const result = getMapParams({ center: "50,10", format: fmt })
+        expect(result.options.format).toBe(fmt)
+      }
+    })
+
+    it("caps zoom at 20", () => {
+      const result = getMapParams({ center: "50,10", zoom: "25" })
+      expect(result.options.zoom).toBe(20)
+    })
+
+    it("throws when dimensions exceed max", () => {
+      expect(() =>
+        getMapParams({ center: "50,10", width: "9000", height: "100" })
+      ).toThrow(/exceeds maximum/)
+    })
+
+    it("throws when pixel budget exceeded", () => {
+      expect(() =>
+        getMapParams({ center: "50,10", width: "6000", height: "5000" })
+      ).toThrow(/pixel budget/)
+    })
+
+    it("throws when dimensions are zero", () => {
+      expect(() =>
+        getMapParams({ center: "50,10", width: "0", height: "100" })
+      ).toThrow(/at least/)
+    })
   })
 })

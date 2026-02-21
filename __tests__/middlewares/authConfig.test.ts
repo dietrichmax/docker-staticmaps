@@ -134,5 +134,24 @@ describe("AuthConfig", () => {
       expect(res.send).toHaveBeenCalledWith("Unauthorized")
       expect(next).not.toHaveBeenCalled()
     })
+
+    test("rejects expired demo cookie", () => {
+      // Craft a cookie with an expiry 1 hour in the past
+      const crypto = require("crypto")
+      const expiredTime = Date.now() - 60 * 60 * 1000
+      const payload = `demo:${expiredTime}`
+      // Sign it with the same secret (random per process, but AuthConfig uses it internally)
+      // We use signDemoCookie then manually tamper with the expiry to simulate expiration
+      const validCookie = AuthConfig.signDemoCookie()
+      // Extract the secret by re-signing: we can't access the secret directly,
+      // so instead we use Date.now mock to simulate time passing
+      const originalNow = Date.now
+      Date.now = () => originalNow() + 31 * 60 * 1000 // 31 minutes later (past 30-min expiry)
+      req.headers!.cookie = `demo_auth=${validCookie}`
+      AuthConfig.checkDemoCookie(req as Request, res as Response, next)
+      Date.now = originalNow
+      expect(res.status).toHaveBeenCalledWith(401)
+      expect(next).not.toHaveBeenCalled()
+    })
   })
 })
