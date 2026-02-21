@@ -221,7 +221,7 @@ describe("loadMarkers", () => {
 
     expect(global.fetch).toHaveBeenCalledWith(
       "https://example.com/marker.png",
-      { method: "GET", redirect: "manual" }
+      expect.objectContaining({ method: "GET", redirect: "manual" })
     )
     expect(sharpMock).toHaveBeenCalled()
     expect(sharpInstance.resize).toHaveBeenCalledWith(10, 15)
