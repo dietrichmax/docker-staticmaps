@@ -9,7 +9,7 @@ import logger from "../utils/logger"
 import { parseCenter } from "./parseCoordinates"
 import { parseMultipleShapes } from "./parseShapes"
 import { getTileUrl, parseAttributionParam, parseBorderParam } from "./parseTileConfig"
-import { sanitizeTileHeaders, isPrivateUrl } from "../utils/security"
+import { sanitizeTileHeaders, isPrivateUrl, replacePlaceholders } from "../utils/security"
 
 // Re-export submodule functions for backward compatibility with tests
 export { isEncodedPolyline, parseCoordinates, parseCenter } from "./parseCoordinates"
@@ -242,7 +242,7 @@ function validateTileLayers(layers: any): any[] {
   if (!Array.isArray(layers)) return []
   return layers.slice(0, 10).map((layer: any) => {
     if (!layer || typeof layer !== "object") return {}
-    const testUrl = (layer.tileUrl || "").replace(/\{[^}]+\}/g, "0")
+    const testUrl = replacePlaceholders(layer.tileUrl || "")
     if (layer.tileUrl && isPrivateUrl(testUrl)) {
       logger.error(`Blocked private/internal tile layer URL: ${layer.tileUrl}`)
       return { ...layer, tileUrl: "" }

@@ -86,6 +86,17 @@ export function redactUrl(url: string): string {
   return url.replace(/([?&])(api_key|API_KEY)=[^&]*/gi, "$1$2=[REDACTED]")
 }
 
+/** Replaces tile URL template placeholders like {z}, {x}, {y}, {s}, {quadkey} with safe defaults. */
+export function replacePlaceholders(url: string): string {
+  return url
+    .replaceAll("{z}", "0")
+    .replaceAll("{x}", "0")
+    .replaceAll("{y}", "0")
+    .replaceAll("{s}", "a")
+    .replaceAll("{quadkey}", "0")
+    .replaceAll("{r}", "")
+}
+
 /** Header names allowed in user-supplied tileRequestHeader. */
 const ALLOWED_TILE_HEADERS = new Set([
   "user-agent",
