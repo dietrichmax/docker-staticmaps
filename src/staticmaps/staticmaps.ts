@@ -175,9 +175,9 @@ class StaticMaps {
    *
    * @param {Coordinate} [center] - Optional array of two numbers representing the longitude and latitude of the map's center. If omitted, center is calculated from map features.
    * @param {number} [zoom] - Optional zoom level for the map. If not provided, it will be calculated.
-   * @returns {Promise<string>} - Promise that resolves to the SVG string representing the rendered map.
+   * @returns {Promise<void>} - Promise that resolves when the map has been rendered.
    */
-  async render(center?: Coordinate, zoom?: number): Promise<string> {
+  async render(center?: Coordinate, zoom?: number): Promise<void> {
     if (
       !center &&
       this.markers.length === 0 &&
@@ -225,7 +225,7 @@ class StaticMaps {
       zoom: this.zoom,
     })
 
-    return this.drawFeatures()
+    await this.drawFeatures()
   }
 
   /**
@@ -351,9 +351,9 @@ class StaticMaps {
    * @param {number} x - The tile number in the x direction.
    * @returns {number} - The pixel coordinate on the image canvas.
    */
-  xToPx(x: number): number {
+  xToPx = (x: number): number => {
     const px = (x - this.centerX) * this.tileSize + this.width / 2
-    return Math.round(px) // Return rounded number as a number type
+    return Math.round(px)
   }
 
   /**
@@ -362,9 +362,9 @@ class StaticMaps {
    * @param {number} y - The tile number in the y direction.
    * @returns {number} - The pixel coordinate on the image canvas.
    */
-  yToPx(y: number): number {
+  yToPx = (y: number): number => {
     const px = (y - this.centerY) * this.tileSize + this.height / 2
-    return Math.round(px) // Return rounded number as a number type
+    return Math.round(px)
   }
 
   /**
@@ -384,8 +384,8 @@ class StaticMaps {
       tileSize: this.tileSize,
       zoom: this.zoom,
       reverseY: this.reverseY,
-      xToPx: this.xToPx.bind(this),
-      yToPx: this.yToPx.bind(this),
+      xToPx: this.xToPx,
+      yToPx: this.yToPx,
       tileManager: this.tileManager,
       image: this.image,
       config,
@@ -416,8 +416,8 @@ class StaticMaps {
     return circleToSVG({
       circle,
       zoom: this.zoom,
-      xToPx: this.xToPx.bind(this),
-      yToPx: this.yToPx.bind(this),
+      xToPx: this.xToPx,
+      yToPx: this.yToPx,
     })
   }
 
@@ -431,8 +431,8 @@ class StaticMaps {
     return textToSVG({
       text,
       zoom: this.zoom,
-      xToPx: this.xToPx.bind(this),
-      yToPx: this.yToPx.bind(this),
+      xToPx: this.xToPx,
+      yToPx: this.yToPx,
     })
   }
 
@@ -446,8 +446,8 @@ class StaticMaps {
     return lineToSVG({
       line,
       zoom: this.zoom,
-      xToPx: this.xToPx.bind(this),
-      yToPx: this.yToPx.bind(this),
+      xToPx: this.xToPx,
+      yToPx: this.yToPx,
     })
   }
 
@@ -470,26 +470,11 @@ class StaticMaps {
    *
    * This method draws lines, markers, text, and circles to the basemap in sequence.
    */
-  async drawFeatures(): Promise<string> {
-    // Collect the parts that will make up the final SVG
-    let svgContent = ""
-
-    // Draw each feature and append to the SVG content
-    if (this.lines) {
-      svgContent += await this.drawSVG(this.lines, (c) => this.lineToSVG(c))
-    }
-    if (this.text) {
-      svgContent += await this.drawSVG(this.text, (c) => this.textToSVG(c))
-    }
-    if (this.circles) {
-      svgContent += await this.drawSVG(this.circles, (c) => this.circleToSVG(c))
-    }
-    if (this.markers) {
-      svgContent += await this.drawMarkers()
-    }
-
-    // Return the final SVG string
-    return svgContent
+  async drawFeatures(): Promise<void> {
+    await this.drawSVG(this.lines, (c) => this.lineToSVG(c))
+    await this.drawSVG(this.text, (c) => this.textToSVG(c))
+    await this.drawSVG(this.circles, (c) => this.circleToSVG(c))
+    await this.drawMarkers()
   }
 
   /**
@@ -501,8 +486,8 @@ class StaticMaps {
     return loadMarkers(
       this.markers,
       this.zoom,
-      this.xToPx.bind(this),
-      this.yToPx.bind(this)
+      this.xToPx,
+      this.yToPx
     )
   }
 }

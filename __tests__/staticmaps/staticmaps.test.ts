@@ -103,8 +103,9 @@ describe("StaticMaps", () => {
     const map = new StaticMaps(baseOptions)
     map.addMarker({ coord: [10, 10] } as any)
 
-    const svg = await map.render([10, 10], 5)
-    expect(svg).toContain("<svg")
+    await map.render([10, 10], 5)
+    expect(map.zoom).toBe(5)
+    expect(drawLayer).toHaveBeenCalled()
   })
 
   it("should clamp zoom to maxZoom", async () => {
@@ -134,5 +135,16 @@ describe("StaticMaps", () => {
     map.centerY = 0
     expect(map.xToPx(1)).toBeGreaterThan(0)
     expect(map.yToPx(1)).toBeGreaterThan(0)
+  })
+
+  it("xToPx and yToPx work as detached callbacks", () => {
+    const map = new StaticMaps(baseOptions)
+    map.centerX = 2
+    map.centerY = 3
+
+    // Extract as standalone functions (simulates passing to renderer)
+    const { xToPx, yToPx } = map
+    expect(xToPx(2)).toBe(baseOptions.width / 2)
+    expect(yToPx(3)).toBe(baseOptions.height / 2)
   })
 })
