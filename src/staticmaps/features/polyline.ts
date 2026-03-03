@@ -72,7 +72,7 @@ export default class Polyline {
         const geodesicSegment: Coordinate[] = createGeodesicLine(
           [start[1], start[0]],
           [end[1], end[0]]
-        ).map(([lat, lon]) => [lon, lat])
+        )
 
         // Avoid duplicate points between segments
         if (segments.length > 0) geodesicSegment.shift()

@@ -16,16 +16,16 @@ describe("Polyline class", () => {
 
     const poly = new Polyline({ coords })
 
-    // Polyline constructor swaps x/y in output?
+    // Geodesic interpolation preserves [lon, lat] order
     const inputStart = coords[0]
     const polyStart = poly.coords[0]
-    expect(polyStart[0]).toBeCloseTo(inputStart[1], 9) // poly x ~ input y
-    expect(polyStart[1]).toBeCloseTo(inputStart[0], 9) // poly y ~ input x
+    expect(polyStart[0]).toBeCloseTo(inputStart[0], 9)
+    expect(polyStart[1]).toBeCloseTo(inputStart[1], 9)
 
     const inputEnd = coords[coords.length - 1]
     const polyEnd = poly.coords[poly.coords.length - 1]
-    expect(polyEnd[0]).toBeCloseTo(inputEnd[1], 9)
-    expect(polyEnd[1]).toBeCloseTo(inputEnd[0], 9)
+    expect(polyEnd[0]).toBeCloseTo(inputEnd[0], 9)
+    expect(polyEnd[1]).toBeCloseTo(inputEnd[1], 9)
 
     expect(poly.coords.length).toBeGreaterThan(3) // more points due to interpolation
     expect(poly.color).toBe("#000000BB")
@@ -74,13 +74,13 @@ describe("Polyline class", () => {
     expect(poly.type).toBe("polyline")
   })
 
-  test("constructor calls createGeodesicLine for exactly two coords and swaps lat/lon", () => {
+  test("constructor calls createGeodesicLine for exactly two coords", () => {
     const coords: Coordinate[] = [
       [10, 20],
       [30, 40],
     ]
 
-    // Spy on createGeodesicLine and mock return value
+    // Spy on createGeodesicLine and mock return value (already [lon, lat])
     const geodesicCoords: Coordinate[] = [
       [20, 10],
       [30, 40],
@@ -94,21 +94,42 @@ describe("Polyline class", () => {
 
     // It should call createGeodesicLine once
     expect(spy).toHaveBeenCalledTimes(1)
-    const swappedCoords = geodesicCoords.map(([lat, lon]) => [lon, lat])
-    expect(poly.coords).toStrictEqual(swappedCoords)
+    // createGeodesicLine returns [lon, lat] — no swap needed
+    expect(poly.coords).toStrictEqual(geodesicCoords)
   })
 
-  /*test("extent calculates bounding box correctly", () => {
+  test("geodesic interpolation keeps coordinates in valid geographic range", () => {
+    // Regression: a coordinate swap bug sent transatlantic routes to the south pole
     const coords: Coordinate[] = [
-      [-10, 20],
-      [30, 40],
-      [5, 15],
-      [25, 35],
+      [-3.7, 40.4], // Madrid [lon, lat]
+      [-74, 40.7],  // New York [lon, lat]
     ]
     const poly = new Polyline({ coords })
-    const extent = poly.extent()
-    expect(extent).toEqual([-10, 15, 30, 40])
-  })*/
+
+    for (const [lon, lat] of poly.coords) {
+      expect(lon).toBeGreaterThanOrEqual(-180)
+      expect(lon).toBeLessThanOrEqual(180)
+      expect(lat).toBeGreaterThanOrEqual(-90)
+      expect(lat).toBeLessThanOrEqual(90)
+    }
+
+    // Transatlantic route should curve north, all latitudes >= 40
+    for (const [, lat] of poly.coords) {
+      expect(lat).toBeGreaterThanOrEqual(39)
+    }
+  })
+
+  test("withGeodesicLine=false skips geodesic interpolation", () => {
+    const coords: Coordinate[] = [
+      [0, 0],
+      [10, 10],
+      [20, 20],
+    ]
+    const poly = new Polyline({ coords, withGeodesicLine: false })
+
+    expect(poly.coords).toStrictEqual(coords)
+    expect(poly.coords.length).toBe(3)
+  })
 
   test("extent works with single coordinate", () => {
     const coords: Coordinate[] = [[2, 3]]
