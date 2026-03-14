@@ -18,10 +18,6 @@ I am committed to protecting your privacy and believe that you should have contr
 
 I recommend that you read this Privacy Policy in full to ensure you are fully informed. The responsible data controller for mxd.codes and all related services is Max Dietrich
 
-# Plausible
-
-This website uses Plausible, a privacy-friendly, open-source web analytics platform designed to track basic website usage without collecting any personal data. IP addresses are not stored, cookies are not used, and all data is anonymized. The Plausible instance is self-hosted on a virtual server owned by Netcup GmbH, and no data is shared with third parties at any time.
-
 # Third party websites
 
 This website includes hyperlinks to, and details of, third party websites. I have no control over, and are not responsible for, the privacy policies and practices of third parties.

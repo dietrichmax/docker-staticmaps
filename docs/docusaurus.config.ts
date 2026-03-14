@@ -57,14 +57,6 @@ const config: Config = {
     ],
   ],
 
-  scripts: [
-    {
-      "src": "https://analytics.mxd.codes/js/script.js",
-      "defer": true,
-      "data-domain": "dietrichmax.github.io",
-    },
-  ],
-
   themeConfig: {
     // Replace with your project's social card
     //image: 'img/docusaurus-social-card.jpg',
