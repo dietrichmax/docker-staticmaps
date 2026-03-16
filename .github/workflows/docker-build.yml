@@ -5,6 +5,7 @@ on:
     branches:
       - main
     paths:
+      - '.github/workflows/docker-build.yml'
       - 'docker/**'
       - 'public/**'
       - 'src/**'
