@@ -9,9 +9,11 @@
     "skipLibCheck": true, // Skips type checking of declaration files
     "forceConsistentCasingInFileNames": true, // Ensures file name casing consistency
     "outDir": "./dist", // Output directory for compiled files
+    "rootDir": "./src", // Root directory of input files
     "baseUrl": "./", // Base directory for resolving non-relative module names
     "noImplicitAny": true, // Disallows usage of `any` type without explicit declaration
     "moduleResolution": "node", // Module resolution strategy (node, classic)
+    "ignoreDeprecations": "6.0", // baseUrl + moduleResolution=node are deprecated in TS 6, removed in TS 7
     "sourceMap": true
   },
   "include": ["src/**/*"],
