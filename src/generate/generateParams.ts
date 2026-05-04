@@ -10,6 +10,7 @@ import { parseCenter } from "./parseCoordinates"
 import { parseMultipleShapes } from "./parseShapes"
 import { getTileUrl, parseAttributionParam, parseBorderParam } from "./parseTileConfig"
 import { sanitizeTileHeaders, isPrivateUrl, replacePlaceholders } from "../utils/security"
+import { parseBoolean } from "../utils/helpers"
 
 // Re-export submodule functions for backward compatibility with tests
 export { isEncodedPolyline, parseCoordinates, parseCenter } from "./parseCoordinates"
@@ -68,6 +69,10 @@ const MAX_TILE_REQUEST_LIMIT = 8
 const MAX_TILE_REQUEST_TIMEOUT = 30_000
 const MAX_ZOOM = 20
 const MAX_FEATURES = 1000
+
+/** Short-form attribution appended when ?hillshade=true is set. Override via HILLSHADE_ATTRIBUTION. */
+const HILLSHADE_ATTRIBUTION =
+  process.env.HILLSHADE_ATTRIBUTION || "Hillshade: Mapzen / AWS Terrain Tiles"
 
 /**
  * Default style and properties for each supported shape type.
@@ -168,9 +173,15 @@ export function getMapParams(params: MapParamsInput): MapParamsOutput {
     params.basemap
   )
 
+  const combinedAttribution = parseBoolean(params.hillshade)
+    ? basemapAttribution
+      ? `${basemapAttribution} | ${HILLSHADE_ATTRIBUTION}`
+      : HILLSHADE_ATTRIBUTION
+    : basemapAttribution
+
   const attribution = parseAttributionParam(
     params.attribution,
-    basemapAttribution
+    combinedAttribution
   )
 
   const borderOptions = parseBorderParam(params.border)
@@ -215,6 +226,7 @@ export function getMapParams(params: MapParamsInput): MapParamsOutput {
     ...(typeof attribution?.show !== "undefined" || attribution?.text
       ? { attribution }
       : {}),
+    ...(parseBoolean(params.hillshade) && { hillshade: true }),
 
     tileUrl,
     center,

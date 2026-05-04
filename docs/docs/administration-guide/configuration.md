@@ -30,6 +30,8 @@ You can configure the **Docker Static Maps API** through environment variables.
 | `MAX_PARAMETER_LIMIT` | number | 1000 | Controls the maximum number of parameters that are allowed in the URL-encoded data |
 | `RATE_LIMIT_MS` | number | 60000 | Rate limit window in milliseconds |
 | `RATE_LIMIT_MAX` | number | 60 | Max requests per IP per window |
+| `HILLSHADE_TILE_URL` | string | AWS Open Data Terrarium endpoint | Tile URL template for the optional hillshade overlay. Must serve Terrarium-encoded raster-DEM tiles. |
+| `HILLSHADE_ATTRIBUTION` | string | `Hillshade: Mapzen / AWS Terrain Tiles` | Short-form attribution appended when `hillshade=true` is set. Override when pointing `HILLSHADE_TILE_URL` at a non-Mapzen DEM source. |
 
 ---
 

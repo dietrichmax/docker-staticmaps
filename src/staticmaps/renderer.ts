@@ -12,6 +12,7 @@ import {
 import { Text, Polyline, Circle, IconMarker } from "./features"
 import sharp from "sharp"
 import { isSafeOutboundUrl, escapeXml } from "../utils/security"
+import { terrariumToHillshade } from "./hillshade"
 import logger from "../utils/logger"
 
 /**
@@ -64,7 +65,12 @@ export async function drawLayer({
   yToPx: (y: number) => number
   tileManager: { getTiles: (tiles: any[]) => Promise<any[]> }
   image: { draw: (tiles: any[]) => Promise<any[]> }
-  config: { tileUrl: string; tileSubdomains?: string[] }
+  config: {
+    tileUrl: string
+    tileSubdomains?: string[]
+    opacity?: number
+    terrainEncoding?: "terrarium"
+  }
 }): Promise<any[]> {
   if (!config?.tileUrl) return image.draw([])
 
@@ -125,6 +131,24 @@ export async function drawLayer({
   const validTiles = loadedTiles
     .filter((tile: any) => tile.success)
     .map((t: any) => t.tile)
+
+  if (config.terrainEncoding === "terrarium") {
+    for (const tile of validTiles) {
+      tile.body = await terrariumToHillshade(tile.body, zoom)
+      tile.blend = "multiply"
+    }
+  } else {
+    const opacity = config.opacity ?? 1
+    if (opacity < 1) {
+      for (const tile of validTiles) {
+        tile.body = await sharp(tile.body)
+          .removeAlpha()
+          .ensureAlpha(opacity)
+          .toBuffer()
+      }
+    }
+  }
+
   return image.draw(validTiles)
 }
 
