@@ -12,6 +12,8 @@ export class TileServerConfig {
   public readonly tileUrl: string
   /** List of subdomains for the tile server */
   public readonly tileSubdomains: string[]
+  public readonly opacity: number
+  public readonly terrainEncoding?: "terrarium"
 
   /**
    * Create a TileServerConfig instance.
@@ -21,6 +23,10 @@ export class TileServerConfig {
     this.tileUrl =
       options.tileUrl ?? "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
     this.tileSubdomains = options.tileSubdomains ?? options.subdomains ?? []
+    this.opacity = Number.isFinite(options.opacity)
+      ? Math.max(0, Math.min(1, Number(options.opacity)))
+      : 1
+    this.terrainEncoding = options.terrainEncoding
   }
 }
 

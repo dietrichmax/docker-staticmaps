@@ -49,6 +49,44 @@ describe("generateParams", () => {
       const result = getMapParams({})
       expect(result.missingParams).toContain("{center} or {coordinates}")
     })
+
+    it("appends hillshade attribution when ?hillshade=true", () => {
+      const result = getMapParams({
+        center: "50,10",
+        basemap: "osm",
+        hillshade: "true",
+      })
+
+      expect(result.options.hillshade).toBe(true)
+      expect(result.options.attribution?.text).toContain(
+        "© OpenStreetMap contributors"
+      )
+      expect(result.options.attribution?.text).toContain(
+        "Hillshade: Mapzen / AWS Terrain Tiles"
+      )
+    })
+
+    it("does not append hillshade attribution when hillshade is off", () => {
+      const result = getMapParams({
+        center: "50,10",
+        basemap: "osm",
+      })
+
+      expect(result.options.hillshade).toBeUndefined()
+      expect(result.options.attribution?.text).not.toContain("Hillshade:")
+    })
+
+    it("user attribution override wins over hillshade-appended text", () => {
+      const result = getMapParams({
+        center: "50,10",
+        basemap: "osm",
+        hillshade: "true",
+        attribution: "text:Custom note",
+      })
+
+      expect(result.options.attribution?.text).toBe("Custom note")
+      expect(result.options.attribution?.text).not.toContain("Hillshade:")
+    })
   })
 
   describe("parseMultipleShapes", () => {

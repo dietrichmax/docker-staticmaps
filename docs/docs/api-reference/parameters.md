@@ -45,5 +45,6 @@ Request static maps from the `/api/staticmaps` endpoint using the following para
 | `tileRequestLimit` | `2` | Max parallel tile requests |
 | `zoomRange` | `{ min: 1, max: 17 }` | Min and max zoom to try |
 | `reverseY` | `false` | Use TMS-style Y axis if `true` |
+| `hillshade` | `false` | Composite a shaded-relief overlay on top of the basemap (see **Hillshade**) |
 
 ---

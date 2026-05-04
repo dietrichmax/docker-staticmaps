@@ -57,6 +57,7 @@ export default class Image {
         success: true,
         position: { top: Math.round(sy), left: Math.round(sx) },
         data: part,
+        ...(data.blend && { blend: data.blend }),
       }
     } catch (error) {
       return { success: false }
@@ -100,9 +101,10 @@ export default class Image {
     // Composite all prepared tiles on the base image
     this.image = await sharp(baseImage)
       .composite(
-        preparedTiles.map(({ position, data }) => ({
+        preparedTiles.map(({ position, data, blend }) => ({
           input: data,
           ...position,
+          ...(blend && { blend: blend as sharp.Blend }),
         }))
       )
       .toBuffer()

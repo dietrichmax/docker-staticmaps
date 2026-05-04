@@ -227,7 +227,9 @@ app.listen(PORT, () => {
       `  RATE_LIMIT_MS: ${process.env.RATE_LIMIT_MS || "60000"}\n` +
       `  RATE_LIMIT_MAX: ${process.env.RATE_LIMIT_MAX || "60"}\n` +
       `  LOG_LEVEL: ${process.env.LOG_LEVEL || "INFO"}\n` +
-      `  MAX_BODY_SIZE: ${process.env.MAX_BODY_SIZE || "100kb"}`
+      `  MAX_BODY_SIZE: ${process.env.MAX_BODY_SIZE || "100kb"}\n` +
+      `  HILLSHADE_TILE_URL: ${process.env.HILLSHADE_TILE_URL || "(default)"}\n` +
+      `  HILLSHADE_ATTRIBUTION: ${process.env.HILLSHADE_ATTRIBUTION || "(default)"}`
   )
   logger.info(
     `🗺️  docker-staticmaps running at http://localhost:${PORT}/api/staticmaps \nDemo running at http://localhost:${PORT}/`

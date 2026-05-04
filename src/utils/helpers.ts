@@ -43,6 +43,14 @@ export function measureTextWidth(
 }
 
 /**
+ * Loose boolean parser for query-string values.
+ * Treats `true`, `"true"`, `"1"` and `1` as `true`; everything else as `false`.
+ */
+export function parseBoolean(val: any): boolean {
+  return val === true || val === "true" || val === "1" || val === 1
+}
+
+/**
  * Converts a number of bytes into a human-readable string with appropriate units.
  *
  * @param {number} bytes - The size in bytes to format.

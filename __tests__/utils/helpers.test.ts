@@ -3,6 +3,7 @@ import {
   normalizeIp,
   measureTextWidth,
   formatBytes,
+  parseBoolean,
 } from "../../src/utils/helpers"
 
 describe("truncate", () => {
@@ -83,5 +84,25 @@ describe("formatBytes", () => {
 
   it("rounds values to 2 decimal places", () => {
     expect(formatBytes(123456789)).toBe("117.74 MB")
+  })
+})
+
+describe("parseBoolean", () => {
+  it("returns true for true, 'true', '1', 1", () => {
+    expect(parseBoolean(true)).toBe(true)
+    expect(parseBoolean("true")).toBe(true)
+    expect(parseBoolean("1")).toBe(true)
+    expect(parseBoolean(1)).toBe(true)
+  })
+
+  it("returns false for everything else", () => {
+    expect(parseBoolean(false)).toBe(false)
+    expect(parseBoolean("false")).toBe(false)
+    expect(parseBoolean("0")).toBe(false)
+    expect(parseBoolean(0)).toBe(false)
+    expect(parseBoolean(undefined)).toBe(false)
+    expect(parseBoolean(null)).toBe(false)
+    expect(parseBoolean("yes")).toBe(false)
+    expect(parseBoolean("TRUE")).toBe(false)
   })
 })

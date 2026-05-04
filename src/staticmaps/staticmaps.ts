@@ -1,6 +1,7 @@
 import { Image, IconMarker, Polyline, Circle, Text, Bound } from "./features"
 import { lonToX, latToY, yToLat, xToLon } from "./utils"
 import logger from "../utils/logger"
+import { HILLSHADE_TILE_URL } from "./hillshade"
 import {
   MapOptions,
   TileServerConfigOptions,
@@ -60,6 +61,15 @@ class StaticMaps {
       this.options.tileLayers.forEach((layerConfig) => {
         this.tileLayers.push(new TileServerConfig(layerConfig))
       })
+    }
+
+    if (this.options.hillshade) {
+      this.tileLayers.push(
+        new TileServerConfig({
+          tileUrl: HILLSHADE_TILE_URL,
+          terrainEncoding: "terrarium",
+        })
+      )
     }
 
     this.width = this.options.width

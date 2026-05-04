@@ -52,6 +52,7 @@ export interface MapOptions {
     show: boolean
     text: string
   }
+  hillshade?: boolean // Overlay a hillshade layer on top of the basemap
   tileUrl?: string // Tile URL override
   center?: Coordinate // Center Coordinate
   quality?: number
@@ -139,6 +140,7 @@ export type ShapeType = "polyline" | "polygon" | "circle" | "markers" | "text"
 export interface TileData {
   body: Buffer // Raw tile image buffer
   box: Coordinate // Position or size reference [x, y] or [width, height]
+  blend?: string // Optional sharp blend mode applied when compositing
 }
 
 /**
@@ -148,6 +150,7 @@ export interface TilePart {
   success: boolean // Indicates if tile fetch succeeded
   position?: { top: number; left: number } // Tile position in final image
   data?: Buffer // Tile buffer (if success is true)
+  blend?: string // Optional sharp blend mode applied when compositing
 }
 
 /**
@@ -156,6 +159,8 @@ export interface TilePart {
 export interface TileServerConfigOptions {
   tileUrl?: string // Tile URL template
   tileSubdomains?: string[] // Subdomains used for tile sharding
+  opacity?: number // Layer opacity (0..1, default 1)
+  terrainEncoding?: "terrarium" // Render this layer as hillshade from terrain-RGB
 }
 
 /**
@@ -165,6 +170,8 @@ export interface TileServerOptions {
   tileUrl?: string // Optional tile URL template (default: "https://tile.openstreetmap.org/{z}/{x}/{y}.png")
   tileSubdomains?: string[] // Optional subdomains for tile requests
   subdomains?: string[] // Optional subdomains (backward compatibility)
+  opacity?: number // Layer opacity (0..1, default 1)
+  terrainEncoding?: "terrarium" // Render this layer as hillshade from terrain-RGB
 }
 
 /**
