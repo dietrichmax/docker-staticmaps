@@ -24,5 +24,8 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Audit npm dependencies
+        run: npm audit --audit-level=high
+
       - name: Run Jest tests
         run: npm test
