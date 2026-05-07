@@ -19,7 +19,7 @@
     "canvas": "3.2.3",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
-    "express-rate-limit": "^8.4.1",
+    "express-rate-limit": "^8.5.1",
     "node-cache": "^5.1.2",
     "ol": "^10.9.0",
     "pdfkit": "^0.18.0",
