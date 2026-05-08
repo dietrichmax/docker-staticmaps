@@ -4,9 +4,8 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    open-pull-requests-limit: 5
     labels: ["chore"]
-    commit-message:
-      prefix: "chore(deps)"
     groups:
       minor-and-patch:
         update-types: [minor, patch]
@@ -15,9 +14,8 @@ updates:
     directory: /docs
     schedule:
       interval: weekly
+    open-pull-requests-limit: 5
     labels: ["chore"]
-    commit-message:
-      prefix: "chore(deps)"
     groups:
       minor-and-patch:
         update-types: [minor, patch]
@@ -26,6 +24,5 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    open-pull-requests-limit: 5
     labels: ["chore"]
-    commit-message:
-      prefix: "chore(deps)"
