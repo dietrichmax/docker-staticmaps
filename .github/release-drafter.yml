@@ -12,8 +12,8 @@ categories:
   - title: "🧹 Maintenance "
     labels: ["refactor", "maintenance", "chores"]
   - title: "📚 Documentation"
-    label: ["documentation"]
-change-template: "🔹 $TITLE (#$NUMBER) by @$AUTHOR"
+    labels: ["documentation"]
+change-template: "- $TITLE (#$NUMBER) by @$AUTHOR"
 change-title-escapes: '\<*_&'
 version-resolver:
   major:
