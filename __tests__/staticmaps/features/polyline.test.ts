@@ -94,7 +94,7 @@ describe("Polyline class", () => {
 
     // It should call createGeodesicLine once
     expect(spy).toHaveBeenCalledTimes(1)
-    // createGeodesicLine returns [lon, lat] — no swap needed
+    // createGeodesicLine returns [lon, lat] - no swap needed
     expect(poly.coords).toStrictEqual(geodesicCoords)
   })
 

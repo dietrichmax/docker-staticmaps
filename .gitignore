@@ -15,8 +15,5 @@ yarn-error.log*
 
 # build
 dist
-*tar.gz
-*zip.
-*releaseAnnouncement*
 coverage
 /public/ol.js

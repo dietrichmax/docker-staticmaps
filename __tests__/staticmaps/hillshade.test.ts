@@ -50,7 +50,7 @@ describe("terrariumToHillshade", () => {
       .raw()
       .toBuffer({ resolveWithObject: true })
 
-    // Center pixel R-channel — flat ground, slope=0, illum=cos(zenith)
+    // Center pixel R-channel - flat ground, slope=0, illum=cos(zenith)
     const cx = Math.floor(w / 2)
     const cy = Math.floor(h / 2)
     const idx = (cy * w + cx) * 4
