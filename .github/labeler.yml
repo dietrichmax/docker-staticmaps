@@ -1,24 +1,38 @@
 cli:
-  - ".github/**"
+  - changed-files:
+      - any-glob-to-any-file:
+          - ".github/**"
 
 build:
-  - "docker/**"
-  - "package.json"
+  - changed-files:
+      - any-glob-to-any-file:
+          - "docker/**"
+          - "package.json"
 
 documentation:
-  - "README.md"
-  - "docs/**"
+  - changed-files:
+      - any-glob-to-any-file:
+          - "README.md"
+          - "docs/**"
 
 server:
-  - "src/**"
+  - changed-files:
+      - any-glob-to-any-file:
+          - "src/**"
 
 tests:
-  - "__tests__/**"
+  - changed-files:
+      - any-glob-to-any-file:
+          - "__tests__/**"
 
 web:
-  - "public/**"
+  - changed-files:
+      - any-glob-to-any-file:
+          - "public/**"
 
 config:
-  - ".env"
-  - "tsconfig.json"
-  - ".prettierrc.json"
+  - changed-files:
+      - any-glob-to-any-file:
+          - ".env"
+          - "tsconfig.json"
+          - ".prettierrc.json"
