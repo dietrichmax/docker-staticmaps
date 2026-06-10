@@ -22,7 +22,7 @@
     "express-rate-limit": "^8.5.2",
     "node-cache": "^5.1.2",
     "ol": "^10.9.0",
-    "pdfkit": "^0.18.0",
+    "pdfkit": "^0.19.0",
     "sharp": "^0.34.5"
   },
   "devDependencies": {
