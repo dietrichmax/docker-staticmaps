@@ -23,12 +23,12 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v6
         with:
-          node-version: "24"
+          node-version: "26"
           cache: "npm"
       - run: npm ci
       - run: npm test
 
-  push_to_registries:
+  build_scan_push:
     runs-on: ubuntu-latest
     needs: test
     permissions:
@@ -41,6 +41,26 @@ jobs:
       - uses: actions/checkout@v7
 
       - uses: docker/setup-buildx-action@v4
+
+      # Build the image locally (amd64) so it can be scanned before publishing
+      - name: Build image for scanning
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: ./docker/Dockerfile
+          platforms: linux/amd64
+          load: true
+          tags: docker-staticmaps:scan
+
+      # Gate: fail the run on fixable HIGH/CRITICAL vulnerabilities, before any push
+      - name: Scan image for vulnerabilities
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: docker-staticmaps:scan
+          severity: HIGH,CRITICAL
+          exit-code: 1
+          ignore-unfixed: true
+          format: table
 
       - uses: docker/login-action@v4
         with:
@@ -80,19 +100,3 @@ jobs:
           tags: |
             ${{ secrets.DOCKER_HUB_USERNAME }}/docker-staticmaps:${{ github.ref_name }}
             ghcr.io/${{ github.repository }}:${{ github.ref_name }}
-
-  scan:
-    runs-on: ubuntu-latest
-    needs: push_to_registries
-    permissions:
-      contents: read
-      packages: read
-    steps:
-      - name: Scan image for vulnerabilities
-        uses: aquasecurity/trivy-action@v0.36.0
-        with:
-          image-ref: ghcr.io/${{ github.repository }}:${{ github.sha }}
-          severity: HIGH,CRITICAL
-          exit-code: 1
-          ignore-unfixed: true
-          format: table
