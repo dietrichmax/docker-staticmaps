@@ -48,8 +48,9 @@ RUN npm cache clean --force
 # Stage 2: Final Stage (Minimal Image)
 FROM node:26-alpine AS final
 
-# Install runtime dependencies required by node-canvas
-RUN apk add --no-cache \
+# Upgrade base packages and install node-canvas runtime dependencies
+RUN apk upgrade --no-cache && \
+  apk add --no-cache \
   cairo pango giflib libpng jpeg msttcorefonts-installer fontconfig && \
   update-ms-fonts && fc-cache -f -v
   
@@ -62,8 +63,9 @@ COPY --from=build /opt/app/public ./public
 COPY --from=build /opt/app/package*.json ./
 COPY --from=build /opt/app/node_modules ./node_modules
 
-# Install only production deps and add non-root user
+# Remove npm and add non-root user
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup && \
+    rm -rf /usr/local/lib/node_modules/npm /usr/local/bin/npm /usr/local/bin/npx && \
     chown -R appuser:appgroup /opt/app
 
 # Switch to non-root user for security
@@ -80,4 +82,4 @@ HEALTHCHECK --interval=30s --timeout=5s --retries=3 --start-period=30s \
   CMD wget --no-verbose --tries=1 -O - http://127.0.0.1:3000/health || exit 1
 
 # Start the application
-CMD ["npm", "run", "start"]
+CMD ["node", "dist/server.cjs"]
