@@ -21,7 +21,7 @@
     "express-rate-limit": "^8.5.2",
     "node-cache": "^5.1.2",
     "pdfkit": "^0.19.1",
-    "sharp": "^0.35.1"
+    "sharp": "^0.35.2"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",

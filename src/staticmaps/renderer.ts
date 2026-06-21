@@ -11,6 +11,7 @@ import {
 } from "./utils"
 import { Text, Polyline, Circle, IconMarker } from "./features"
 import sharp from "sharp"
+import type { FitEnum, ResizeOptions } from "sharp"
 import { isSafeOutboundUrl, escapeXml } from "../utils/security"
 import { terrariumToHillshade } from "./hillshade"
 import logger from "../utils/logger"
@@ -382,20 +383,20 @@ export async function drawMarkers(
         marker.drawWidth !== marker.width ||
         marker.drawHeight !== marker.height
       ) {
-        const validFitModes = new Set<keyof sharp.FitEnum>([
+        const validFitModes = new Set<keyof FitEnum>([
           "cover",
           "contain",
           "fill",
           "inside",
           "outside",
         ])
-        const fitMode: keyof sharp.FitEnum = validFitModes.has(
-          marker.resizeMode as keyof sharp.FitEnum
+        const fitMode: keyof FitEnum = validFitModes.has(
+          marker.resizeMode as keyof FitEnum
         )
-          ? (marker.resizeMode as keyof sharp.FitEnum)
+          ? (marker.resizeMode as keyof FitEnum)
           : "cover"
 
-        const resizeData: sharp.ResizeOptions = { fit: fitMode }
+        const resizeData: ResizeOptions = { fit: fitMode }
         if (marker.drawWidth !== marker.width)
           resizeData.width = marker.drawWidth
         if (marker.drawHeight !== marker.height)
