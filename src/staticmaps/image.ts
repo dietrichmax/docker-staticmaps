@@ -1,4 +1,5 @@
 import sharp from "sharp"
+import type { Blend } from "sharp"
 import { ImageOptions, TileData, TilePart } from "../types/types"
 import PDFDocument from "pdfkit"
 import { Writable } from "stream"
@@ -104,7 +105,7 @@ export default class Image {
         preparedTiles.map(({ position, data, blend }) => ({
           input: data,
           ...position,
-          ...(blend && { blend: blend as sharp.Blend }),
+          ...(blend && { blend: blend as Blend }),
         }))
       )
       .toBuffer()
