@@ -9,7 +9,7 @@ build:
           - "docker/**"
           - "package.json"
 
-documentation:
+docs:
   - changed-files:
       - any-glob-to-any-file:
           - "README.md"
