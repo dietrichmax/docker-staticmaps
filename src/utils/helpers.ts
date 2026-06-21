@@ -1,4 +1,4 @@
-import { createCanvas } from "canvas"
+import PDFDocument from "pdfkit"
 
 /**
  * Truncates a string to the specified max length and adds ellipsis if truncated.
@@ -23,23 +23,22 @@ export function normalizeIp(ip: string): string {
   return ip
 }
 
+// Reused PDFKit document used only for text measurement (see measureTextWidth).
+let measureDoc: InstanceType<typeof PDFDocument> | undefined
+
 /**
- * Measures the width of a given text string using a canvas context.
+ * Measures the rendered width of a text string in pixels.
+ *
+ * Uses PDFKit's built-in Helvetica metrics (which match Arial to within
+ * ~0.2%) so the attribution background can be sized without a native canvas.
  *
  * @param {string} text - The text to measure.
  * @param {number} fontSize - The font size in pixels.
- * @param {string} [fontFamily='Arial'] - The font family to use.
  * @returns {number} - The measured width of the text in pixels.
  */
-export function measureTextWidth(
-  text: string,
-  fontSize: number,
-  fontFamily = "Arial"
-): number {
-  const canvas = createCanvas(1, 1)
-  const ctx = canvas.getContext("2d")
-  ctx.font = `${fontSize}px ${fontFamily}`
-  return ctx.measureText(text).width
+export function measureTextWidth(text: string, fontSize: number): number {
+  measureDoc ??= new PDFDocument({ autoFirstPage: false })
+  return measureDoc.fontSize(fontSize).widthOfString(text)
 }
 
 /**

@@ -14,19 +14,6 @@ LABEL org.opencontainers.image.licenses=GPL
 # Create app directory
 WORKDIR /opt/app
 
-# Install build dependencies for native modules
-RUN apk add --no-cache \
-  python3 make g++ libc6-compat \
-  cairo-dev pango-dev giflib-dev libpng-dev jpeg-dev \
-  libtool pkgconfig
-
-# Install Microsoft fonts for canvas (optional)
-RUN apk add --no-cache msttcorefonts-installer fontconfig && \
-    update-ms-fonts && fc-cache -f -v
-
-# Symlink python3 to python for node-gyp
-RUN ln -sf /usr/bin/python3 /usr/bin/python
-
 # Copy package.json and package-lock.json first to utilize Docker cache for dependencies
 COPY package*.json ./
 
@@ -48,11 +35,9 @@ RUN npm cache clean --force
 # Stage 2: Final Stage (Minimal Image)
 FROM node:26-alpine AS final
 
-# Upgrade base packages and install node-canvas runtime dependencies
+# Patch base OS packages and install a font for sharp's SVG text rendering
 RUN apk upgrade --no-cache && \
-  apk add --no-cache \
-  cairo pango giflib libpng jpeg msttcorefonts-installer fontconfig && \
-  update-ms-fonts && fc-cache -f -v
+    apk add --no-cache fontconfig font-liberation
   
 # Set working directory
 WORKDIR /opt/app
