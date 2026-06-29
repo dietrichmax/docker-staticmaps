@@ -15,7 +15,7 @@ jobs:
     if: github.event.pull_request.base.repo.full_name == 'dietrichmax/docker-staticmaps'
     steps:
       - name: Apply Labels
-        uses: actions/labeler@v6
+        uses: actions/labeler@f27b608878404679385c85cfa523b85ccb86e213 # v6
         with:
           configuration-path: .github/labeler.yml
           sync-labels: false
