@@ -1,5 +1,5 @@
 # -------- Stage 1: Build --------
-FROM node:26-alpine AS build
+FROM node:26-alpine@sha256:725aeba2364a9b16beae49e180d83bd597dbd0b15c47f1f28875c290bfd255b9 AS build
 
 # Metadata
 LABEL org.opencontainers.image.title="docker-staticmaps"
@@ -27,13 +27,13 @@ COPY . .
 RUN npm run build
 
 # Remove dev dependencies to keep only production deps and native modules
-RUN npm prune --production
+RUN npm prune --omit=dev
 
 # Clean npm cache to save space
 RUN npm cache clean --force
 
 # Stage 2: Final Stage (Minimal Image)
-FROM node:26-alpine AS final
+FROM node:26-alpine@sha256:725aeba2364a9b16beae49e180d83bd597dbd0b15c47f1f28875c290bfd255b9 AS final
 
 # Patch base OS packages and install a font for sharp's SVG text rendering
 RUN apk upgrade --no-cache && \
