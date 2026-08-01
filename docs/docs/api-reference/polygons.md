@@ -27,7 +27,7 @@ polygon=polygonStyle|polygonCoord1|polygonCoord2|...
   | Parameter | Default | Description |
   | --- | --- | --- |
   | `color` | `#4874db` | Defines the stroke color of the polygon. |
-  | `weight` | `5` | Sets the stroke width of the polygon. |
+  | `weight` | `3` | Sets the stroke width of the polygon. |
   | `fill` |  | Specifies the fill color of the polygon. |
   | `strokeDasharray` | (none) | Pattern of dashes and gaps, e.g., `5,5` see [stroke-dasharray](https://developer.mozilla.org/de/docs/Web/CSS/stroke-dasharray). |
 

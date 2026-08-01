@@ -24,12 +24,12 @@ circle=circleStyle|circleCoord
 - **circleCoord**: Coordinates for the circle's center in lat, lon format, separated by |. You need at least one coordinate.
 - **circleStyle**: Customize the circle with:
 
-  | Parameter | Default    | Description                              |
-  | --------- | ---------- | ---------------------------------------- |
-  | `radius`  | (required) | Specifies the radius of the element.     |
-  | `color`   | `#0000bb`  | Defines the stroke color of the element. |
-  | `width`   | `3`        | Sets the stroke width of the element.    |
-  | `fill`    | `{color}`  | Specifies the fill color of the element. |
+  | Parameter | Default   | Description                              |
+  | --------- | --------- | ---------------------------------------- |
+  | `radius`  | `10`      | Radius of the circle in meters.          |
+  | `color`   | `#4874db` | Defines the stroke color of the element. |
+  | `width`   | `3`       | Sets the stroke width of the element.    |
+  | `fill`    | `{color}` | Specifies the fill color of the element. |
 
 **Example**: Circle with a radius of `20` meters.
 
