@@ -1,6 +1,7 @@
 // TileManager.ts
 import { getCachedTile, setCachedTile } from "../utils/cache"
 import { workOnQueue } from "./utils"
+import { safeFetch } from "../utils/safeFetch"
 import logger from "../utils/logger"
 import { TileServerOptions } from "../types/types"
 
@@ -83,15 +84,16 @@ export class TileManager {
     const timeoutId = setTimeout(() => controller.abort(), timeout)
 
     try {
-      const res = await fetch(data.url, {
-        method: "GET",
+      const res = await safeFetch(data.url, {
         headers,
-        redirect: "manual" as RequestRedirect,
         signal: controller.signal,
+        maxBytes: 10 * 1024 * 1024,
       })
 
       if (res.status >= 300 && res.status < 400) {
-        throw new Error(`Tile server returned redirect (${res.status}), blocked for security`)
+        throw new Error(
+          `Tile server returned redirect (${res.status}), blocked for security`
+        )
       }
       if (!res.ok) {
         throw new Error(`Failed to fetch tile: ${res.statusText}`)
@@ -102,11 +104,6 @@ export class TileManager {
       const contentType = res.headers.get("content-type")
       if (!contentType || !contentType.startsWith("image/")) {
         throw new Error("Tiles server response with wrong data")
-      }
-
-      const contentLength = Number(res.headers.get("content-length") || 0)
-      if (contentLength > 10 * 1024 * 1024) {
-        throw new Error(`Tile response too large: ${contentLength} bytes`)
       }
 
       const arrayBuffer = await res.arrayBuffer()

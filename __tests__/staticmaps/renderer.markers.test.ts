@@ -1,7 +1,13 @@
 import sharp from "sharp"
 import { drawMarkers, loadMarkers } from "../../src/staticmaps/renderer"
+import { safeFetch } from "../../src/utils/safeFetch"
 
 jest.mock("sharp")
+
+// Mock the outbound fetch used for remote marker icons
+jest.mock("../../src/utils/safeFetch", () => ({
+  safeFetch: jest.fn(),
+}))
 
 const mockSharpInstance = {
   metadata: jest.fn(),
@@ -184,8 +190,7 @@ describe("loadMarkers", () => {
     sharpMock.mockImplementation(() => sharpInstance as any)
     sharpInstance.toBuffer.mockResolvedValue(Buffer.from("imagebuffer"))
 
-    // Reset fetch mock
-    global.fetch = jest.fn()
+    ;(safeFetch as jest.Mock).mockReset()
   })
 
   it("returns true immediately if markers empty", async () => {
@@ -207,9 +212,11 @@ describe("loadMarkers", () => {
 
     // Mock fetch to return a successful response with image data
     const arrayBuffer = new Uint8Array([1, 2, 3]).buffer
-    ;(global.fetch as jest.Mock).mockResolvedValue({
+    ;(safeFetch as jest.Mock).mockResolvedValue({
       ok: true,
-      headers: { get: (name: string) => name === "content-type" ? "image/png" : null },
+      headers: {
+        get: (name: string) => (name === "content-type" ? "image/png" : null),
+      },
       arrayBuffer: jest.fn().mockResolvedValue(arrayBuffer),
     })
 
@@ -219,9 +226,9 @@ describe("loadMarkers", () => {
 
     const result = await loadMarkers(markers as any, 2, xToPx, yToPx)
 
-    expect(global.fetch).toHaveBeenCalledWith(
+    expect(safeFetch).toHaveBeenCalledWith(
       "https://example.com/marker.png",
-      expect.objectContaining({ method: "GET", redirect: "manual" })
+      expect.objectContaining({ maxBytes: expect.any(Number) })
     )
     expect(sharpMock).toHaveBeenCalled()
     expect(sharpInstance.resize).toHaveBeenCalledWith(10, 15)
@@ -280,7 +287,7 @@ describe("loadMarkers", () => {
       },
     ]
 
-    ;(global.fetch as jest.Mock).mockResolvedValue({
+    ;(safeFetch as jest.Mock).mockResolvedValue({
       ok: false,
     })
 

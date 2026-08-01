@@ -13,6 +13,7 @@ import { Text, Polyline, Circle, IconMarker } from "./features"
 import sharp from "sharp"
 import type { FitEnum, ResizeOptions } from "sharp"
 import { isSafeOutboundUrl, escapeXml } from "../utils/security"
+import { safeFetch, type SafeResponse } from "../utils/safeFetch"
 import { terrariumToHillshade } from "./hillshade"
 import logger from "../utils/logger"
 
@@ -212,12 +213,10 @@ export function lineToSVG({
   if (!line.coords || line.coords.length < 2) return ""
 
   // Project coordinates to pixels
-  const pixels = line.coords.map(
-    ([lon, lat]: Coordinate): Coordinate => [
-      xToPx(lonToX(lon, zoom)),
-      yToPx(latToY(lat, zoom)),
-    ]
-  )
+  const pixels = line.coords.map(([lon, lat]: Coordinate): Coordinate => [
+    xToPx(lonToX(lon, zoom)),
+    yToPx(latToY(lat, zoom)),
+  ])
 
   // Smooth or use original points depending on type
   const points =
@@ -469,9 +468,12 @@ export async function loadMarkers(
         }
         const controller = new AbortController()
         const timeoutId = setTimeout(() => controller.abort(), 10_000)
-        let response: globalThis.Response
+        let response: SafeResponse
         try {
-          response = await fetch(icon.file, { method: "GET", redirect: "manual" as RequestRedirect, signal: controller.signal })
+          response = await safeFetch(icon.file, {
+            signal: controller.signal,
+            maxBytes: 5 * 1024 * 1024,
+          })
         } finally {
           clearTimeout(timeoutId)
         }
@@ -483,10 +485,6 @@ export async function loadMarkers(
         const contentType = response.headers.get("content-type")
         if (!contentType || !contentType.startsWith("image/")) {
           throw new Error(`Marker URL did not return an image: ${icon.file}`)
-        }
-        const contentLength = Number(response.headers.get("content-length") || 0)
-        if (contentLength > 5 * 1024 * 1024) {
-          throw new Error(`Marker image too large: ${contentLength} bytes`)
         }
         const arrayBuffer = await response.arrayBuffer()
         icon.data = await sharp(Buffer.from(arrayBuffer))

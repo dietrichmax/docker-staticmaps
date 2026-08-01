@@ -1,6 +1,7 @@
 import { TileManager, TileServerConfig } from "../../src/staticmaps/tilemanager"
 import * as cache from "../../src/utils/cache"
 import * as utils from "../../src/staticmaps/utils"
+import { safeFetch } from "../../src/utils/safeFetch"
 import logger from "../../src/utils/logger"
 
 describe("TileServerConfig", () => {
@@ -35,8 +36,10 @@ describe("TileServerConfig", () => {
   })
 })
 
-// Mock fetch globally for all tests
-global.fetch = jest.fn()
+// Mock the outbound fetch used by TileManager
+jest.mock("../../src/utils/safeFetch", () => ({
+  safeFetch: jest.fn(),
+}))
 
 // Mock logger to avoid actual logs during tests
 jest.mock("../../src/utils/logger", () => ({
@@ -92,7 +95,7 @@ describe("TileManager", () => {
     it("fetches tile successfully and caches it", async () => {
       const arrayBuffer = new Uint8Array([1, 2, 3]).buffer
       ;(cache.getCachedTile as jest.Mock).mockReturnValue(null)
-      ;(global.fetch as jest.Mock).mockResolvedValue({
+      ;(safeFetch as jest.Mock).mockResolvedValue({
         ok: true,
         headers: { get: () => "image/png" },
         arrayBuffer: () => Promise.resolve(arrayBuffer),
@@ -101,10 +104,7 @@ describe("TileManager", () => {
       const tm = new TileManager({ tileLayers })
       const result = await tm.getTile(tileData)
 
-      expect(global.fetch).toHaveBeenCalledWith(
-        tileData.url,
-        expect.any(Object)
-      )
+      expect(safeFetch).toHaveBeenCalledWith(tileData.url, expect.any(Object))
       expect(result.success).toBe(true)
       expect(result.tile?.url).toBe(tileData.url)
       expect(result.tile?.body).toBeInstanceOf(Buffer)
@@ -114,7 +114,7 @@ describe("TileManager", () => {
 
     it("returns error if fetch response is not ok", async () => {
       ;(cache.getCachedTile as jest.Mock).mockReturnValue(null)
-      ;(global.fetch as jest.Mock).mockResolvedValue({
+      ;(safeFetch as jest.Mock).mockResolvedValue({
         ok: false,
         statusText: "Not Found",
         headers: { get: () => "image/png" },
@@ -129,7 +129,7 @@ describe("TileManager", () => {
 
     it("returns error if content-type is not image/*", async () => {
       ;(cache.getCachedTile as jest.Mock).mockReturnValue(null)
-      ;(global.fetch as jest.Mock).mockResolvedValue({
+      ;(safeFetch as jest.Mock).mockResolvedValue({
         ok: true,
         headers: { get: () => "application/json" },
         arrayBuffer: () => Promise.resolve(new ArrayBuffer(0)),
@@ -144,7 +144,7 @@ describe("TileManager", () => {
 
     it("returns error if fetch throws", async () => {
       ;(cache.getCachedTile as jest.Mock).mockReturnValue(null)
-      ;(global.fetch as jest.Mock).mockRejectedValue(new Error("Network error"))
+      ;(safeFetch as jest.Mock).mockRejectedValue(new Error("Network error"))
 
       const tm = new TileManager({ tileLayers })
       const result = await tm.getTile(tileData)
