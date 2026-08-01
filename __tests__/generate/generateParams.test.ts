@@ -332,15 +332,15 @@ describe("generateParams", () => {
     })
 
     it("throws on unsupported format", () => {
-      expect(() =>
-        getMapParams({ center: "50,10", format: "svg" })
-      ).toThrow(/Unsupported format/)
+      expect(() => getMapParams({ center: "50,10", format: "svg" })).toThrow(
+        /Unsupported format/
+      )
     })
 
     it("throws on executable format", () => {
-      expect(() =>
-        getMapParams({ center: "50,10", format: "exe" })
-      ).toThrow(/Unsupported format/)
+      expect(() => getMapParams({ center: "50,10", format: "exe" })).toThrow(
+        /Unsupported format/
+      )
     })
 
     it("accepts allowed formats", () => {

@@ -16,7 +16,11 @@ const tileCacheTTL = parseInt(process.env.TILE_CACHE_TTL ?? "", 10) || 3600
  * - stdTTL: standard TTL for cached items (in seconds).
  * - checkperiod: interval in seconds to check and purge expired cache entries.
  */
-const tileCache = new NodeCache({ stdTTL: tileCacheTTL, checkperiod: 120, maxKeys: 500 })
+const tileCache = new NodeCache({
+  stdTTL: tileCacheTTL,
+  checkperiod: 120,
+  maxKeys: 500,
+})
 
 /**
  * Retrieves a cached tile buffer by its cache key.
@@ -79,7 +83,9 @@ export function createCacheKeyFromRequest(req: MapRequest): string {
     return devKey
   }
 
-  const queryParams = Object.entries(req.method === "GET" ? req.query : req.body)
+  const queryParams = Object.entries(
+    req.method === "GET" ? req.query : req.body
+  )
     .map(([k, v]) => {
       if (Array.isArray(v)) {
         return [k, v.join(",")] // join array values with a comma
@@ -91,7 +97,7 @@ export function createCacheKeyFromRequest(req: MapRequest): string {
     .join("&") // join to form cache key string
 
   // Use hash for large parameter sets to avoid URL length issues
-  const paramHash = createHash('sha256').update(queryParams).digest('hex')
+  const paramHash = createHash("sha256").update(queryParams).digest("hex")
   const cacheKey = `${req.method}:${req.path}:${paramHash}`
 
   logger.debug(`Generated cache key: ${cacheKey}`)

@@ -493,12 +493,7 @@ class StaticMaps {
    * @returns {Promise<boolean>} Resolves to true when markers are loaded successfully.
    */
   async loadMarker(): Promise<boolean> {
-    return loadMarkers(
-      this.markers,
-      this.zoom,
-      this.xToPx,
-      this.yToPx
-    )
+    return loadMarkers(this.markers, this.zoom, this.xToPx, this.yToPx)
   }
 }
 
