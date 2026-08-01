@@ -93,14 +93,24 @@ describe("Tile Cache", () => {
     })
 
     it("should handle POST requests using body parameters", () => {
-      const req1 = mockRequest("POST", "/api/staticmaps", {}, {
-        width: "800",
-        polyline: "coord1,coord2,coord3",
-      })
-      const req2 = mockRequest("POST", "/api/staticmaps", {}, {
-        width: "800",
-        polyline: "coord4,coord5,coord6",
-      })
+      const req1 = mockRequest(
+        "POST",
+        "/api/staticmaps",
+        {},
+        {
+          width: "800",
+          polyline: "coord1,coord2,coord3",
+        }
+      )
+      const req2 = mockRequest(
+        "POST",
+        "/api/staticmaps",
+        {},
+        {
+          width: "800",
+          polyline: "coord4,coord5,coord6",
+        }
+      )
 
       const key1 = createCacheKeyFromRequest(req1)
       const key2 = createCacheKeyFromRequest(req2)
@@ -116,10 +126,15 @@ describe("Tile Cache", () => {
       }
 
       const req1 = mockRequest("POST", "/api/staticmaps", {}, largeParams)
-      const req2 = mockRequest("POST", "/api/staticmaps", {}, {
-        ...largeParams,
-        coord0: "different,value",
-      })
+      const req2 = mockRequest(
+        "POST",
+        "/api/staticmaps",
+        {},
+        {
+          ...largeParams,
+          coord0: "different,value",
+        }
+      )
 
       const key1 = createCacheKeyFromRequest(req1)
       const key2 = createCacheKeyFromRequest(req2)

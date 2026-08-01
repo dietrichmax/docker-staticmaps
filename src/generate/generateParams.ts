@@ -8,14 +8,30 @@ import {
 import logger from "../utils/logger"
 import { parseCenter } from "./parseCoordinates"
 import { parseMultipleShapes } from "./parseShapes"
-import { getTileUrl, parseAttributionParam, parseBorderParam } from "./parseTileConfig"
-import { sanitizeTileHeaders, isPrivateUrl, replacePlaceholders } from "../utils/security"
+import {
+  getTileUrl,
+  parseAttributionParam,
+  parseBorderParam,
+} from "./parseTileConfig"
+import {
+  sanitizeTileHeaders,
+  isPrivateUrl,
+  replacePlaceholders,
+} from "../utils/security"
 import { parseBoolean } from "../utils/helpers"
 
 // Re-export submodule functions for backward compatibility with tests
-export { isEncodedPolyline, parseCoordinates, parseCenter } from "./parseCoordinates"
+export {
+  isEncodedPolyline,
+  parseCoordinates,
+  parseCenter,
+} from "./parseCoordinates"
 export { parseMultipleShapes, extractParams } from "./parseShapes"
-export { getTileUrl, parseAttributionParam, parseBorderParam } from "./parseTileConfig"
+export {
+  getTileUrl,
+  parseAttributionParam,
+  parseBorderParam,
+} from "./parseTileConfig"
 
 // ——— Defaults —————————————————————————————————————————————
 
@@ -145,11 +161,16 @@ export function getMapParams(params: MapParamsInput): MapParamsOutput {
     0
   )
   if (totalFeatures > MAX_FEATURES) {
-    throw new Error(`Too many features: ${totalFeatures} exceeds limit of ${MAX_FEATURES}`)
+    throw new Error(
+      `Too many features: ${totalFeatures} exceeds limit of ${MAX_FEATURES}`
+    )
   }
 
   const center = parseCenter(params.center)
-  const quality = Math.max(1, Math.min(100, parseInt(params.quality || "100", 10)))
+  const quality = Math.max(
+    1,
+    Math.min(100, parseInt(params.quality || "100", 10))
+  )
 
   const width = parseInt((params.width ?? DEFAULTS.width).toString(), 10)
   const height = parseInt((params.height ?? DEFAULTS.height).toString(), 10)
@@ -197,21 +218,34 @@ export function getMapParams(params: MapParamsInput): MapParamsOutput {
     ...(params.format && {
       format: ALLOWED_FORMATS.has(params.format.toLowerCase())
         ? params.format
-        : (() => { throw new Error(`Unsupported format: "${params.format}". Allowed: ${[...ALLOWED_FORMATS].join(", ")}`) })(),
+        : (() => {
+            throw new Error(
+              `Unsupported format: "${params.format}". Allowed: ${[...ALLOWED_FORMATS].join(", ")}`
+            )
+          })(),
     }),
     ...(params.tileRequestTimeout && {
-      tileRequestTimeout: Math.min(Math.max(0, Number(params.tileRequestTimeout)), MAX_TILE_REQUEST_TIMEOUT),
+      tileRequestTimeout: Math.min(
+        Math.max(0, Number(params.tileRequestTimeout)),
+        MAX_TILE_REQUEST_TIMEOUT
+      ),
     }),
     ...(params.tileRequestHeader && {
       tileRequestHeader: sanitizeTileHeaders(params.tileRequestHeader),
     }),
     ...(params.tileRequestLimit && {
-      tileRequestLimit: Math.min(Number(params.tileRequestLimit), MAX_TILE_REQUEST_LIMIT),
+      tileRequestLimit: Math.min(
+        Number(params.tileRequestLimit),
+        MAX_TILE_REQUEST_LIMIT
+      ),
     }),
     ...(params.zoomRange && {
       zoomRange: {
         min: Math.max(1, Math.min(Number(params.zoomRange.min) || 1, MAX_ZOOM)),
-        max: Math.max(1, Math.min(Number(params.zoomRange.max) || 17, MAX_ZOOM)),
+        max: Math.max(
+          1,
+          Math.min(Number(params.zoomRange.max) || 17, MAX_ZOOM)
+        ),
       },
     }),
     ...(typeof params.reverseY !== "undefined" && {
@@ -261,8 +295,12 @@ function validateTileLayers(layers: any): any[] {
     }
     return {
       ...layer,
-      ...(layer.tileSubdomains && { tileSubdomains: validateSubdomains(layer.tileSubdomains) }),
-      ...(layer.subdomains && { subdomains: validateSubdomains(layer.subdomains) }),
+      ...(layer.tileSubdomains && {
+        tileSubdomains: validateSubdomains(layer.tileSubdomains),
+      }),
+      ...(layer.subdomains && {
+        subdomains: validateSubdomains(layer.subdomains),
+      }),
     }
   })
 }

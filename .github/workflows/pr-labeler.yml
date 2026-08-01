@@ -8,7 +8,6 @@ permissions:
   contents: read
   pull-requests: write
 
-
 jobs:
   label-ci:
     runs-on: ubuntu-latest

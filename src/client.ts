@@ -44,7 +44,10 @@ function initializeMap() {
 }
 
 // Get current map center and zoom as [lon, lat] and zoom number
-function getMapCenterAndZoom(): { center: [number, number]; zoom: number } | null {
+function getMapCenterAndZoom(): {
+  center: [number, number]
+  zoom: number
+} | null {
   const view = map.getView()
   if (!view) return null
 
@@ -91,7 +94,11 @@ function switchBasemap(basemapKey: string) {
 }
 
 // Update static map URL
-function updateStaticMapUrl(centerLonLat: [number, number], zoom: number, basemap: string) {
+function updateStaticMapUrl(
+  centerLonLat: [number, number],
+  zoom: number,
+  basemap: string
+) {
   const mapWidth = document.getElementById("map")!.offsetWidth
   const [lon, lat] = centerLonLat
   const staticMapUrl = `/staticmaps?width=${mapWidth}&height=${height}&center=${encodeURIComponent(`${lat},${lon}`)}&zoom=${Math.round(zoom)}&basemap=${basemap}`
@@ -106,7 +113,7 @@ async function generateStaticMap() {
   const centerAndZoom = getMapCenterAndZoom()
   if (!centerAndZoom) return
   const { center, zoom } = centerAndZoom
-  
+
   const currentZoom = Math.round(zoom)
   const mapWidth = document.getElementById("map")!.offsetWidth
   const staticMapUrl = `/demo-map?width=${mapWidth}&height=${height}&center=${encodeURIComponent(`${center[1]},${center[0]}`)}&zoom=${currentZoom}&basemap=${currentBasemap}`
@@ -136,5 +143,7 @@ async function generateStaticMap() {
 }
 
 // Event listener for generate button
-document.getElementById("generateStaticMap")!.addEventListener("click", generateStaticMap)
+document
+  .getElementById("generateStaticMap")!
+  .addEventListener("click", generateStaticMap)
 window.addEventListener("load", initializeMap)

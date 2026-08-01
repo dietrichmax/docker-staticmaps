@@ -8,9 +8,7 @@ import { Request } from "express"
 export type Coordinate = [number, number]
 
 export type CoordInput =
-  | Array<Coordinate>
-  | Array<string>
-  | Array<{ lat: number; lon: number }>
+  Array<Coordinate> | Array<string> | Array<{ lat: number; lon: number }>
 
 /**
  * Represents a basic feature or data object.

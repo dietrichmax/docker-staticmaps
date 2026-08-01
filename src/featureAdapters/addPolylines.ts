@@ -26,7 +26,14 @@ export function addPolylines(
   isPolygon = false
 ): void {
   items.forEach((item, i) => {
-    const { coords = [], color, weight, fill, strokeDasharray, withGeodesicLine } = item
+    const {
+      coords = [],
+      color,
+      weight,
+      fill,
+      strokeDasharray,
+      withGeodesicLine,
+    } = item
     if (coords.length < 2) {
       logger.warn(
         `Skipping ${isPolygon ? "polygon" : "polyline"} [${i}] due to insufficient coords`,

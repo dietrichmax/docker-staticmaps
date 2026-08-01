@@ -68,13 +68,19 @@ app.use(headers)
 /**
  * Middleware to parse incoming JSON request bodies.
  */
-app.use(express.json({ limit: process.env.MAX_BODY_SIZE || '100kb' }))
+app.use(express.json({ limit: process.env.MAX_BODY_SIZE || "100kb" }))
 
 /**
  * Middleware to parse URL-encoded request bodies (from forms).
  * The 'extended: true' option allows for rich objects and arrays.
  */
-app.use(express.urlencoded({ extended: true, limit: process.env.MAX_BODY_SIZE || '100kb' , parameterLimit: Number(process.env.MAX_PARAMETER_LIMIT) || 1000 }))
+app.use(
+  express.urlencoded({
+    extended: true,
+    limit: process.env.MAX_BODY_SIZE || "100kb",
+    parameterLimit: Number(process.env.MAX_PARAMETER_LIMIT) || 1000,
+  })
+)
 
 /**
  * Redirect handler for legacy `/staticmaps` route.
@@ -129,31 +135,36 @@ app.get(
   }
 )
 
-app.get("/demo-map", rateLimiter, AuthConfig.checkDemoCookie, async (req: Request, res: Response) => {
-  try {
-    const url = new URL("/api/staticmaps", `http://localhost:${PORT}`)
-    // Forward query params but use internal API key via header (not logged in URL)
-    const queryParams = { ...req.query } as Record<string, string>
-    delete queryParams.api_key
-    delete queryParams.API_KEY
-    url.search = new URLSearchParams(queryParams).toString()
+app.get(
+  "/demo-map",
+  rateLimiter,
+  AuthConfig.checkDemoCookie,
+  async (req: Request, res: Response) => {
+    try {
+      const url = new URL("/api/staticmaps", `http://localhost:${PORT}`)
+      // Forward query params but use internal API key via header (not logged in URL)
+      const queryParams = { ...req.query } as Record<string, string>
+      delete queryParams.api_key
+      delete queryParams.API_KEY
+      url.search = new URLSearchParams(queryParams).toString()
 
-    const response = await fetch(url.toString(), {
-      headers: process.env.API_KEY
-        ? { "x-api-key": process.env.API_KEY }
-        : {},
-    })
-    if (!response.ok)
-      return res.status(response.status).send(await response.text())
+      const response = await fetch(url.toString(), {
+        headers: process.env.API_KEY
+          ? { "x-api-key": process.env.API_KEY }
+          : {},
+      })
+      if (!response.ok)
+        return res.status(response.status).send(await response.text())
 
-    const buffer = await response.arrayBuffer()
-    res.setHeader("Content-Type", "image/png")
-    res.send(Buffer.from(buffer))
-  } catch (err) {
-    logger.error("Error proxying demo map", { error: err })
-    res.status(500).json({ error: "Failed to fetch demo map" })
+      const buffer = await response.arrayBuffer()
+      res.setHeader("Content-Type", "image/png")
+      res.send(Buffer.from(buffer))
+    } catch (err) {
+      logger.error("Error proxying demo map", { error: err })
+      res.status(500).json({ error: "Failed to fetch demo map" })
+    }
   }
-})
+)
 
 // -------------------
 // STATIC FILES

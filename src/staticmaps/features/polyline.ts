@@ -50,8 +50,6 @@ export default class Polyline {
         ? "polygon"
         : "polyline"
 
-
-
     // Extract withGeodesicLine parameter (default: true)
     const withGeodesicLine = options.withGeodesicLine ?? true
 

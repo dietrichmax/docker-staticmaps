@@ -102,7 +102,7 @@ describe("Polyline class", () => {
     // Regression: a coordinate swap bug sent transatlantic routes to the south pole
     const coords: Coordinate[] = [
       [-3.7, 40.4], // Madrid [lon, lat]
-      [-74, 40.7],  // New York [lon, lat]
+      [-74, 40.7], // New York [lon, lat]
     ]
     const poly = new Polyline({ coords })
 

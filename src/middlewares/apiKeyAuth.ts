@@ -33,7 +33,8 @@ export function authenticateApiKey(
     AuthConfig.apiKey &&
     key.length === AuthConfig.apiKey.length &&
     timingSafeEqual(Buffer.from(key), Buffer.from(AuthConfig.apiKey))
-  ) return next()
+  )
+    return next()
 
   logger.warn(`Unauthorized access from IP=${req.ip}, API key=[REDACTED]`)
   res.status(403).json({ error: "Forbidden: Invalid or missing API key" })

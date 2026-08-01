@@ -52,7 +52,12 @@ describe("StaticMaps", () => {
 
   it("should allow adding a line", () => {
     const map = new StaticMaps(baseOptions)
-    const polyline = { coordinates: [[0, 0], [1, 1]] } as any
+    const polyline = {
+      coordinates: [
+        [0, 0],
+        [1, 1],
+      ],
+    } as any
     map.addLine(polyline)
     expect(map.lines.length).toBe(1)
     expect(map.lines[0]).toBe(polyline)
@@ -60,7 +65,13 @@ describe("StaticMaps", () => {
 
   it("should allow adding a polygon", () => {
     const map = new StaticMaps(baseOptions)
-    const polygon = { coordinates: [[0, 0], [1, 1], [0, 1]] } as any
+    const polygon = {
+      coordinates: [
+        [0, 0],
+        [1, 1],
+        [0, 1],
+      ],
+    } as any
     map.addPolygon(polygon)
     expect(map.lines.length).toBe(1)
     expect(map.lines[0]).toBe(polygon)
