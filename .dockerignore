@@ -2,7 +2,7 @@
 __tests__/
 coverage/
 dist/
-node_modules/
+**/node_modules
 examples/
 docker/
 
@@ -18,8 +18,9 @@ jest.config.ts
 Dockerfile*
 
 # Docs, logs, CI/CD
-*.md
-*.log
+docs/
+**/*.md
+**/*.log
 *release*
 
 # Environment files (optional)
