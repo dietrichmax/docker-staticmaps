@@ -1,4 +1,4 @@
-// src/staticmaps/shapes.ts
+// src/staticmaps/features.ts
 export { default as IconMarker } from "./features/marker"
 export { default as Polyline } from "./features/polyline"
 export { default as Circle } from "./features/circle"
