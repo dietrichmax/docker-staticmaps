@@ -174,6 +174,23 @@ describe("TileManager", () => {
       expect(results).toHaveLength(baseLayers.length)
     })
 
+    // Defence in depth for the parser clamp: TileManager is also constructed
+    // directly, and a non-positive limit makes the chunk loop count away from
+    // its exit condition forever. A regression here shows up as this test
+    // hanging rather than failing, because the runaway loop is synchronous and
+    // never yields to the test runner.
+    it("terminates when tileRequestLimit is negative", async () => {
+      const tm = new TileManager({ tileLayers, tileRequestLimit: -1 })
+      jest.spyOn(tm, "getTile").mockImplementation(async (tile) => ({
+        success: true,
+        tile,
+      }))
+
+      const results = await tm.getTiles(baseLayers)
+      expect(tm.getTile).toHaveBeenCalledTimes(baseLayers.length)
+      expect(results).toHaveLength(baseLayers.length)
+    })
+
     it("fetches all tiles without limit if limit is 0", async () => {
       const tm = new TileManager({ tileLayers, tileRequestLimit: 0 })
       jest.spyOn(tm, "getTile").mockImplementation(async (tile) => ({
