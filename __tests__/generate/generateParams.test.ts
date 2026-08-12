@@ -382,6 +382,30 @@ describe("generateParams", () => {
       expect(result.options.tileRequestLimit).toBe(4)
     })
 
+    it("floors tileSize so the tile grid stays bounded", () => {
+      for (const input of ["1", "-256"]) {
+        const result = getMapParams({ center: "50,10", tileSize: input })
+        expect(result.options.tileSize).toBe(64)
+      }
+    })
+
+    it("falls back to the default tileSize when it is unparseable", () => {
+      for (const input of ["abc", "0"]) {
+        const result = getMapParams({ center: "50,10", tileSize: input })
+        expect(result.options.tileSize).toBe(256)
+      }
+    })
+
+    it("caps tileSize at 1024", () => {
+      const result = getMapParams({ center: "50,10", tileSize: "99999" })
+      expect(result.options.tileSize).toBe(1024)
+    })
+
+    it("keeps a valid tileSize untouched", () => {
+      const result = getMapParams({ center: "50,10", tileSize: "512" })
+      expect(result.options.tileSize).toBe(512)
+    })
+
     it("throws when dimensions exceed max", () => {
       expect(() =>
         getMapParams({ center: "50,10", width: "9000", height: "100" })

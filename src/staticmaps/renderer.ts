@@ -17,6 +17,9 @@ import { safeFetch, type SafeResponse } from "../utils/safeFetch"
 import { terrariumToHillshade } from "./hillshade"
 import logger from "../utils/logger"
 
+/** Per layer. The largest canvas the pixel budget allows needs 441 at 256px. */
+const MAX_TILES_PER_LAYER = 1024
+
 /**
  * Draws a map tile layer by loading and rendering tiles based on the given viewport and configuration.
  *
@@ -84,6 +87,13 @@ export async function drawLayer({
   const yMin = Math.floor(centerY - halfHeightTiles)
   const xMax = Math.ceil(centerX + halfWidthTiles)
   const yMax = Math.ceil(centerY + halfHeightTiles)
+
+  const tileCount = (xMax - xMin) * (yMax - yMin)
+  if (tileCount > MAX_TILES_PER_LAYER) {
+    throw new Error(
+      `Tile grid too large: ${tileCount} tiles exceeds limit of ${MAX_TILES_PER_LAYER}`
+    )
+  }
 
   const subdomains = config.tileSubdomains ?? []
 

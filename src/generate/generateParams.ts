@@ -86,6 +86,9 @@ const MAX_TILE_REQUEST_TIMEOUT = 30_000
 const MAX_ZOOM = 20
 const MAX_FEATURES = 1000
 
+const MIN_TILE_SIZE = 64
+const MAX_TILE_SIZE = 1024
+
 /** Short-form attribution appended when ?hillshade=true is set. Override via HILLSHADE_ATTRIBUTION. */
 const HILLSHADE_ATTRIBUTION =
   process.env.HILLSHADE_ATTRIBUTION || "Hillshade: Mapzen / AWS Terrain Tiles"
@@ -213,7 +216,15 @@ export function getMapParams(params: MapParamsInput): MapParamsOutput {
     height,
     ...(params.paddingX && { paddingX: parseInt(params.paddingX, 10) }),
     ...(params.paddingY && { paddingY: parseInt(params.paddingY, 10) }),
-    ...(params.tileSize && { tileSize: parseInt(params.tileSize, 10) }),
+    ...(params.tileSize && {
+      tileSize: Math.min(
+        MAX_TILE_SIZE,
+        Math.max(
+          MIN_TILE_SIZE,
+          parseInt(params.tileSize, 10) || DEFAULTS.tileSize
+        )
+      ),
+    }),
     ...(params.zoom && { zoom: Math.min(parseInt(params.zoom, 10), MAX_ZOOM) }),
     ...(params.format && {
       format: ALLOWED_FORMATS.has(params.format.toLowerCase())
