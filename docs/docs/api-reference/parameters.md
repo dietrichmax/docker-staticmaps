@@ -41,10 +41,10 @@ You must supply either `center` or at least one feature with coordinates (`marke
 | `tileUrl` |  | Tile URL with `{x}`, `{y}`, `{z}` or `{quadkey}` placeholders. Rejected if the host resolves to a private or internal address (see **Configuration**). |
 | `tileSubdomains` | `[]` | Tile subdomains like `['a', 'b', 'c']`. Max 10; entries must match `[a-zA-Z0-9-]+`. |
 | `tileLayers` | `[]` | Multiple tile layers with `tileUrl` and `tileSubdomains`. Max 10 layers. |
-| `tileSize` | `256` | Size of tiles in pixels |
+| `tileSize` | `256` | Size of tiles in pixels. Must match what your tile server serves, usually 256 or 512. Clamped to 64–1024. |
 | `tileRequestTimeout` |  | Tile request timeout (ms). Capped at 30000. |
 | `tileRequestHeader` | `{}` | Extra headers for tile requests. Only `User-Agent`, `Accept`, `Accept-Language`, `Referer` and `Cache-Control` are forwarded; all others are dropped. |
-| `tileRequestLimit` | `2` | Max parallel tile requests. Capped at 8. |
+| `tileRequestLimit` | `2` | Max parallel tile requests. Clamped to 1–8. |
 | `zoomRange` | `{ min: 1, max: 17 }` | Min and max zoom to try |
 | `reverseY` | `false` | Use TMS-style Y axis if `true` |
 | `hillshade` | `false` | Composite a shaded-relief overlay on top of the basemap (see **Hillshade**) |
@@ -60,5 +60,8 @@ Requests exceeding these are rejected rather than silently truncated:
 | Image dimensions | 8192 x 8192, and at most 25,000,000 pixels total |
 | Features per request | 1000 across `markers`, `polyline`, `polygon`, `circle` and `text` combined |
 | Zoom | 20 |
+| Tiles per layer | 1024. Raise `tileSize` or reduce `width`/`height` if a request exceeds it. |
+
+A map covering the full 25,000,000 pixel budget needs 441 tiles at the default `tileSize`, so the tile limit is only reachable by setting a much smaller `tileSize`. `hillshade=true` adds a second layer, each counted separately.
 
 ---
