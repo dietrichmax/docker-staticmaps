@@ -4,6 +4,7 @@ import {
   measureTextWidth,
   formatBytes,
   parseBoolean,
+  parseTrustProxy,
 } from "../../src/utils/helpers"
 
 describe("truncate", () => {
@@ -104,5 +105,29 @@ describe("parseBoolean", () => {
     expect(parseBoolean(null)).toBe(false)
     expect(parseBoolean("yes")).toBe(false)
     expect(parseBoolean("TRUE")).toBe(false)
+  })
+})
+
+describe("parseTrustProxy", () => {
+  it("coerces a hop count to a number, which a string would not do", () => {
+    expect(parseTrustProxy("1")).toBe(1)
+    expect(parseTrustProxy(" 2 ")).toBe(2)
+  })
+
+  it("passes a proxy list through for Express to split", () => {
+    expect(parseTrustProxy("loopback, 10.0.0.0/8")).toBe("loopback, 10.0.0.0/8")
+    expect(parseTrustProxy("172.18.0.1")).toBe("172.18.0.1")
+  })
+
+  it("rejects true, which would let any client spoof X-Forwarded-For", () => {
+    expect(parseTrustProxy("true")).toBeUndefined()
+    expect(parseTrustProxy("TRUE")).toBeUndefined()
+    expect(parseTrustProxy("false")).toBeUndefined()
+  })
+
+  it("returns undefined when unset, so Express keeps its safe default", () => {
+    expect(parseTrustProxy(undefined)).toBeUndefined()
+    expect(parseTrustProxy("")).toBeUndefined()
+    expect(parseTrustProxy("   ")).toBeUndefined()
   })
 })

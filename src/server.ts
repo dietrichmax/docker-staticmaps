@@ -23,7 +23,7 @@ import routes from "./routes/index"
 import logger from "./utils/logger"
 import { authenticateApiKey } from "./middlewares/apiKeyAuth"
 import { headers } from "./middlewares/headers"
-import { truncate, normalizeIp } from "./utils/helpers"
+import { truncate, normalizeIp, parseTrustProxy } from "./utils/helpers"
 import { redactUrl } from "./utils/security"
 import AuthConfig from "./middlewares/authConfig"
 import { rateLimiter } from "./utils/rateLimit"
@@ -39,6 +39,16 @@ const app = express()
  * @constant {number}
  */
 const PORT = Number(process.env.PORT) || 3000
+
+// Without this, req.ip is the proxy's address and all clients share a bucket.
+const trustProxy = parseTrustProxy(process.env.TRUST_PROXY)
+if (trustProxy !== undefined) {
+  app.set("trust proxy", trustProxy)
+} else if (process.env.TRUST_PROXY?.trim()) {
+  logger.warn(
+    `Ignoring TRUST_PROXY="${process.env.TRUST_PROXY}": expected a hop count or a list of proxy IPs/subnets`
+  )
+}
 
 /**
  * Middleware to log incoming requests, including method, URL (truncated),
@@ -237,6 +247,7 @@ app.listen(PORT, () => {
       `  API_KEY: ${process.env.API_KEY ? "(set)" : "(not set)"}\n` +
       `  RATE_LIMIT_MS: ${process.env.RATE_LIMIT_MS || "60000"}\n` +
       `  RATE_LIMIT_MAX: ${process.env.RATE_LIMIT_MAX || "60"}\n` +
+      `  TRUST_PROXY: ${trustProxy === undefined ? "(not set)" : JSON.stringify(trustProxy)}\n` +
       `  LOG_LEVEL: ${process.env.LOG_LEVEL || "INFO"}\n` +
       `  MAX_BODY_SIZE: ${process.env.MAX_BODY_SIZE || "100kb"}\n` +
       `  HILLSHADE_TILE_URL: ${process.env.HILLSHADE_TILE_URL || "(default)"}\n` +
