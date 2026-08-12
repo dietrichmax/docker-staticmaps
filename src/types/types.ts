@@ -48,7 +48,7 @@ export interface MapOptions {
   tileLayers?: TileServerConfigOptions[] // Optional array of tile layer configs
   attribution?: {
     show: boolean
-    text: string
+    text?: string
   }
   hillshade?: boolean // Overlay a hillshade layer on top of the basemap
   tileUrl?: string // Tile URL override
