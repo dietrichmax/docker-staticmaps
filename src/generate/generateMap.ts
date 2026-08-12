@@ -40,7 +40,7 @@ export async function generateMap(
       throw new Error(errMsg)
     }
 
-    if (options.attribution && options.attribution.show && map.image) {
+    if (options.attribution?.show && options.attribution.text && map.image) {
       const svg = createAttributionSVG(
         options.attribution.text,
         options.width,

@@ -131,6 +131,19 @@ describe("generateMap", () => {
     expect(result.buffer).toBeInstanceOf(Buffer)
   })
 
+  it("should skip compositing SVG when attribution has no text", async () => {
+    const options = {
+      attribution: { show: true },
+      format: "png",
+      width: 300,
+      height: 200,
+    }
+    const result = await generateMap(options)
+    expect(attributionModule.createAttributionSVG).not.toHaveBeenCalled()
+    expect(mockMapInstance.image.compositeSVG).not.toHaveBeenCalled()
+    expect(result.buffer).toBeInstanceOf(Buffer)
+  })
+
   it("should apply border if options.border is provided", async () => {
     // Add addBorder mock to the image
     mockMapInstance.image.addBorder = jest
