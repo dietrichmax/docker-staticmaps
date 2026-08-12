@@ -64,6 +64,51 @@ describe("drawLayer", () => {
     expect(result).toBe("drawn-empty")
   })
 
+  test("throws when the tile grid exceeds the per-layer cap", async () => {
+    await expect(
+      drawLayer({
+        centerX: 0,
+        centerY: 0,
+        width: 2000,
+        height: 2000,
+        tileSize: 1,
+        zoom: 10,
+        reverseY: false,
+        xToPx,
+        yToPx,
+        tileManager,
+        image,
+        config: { tileUrl: "https://tileserver.com/{z}/{x}/{y}.png" },
+      })
+    ).rejects.toThrow(/Tile grid too large/)
+
+    expect(tileManager.getTiles).not.toHaveBeenCalled()
+  })
+
+  test("allows the largest canvas the pixel budget permits", async () => {
+    tileManager.getTiles.mockResolvedValue([])
+    image.draw.mockResolvedValue("drawn")
+
+    await expect(
+      drawLayer({
+        centerX: 0,
+        centerY: 0,
+        width: 5000,
+        height: 5000,
+        tileSize: 256,
+        zoom: 10,
+        reverseY: false,
+        xToPx,
+        yToPx,
+        tileManager,
+        image,
+        config: { tileUrl: "https://tileserver.com/{z}/{x}/{y}.png" },
+      })
+    ).resolves.toBe("drawn")
+
+    expect(tileManager.getTiles.mock.calls[0][0].length).toBeLessThan(1024)
+  })
+
   test("calculates tile URLs and calls getTiles and draw correctly without subdomains", async () => {
     const zoom = 2
     const centerX = 2
