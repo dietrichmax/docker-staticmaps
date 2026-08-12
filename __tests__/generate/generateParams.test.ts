@@ -355,6 +355,33 @@ describe("generateParams", () => {
       expect(result.options.zoom).toBe(20)
     })
 
+    // A tileRequestLimit below 1 reaches the `i += limit` chunk loop in
+    // TileManager.getTiles, where it makes the loop counter move away from the
+    // exit condition instead of toward it. The loop then never terminates and
+    // the process dies of heap exhaustion, so the floor is what keeps a single
+    // request from taking the server down.
+    it("floors tileRequestLimit at 1 so the tile chunk loop terminates", () => {
+      for (const input of ["-1", "0", "-999", "abc"]) {
+        const result = getMapParams({
+          center: "50,10",
+          tileRequestLimit: input,
+        })
+        expect(result.options.tileRequestLimit).toBe(1)
+      }
+    })
+
+    // The ceiling keeps one request from opening more parallel connections to a
+    // tile server than the OSM usage policy allows.
+    it("caps tileRequestLimit at 8", () => {
+      const result = getMapParams({ center: "50,10", tileRequestLimit: "999" })
+      expect(result.options.tileRequestLimit).toBe(8)
+    })
+
+    it("keeps a valid tileRequestLimit untouched", () => {
+      const result = getMapParams({ center: "50,10", tileRequestLimit: "4" })
+      expect(result.options.tileRequestLimit).toBe(4)
+    })
+
     it("throws when dimensions exceed max", () => {
       expect(() =>
         getMapParams({ center: "50,10", width: "9000", height: "100" })

@@ -235,7 +235,7 @@ export function getMapParams(params: MapParamsInput): MapParamsOutput {
     }),
     ...(params.tileRequestLimit && {
       tileRequestLimit: Math.min(
-        Number(params.tileRequestLimit),
+        Math.max(1, Math.floor(Number(params.tileRequestLimit)) || 1),
         MAX_TILE_REQUEST_LIMIT
       ),
     }),

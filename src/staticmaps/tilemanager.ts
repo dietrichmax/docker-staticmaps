@@ -133,7 +133,7 @@ export class TileManager {
    *  Fetching tiles and limit concurrent connections
    */
   async getTiles(baseLayers: Object[]) {
-    const limit = this.tileRequestLimit
+    const limit = Math.max(1, Math.floor(Number(this.tileRequestLimit)) || 1)
 
     // Limit concurrent connections to tiles server
     // https://operations.osmfoundation.org/policies/tiles/#technical-usage-requirements
