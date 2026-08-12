@@ -77,6 +77,8 @@ Leave it unset when nothing sits in front of the app.
 
 The count has to match what you actually run. With `TRUST_PROXY=2` and one proxy in front, the app reads one step too far down `X-Forwarded-For` and ends up back on a value the client sent.
 
+Check `RATE_LIMIT_MAX` after enabling this. Until now it applied to all clients at once, so if you raised it to stop legitimate traffic being throttled, that figure now applies to each client separately.
+
 ---
 
 ## Using a tile server on your own network
