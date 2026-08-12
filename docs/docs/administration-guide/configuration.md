@@ -31,6 +31,7 @@ You can configure the **Docker Static Maps API** through environment variables.
 | `MAX_PARAMETER_LIMIT` | number | 1000 | Controls the maximum number of parameters that are allowed in the URL-encoded data |
 | `RATE_LIMIT_MS` | number | 60000 | Rate limit window in milliseconds |
 | `RATE_LIMIT_MAX` | number | 60 | Max requests per IP per window |
+| `TRUST_PROXY` | string | (none) | Set when running behind a reverse proxy, otherwise rate limiting counts every client as one. See [Running behind a reverse proxy](#running-behind-a-reverse-proxy). |
 | `HILLSHADE_TILE_URL` | string | AWS Open Data Terrarium endpoint | Tile URL template for the optional hillshade overlay. Must serve Terrarium-encoded raster-DEM tiles. |
 | `HILLSHADE_ATTRIBUTION` | string | `Hillshade: Mapzen / AWS Terrain Tiles` | Short-form attribution appended when `hillshade=true` is set. Override when pointing `HILLSHADE_TILE_URL` at a non-Mapzen DEM source. |
 | `ALLOW_PRIVATE_TILE_HOSTS` | string | (none) | Comma-separated hostnames permitted to resolve to private/internal addresses. See [Using a tile server on your own network](#using-a-tile-server-on-your-own-network). |
@@ -49,6 +50,32 @@ environment:
 ```
 
 Note that `TILE_USER_AGENT=` with an empty value counts as unset, and the default is used.
+
+---
+
+## Running behind a reverse proxy
+
+If nginx, Traefik or Caddy sits in front of docker-staticmaps, the address the app sees is the proxy's, not the client's. Every request then looks like it comes from the same place, so the per-IP rate limit becomes one bucket shared by everyone and the logs show the proxy on every line.
+
+Set `TRUST_PROXY` to the number of proxies in front of the app:
+
+```yaml
+environment:
+  - TRUST_PROXY=1
+```
+
+Instead of a count you can list the proxies by address or subnet, or use the presets `loopback`, `linklocal` and `uniquelocal`:
+
+```yaml
+environment:
+  - TRUST_PROXY=loopback,172.18.0.0/16
+```
+
+Leave it unset when nothing sits in front of the app.
+
+`TRUST_PROXY=true` is **not** supported and is ignored with a warning. It would trust the `X-Forwarded-For` header from anyone, so a client could send a made-up address and get a fresh rate-limit bucket on every request - use a count or an explicit list instead.
+
+The count has to match what you actually run. With `TRUST_PROXY=2` and one proxy in front, the app reads one step too far down `X-Forwarded-For` and ends up back on a value the client sent.
 
 ---
 

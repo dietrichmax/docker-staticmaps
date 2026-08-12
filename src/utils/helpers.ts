@@ -50,6 +50,19 @@ export function parseBoolean(val: any): boolean {
 }
 
 /**
+ * Parses TRUST_PROXY for Express's `trust proxy` setting. A hop count must be a
+ * number - as a string it parses as an address spec matching nothing, silently
+ * behaving like unset. `true` is refused: it trusts any X-Forwarded-For.
+ */
+export function parseTrustProxy(raw?: string): number | string | undefined {
+  const value = raw?.trim()
+  if (!value) return undefined
+  if (/^\d+$/.test(value)) return Number(value)
+  if (/^(true|false)$/i.test(value)) return undefined
+  return value
+}
+
+/**
  * Converts a number of bytes into a human-readable string with appropriate units.
  *
  * @param {number} bytes - The size in bytes to format.
