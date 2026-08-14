@@ -1,6 +1,6 @@
 services:
   docker-staticmaps:
-    image: mxdcodes/docker-staticmaps:latest
+    image: mxdcodes/docker-staticmaps:latest@sha256:e4c2fb849fc2e83f02a7dcbaca6dbd607a3ca83126a7b3b7a35229f24c37a8cd
     container_name: docker-staticmaps
     restart: always
     ports:
