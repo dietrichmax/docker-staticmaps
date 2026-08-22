@@ -1,16 +1,6 @@
 # -------- Stage 1: Build --------
 FROM node:26-alpine@sha256:aadf416b2cdce311a8811ba3f0608a61b77dbf997500e2eafe781b51f6a0b019 AS build
 
-# Metadata
-LABEL org.opencontainers.image.title="docker-staticmaps"
-LABEL org.opencontainers.image.description="A containerized web version for staticmaps with Express"
-LABEL org.opencontainers.image.url="https://hub.docker.com/repository/docker/mxdcodes/docker-staticmaps"
-LABEL org.opencontainers.image.source="https://github.com/dietrichmax/docker-staticmaps"
-LABEL org.opencontainers.image.documentation="https://github.com/dietrichmax/docker-staticmaps/blob/main/README.md"
-LABEL org.opencontainers.image.authors="Max Dietrich <mail@mxd.codes>"
-LABEL org.opencontainers.image.vendor="Max Dietrich <mail@mxd.codes>"
-LABEL org.opencontainers.image.licenses=GPL
-
 # Create app directory
 WORKDIR /opt/app
 
@@ -34,6 +24,16 @@ RUN npm cache clean --force
 
 # Stage 2: Final Stage (Minimal Image)
 FROM node:26-alpine@sha256:aadf416b2cdce311a8811ba3f0608a61b77dbf997500e2eafe781b51f6a0b019 AS final
+
+LABEL org.opencontainers.image.title="docker-staticmaps"
+LABEL org.opencontainers.image.description="A containerized web version for staticmaps with Express"
+LABEL org.opencontainers.image.url="https://hub.docker.com/repository/docker/mxdcodes/docker-staticmaps"
+LABEL org.opencontainers.image.source="https://github.com/dietrichmax/docker-staticmaps"
+LABEL org.opencontainers.image.documentation="https://github.com/dietrichmax/docker-staticmaps/blob/main/README.md"
+LABEL org.opencontainers.image.authors="Max Dietrich <mail@mxd.codes>"
+LABEL org.opencontainers.image.vendor="Max Dietrich <mail@mxd.codes>"
+LABEL org.opencontainers.image.licenses=GPL
+
 
 # Patch base OS packages and install a font for sharp's SVG text rendering
 RUN apk upgrade --no-cache && \
