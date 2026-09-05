@@ -8,14 +8,14 @@ import {
   parseCenter,
   getTileUrl,
 } from "../../src/generate/generateParams"
-import polyline from "@mapbox/polyline"
+import { decodePolyline } from "../../src/utils/polyline"
 import logger from "../../src/utils/logger"
 import { basemaps } from "../../src/utils/basemaps"
 import { CoordInput } from "../../src/types/types"
 
 // Mocks
 jest.mock("../../src/utils/logger")
-jest.mock("@mapbox/polyline")
+jest.mock("../../src/utils/polyline")
 
 describe("generateParams", () => {
   beforeEach(() => {
@@ -221,13 +221,13 @@ describe("generateParams", () => {
     })
 
     it("decodes encoded polyline strings", () => {
-      ;(polyline.decode as jest.Mock).mockReturnValue([
+      ;(decodePolyline as jest.Mock).mockReturnValue([
         [10, 20],
         [30, 40],
       ])
       const input = ["_p~iF~ps|U"]
       const result = parseCoordinates(input)
-      expect(polyline.decode).toHaveBeenCalled()
+      expect(decodePolyline).toHaveBeenCalled()
       expect(result).toEqual([
         [20, 10],
         [40, 30],

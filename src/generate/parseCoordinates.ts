@@ -1,4 +1,4 @@
-import polyline from "@mapbox/polyline"
+import { decodePolyline } from "../utils/polyline"
 import { Coordinate, CoordInput } from "../types/types"
 
 /**
@@ -49,7 +49,7 @@ export function parseCoordinates(input: CoordInput): Coordinate[] {
   const strings = input as string[]
   if (isEncodedPolyline(strings)) {
     const raw = strings.join("|").replace(/^\{|\}$/g, "")
-    return polyline.decode(raw).map(([lat, lon]) => [lon, lat])
+    return decodePolyline(raw).map(([lat, lon]) => [lon, lat])
   }
 
   // 3) Comma‐separated "lat,lon" pairs
