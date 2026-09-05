@@ -1,6 +1,5 @@
 import path from "path"
 import { fileURLToPath } from "url"
-import nodeExternals from "webpack-node-externals"
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -8,7 +7,13 @@ export default {
   entry: "./src/server.ts",
   target: "node",
   mode: "production",
-  externals: [nodeExternals()],
+  externals: [
+    ({ request }, callback) =>
+      // Keep bare specifiers (node builtins and node_modules) as runtime requires
+      /^[a-z@]/.test(request ?? "")
+        ? callback(null, `commonjs ${request}`)
+        : callback(),
+  ],
   output: {
     filename: "server.cjs",
     path: path.resolve(__dirname, "dist"),
