@@ -19,7 +19,6 @@
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "express-rate-limit": "^8.5.2",
-    "node-cache": "^5.1.2",
     "pdfkit": "^0.20.0",
     "sharp": "^0.35.2"
   },

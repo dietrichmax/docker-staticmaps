@@ -49,6 +49,45 @@ describe("Tile Cache", () => {
       setCachedTile(key, value)
       expect(getCachedTile(key)).toBeUndefined()
     })
+
+    it("should evict the oldest tile instead of failing once full", () => {
+      for (let i = 0; i < 500; i++) {
+        setCachedTile(`tile:${i}`, Buffer.from(`tile ${i}`))
+      }
+
+      expect(() => setCachedTile("tile:500", value)).not.toThrow()
+      expect(getCachedTile("tile:500")?.equals(value)).toBe(true)
+      expect(getCachedTile("tile:0")).toBeUndefined()
+      expect(getCachedTile("tile:499")).toBeDefined()
+    })
+
+    it("should reclaim expired tiles before evicting a live one", () => {
+      jest.useFakeTimers()
+      try {
+        for (let i = 0; i < 500; i++) {
+          setCachedTile(`tile:${i}`, Buffer.from(`tile ${i}`))
+        }
+        jest.advanceTimersByTime(3600 * 1000 + 1)
+        setCachedTile(key, value)
+
+        expect(getCachedTile(key)?.equals(value)).toBe(true)
+        expect(getCachedTile("tile:0")).toBeUndefined()
+        expect(getCachedTile("tile:499")).toBeUndefined()
+      } finally {
+        jest.useRealTimers()
+      }
+    })
+
+    it("should treat a tile as a miss once its TTL has passed", () => {
+      jest.useFakeTimers()
+      try {
+        setCachedTile(key, value)
+        jest.advanceTimersByTime(3600 * 1000 + 1)
+        expect(getCachedTile(key)).toBeUndefined()
+      } finally {
+        jest.useRealTimers()
+      }
+    })
   })
 
   describe("createCacheKeyFromRequest", () => {
