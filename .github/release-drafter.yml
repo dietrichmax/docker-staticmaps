@@ -52,7 +52,7 @@ categories:
     labels: ["dependencies"]
     collapse-after: 3
 
-change-template: "- $TITLE (#$NUMBER) by @$AUTHOR"
+change-template: "- $TITLE (#$NUMBER)"
 change-title-escapes: '\<*_&'
 category-template: "## $TITLE"
 
