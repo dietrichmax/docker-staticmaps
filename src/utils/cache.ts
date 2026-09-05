@@ -1,4 +1,3 @@
-import NodeCache from "node-cache"
 import { createHash } from "crypto"
 import { MapRequest } from "src/types/types"
 import logger from "./logger"
@@ -10,17 +9,57 @@ import logger from "./logger"
  */
 const tileCacheTTL = parseInt(process.env.TILE_CACHE_TTL ?? "", 10) || 3600
 
+const tileCacheMaxKeys = 500
+
+class TileCache {
+  private readonly store = new Map<string, { data: Buffer; expires: number }>()
+
+  constructor(
+    private readonly ttlSeconds: number,
+    private readonly maxKeys: number
+  ) {}
+
+  get(key: string): Buffer | undefined {
+    const entry = this.store.get(key)
+    if (!entry) return undefined
+
+    if (entry.expires <= Date.now()) {
+      this.store.delete(key)
+      return undefined
+    }
+
+    return entry.data
+  }
+
+  set(key: string, data: Buffer): void {
+    if (!this.store.has(key) && this.store.size >= this.maxKeys) {
+      this.evict()
+    }
+
+    this.store.set(key, { data, expires: Date.now() + this.ttlSeconds * 1000 })
+  }
+
+  flushAll(): void {
+    this.store.clear()
+  }
+
+  private evict(): void {
+    const now = Date.now()
+    for (const [key, entry] of this.store) {
+      if (entry.expires <= now) this.store.delete(key)
+    }
+
+    if (this.store.size >= this.maxKeys) {
+      const oldest = this.store.keys().next()
+      if (!oldest.done) this.store.delete(oldest.value)
+    }
+  }
+}
+
 /**
  * In-memory cache instance for storing tile buffers.
- * Configured with:
- * - stdTTL: standard TTL for cached items (in seconds).
- * - checkperiod: interval in seconds to check and purge expired cache entries.
  */
-const tileCache = new NodeCache({
-  stdTTL: tileCacheTTL,
-  checkperiod: 120,
-  maxKeys: 500,
-})
+const tileCache = new TileCache(tileCacheTTL, tileCacheMaxKeys)
 
 /**
  * Retrieves a cached tile buffer by its cache key.
@@ -36,7 +75,7 @@ export function getCachedTile(key: string): Buffer | undefined {
     return undefined
   }
 
-  const data = tileCache.get<Buffer>(key)
+  const data = tileCache.get(key)
   logger.debug(data ? `Cache hit for ${key}` : `Cache miss for ${key}`)
   return data
 }
