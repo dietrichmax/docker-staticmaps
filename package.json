@@ -16,7 +16,7 @@
   "type": "module",
   "main": "dist/server.cjs",
   "dependencies": {
-    "dotenv": "^17.4.2",
+    "dotenv": "^18.0.0",
     "express": "^5.2.1",
     "express-rate-limit": "^8.5.2",
     "pdfkit": "^0.20.0",
