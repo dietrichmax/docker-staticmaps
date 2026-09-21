@@ -32,12 +32,12 @@
     "mini-css-extract-plugin": "2.10.2",
     "nodemon": "3.1.14",
     "ol": "10.10.0",
-    "prettier": "3.9.7",
+    "prettier": "3.9.8",
     "ts-jest": "29.4.12",
     "ts-loader": "9.6.2",
     "ts-node": "10.9.2",
     "typescript": "6.0.3",
-    "webpack": "5.111.0",
+    "webpack": "5.111.1",
     "webpack-cli": "7.2.3"
   },
   "engines": {
