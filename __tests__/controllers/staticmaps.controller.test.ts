@@ -154,6 +154,12 @@ describe("parseCoordinates", () => {
     expect(coords[0]).toHaveLength(2)
   })
 
+  it("keeps a leading brace that is part of the encoded polyline", () => {
+    const coords = parseCoordinates(["{p_lC{_qzL??xEdWhDjAnDrA"])
+    expect(coords[0][0]).toBeCloseTo(72.67342, 5)
+    expect(coords[0][1]).toBeCloseTo(23.1043, 5)
+  })
+
   it("parses lat,lon strings", () => {
     const coords = parseCoordinates(["48.1,11.6"])
     expect(coords).toEqual([[11.6, 48.1]])
