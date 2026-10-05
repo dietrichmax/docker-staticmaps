@@ -48,7 +48,7 @@ export function parseCoordinates(input: CoordInput): Coordinate[] {
   // 2) Encoded polyline
   const strings = input as string[]
   if (isEncodedPolyline(strings)) {
-    const raw = strings.join("|").replace(/^\{|\}$/g, "")
+    const raw = strings.join("|")
     return decodePolyline(raw).map(([lat, lon]) => [lon, lat])
   }
 
