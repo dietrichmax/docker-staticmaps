@@ -1,5 +1,5 @@
 # -------- Stage 1: Build --------
-FROM node:26.13.0-alpine@sha256:8996bb5821d62a8fd9bb27c1cb07462f3fdce6e47d640c6a881ead0b064ce216 AS build
+FROM node:26.13.1-alpine@sha256:6bd9ab43c0ec0190ca7b2d193906cb8b7edf6e7f4afa43ddeccd6452710bffb5 AS build
 
 # Create app directory
 WORKDIR /opt/app
@@ -23,7 +23,7 @@ RUN npm prune --omit=dev
 RUN npm cache clean --force
 
 # Stage 2: Final Stage (Minimal Image)
-FROM node:26.13.0-alpine@sha256:8996bb5821d62a8fd9bb27c1cb07462f3fdce6e47d640c6a881ead0b064ce216 AS final
+FROM node:26.13.1-alpine@sha256:6bd9ab43c0ec0190ca7b2d193906cb8b7edf6e7f4afa43ddeccd6452710bffb5 AS final
 
 LABEL org.opencontainers.image.title="docker-staticmaps"
 LABEL org.opencontainers.image.description="A containerized web version for staticmaps with Express"
